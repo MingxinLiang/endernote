@@ -1,3 +1,19 @@
+## TODO
+
+### 文件管理:
+1. 默认文件夹设定
+2. 文件夹导出导入
+3. 文件导出导入
+4. 快速笔记
+
+### AI
+1. 语音识别
+2. 大模型交互
+
+### 编辑功能
+1. 表格编辑
+
+
 # **EnderNote**
 
 _"Notes, Redefined. Markdown-powered productivity."_
