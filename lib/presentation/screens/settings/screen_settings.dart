@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:logger/logger.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:logger/logger.dart';
 
 import '../../../bloc/theme/theme_bloc.dart';
 import '../../../bloc/theme/theme_events.dart';
@@ -16,9 +18,29 @@ var logger = Logger(
   output: null, // Use the default LogOutput (-> send everything to console)
 );
 
-class ScreenSettings extends StatelessWidget {
-  String rootPath;
-  ScreenSettings({super.key, required this.rootPath});
+var logger = Logger(
+  filter: null, // Use the default LogFilter (-> only log in debug mode)
+  printer: PrettyPrinter(), // Use the PrettyPrinter to format and print log
+  output: null, // Use the default LogOutput (-> send everything to console)
+);
+
+class ScreenSettings extends StatefulWidget {
+  final String rootPath;
+
+  const ScreenSettings({super.key, required this.rootPath});
+
+  @override
+  State<ScreenSettings> createState() => _ScreenSettingsState();
+}
+
+class _ScreenSettingsState extends State<ScreenSettings> {
+  late String rootPath;
+
+  @override
+  void initState() {
+    super.initState();
+    rootPath = widget.rootPath;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -97,8 +119,11 @@ class ScreenSettings extends StatelessWidget {
               onTap: () async {
                 String? selectedDirectory =
                     await FilePicker.platform.getDirectoryPath();
+                logger.i("select path: $selectedDirectory");
                 if (selectedDirectory != null && selectedDirectory.isNotEmpty) {
-                  rootPath = selectedDirectory;
+                  setState(() {
+                    rootPath = selectedDirectory;
+                  });
                 }
               },
             ), // PathSetting
