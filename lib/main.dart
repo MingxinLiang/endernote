@@ -72,7 +72,7 @@ class MyApp extends StatelessWidget {
             routes: {
               '/canvas': (context) => ScreenCanvas(),
               '/home': (context) => ScreenHome(rootPath: rootPath),
-              '/settings': (context) => const ScreenSettings(),
+              '/settings': (context) => ScreenSettings(rootPath: rootPath),
               '/about': (context) => const ScreenAbout(),
             },
             onGenerateRoute: (settings) {

@@ -23,6 +23,8 @@ dependencies:
   bloc: ^9.0.0
   path: ^1.9.0
   flutter_speed_dial: ^7.0.0
+  file_picker: ^9.2.1
+  logger: ^2.5.0
 
 dev_dependencies:
   flutter_test:
