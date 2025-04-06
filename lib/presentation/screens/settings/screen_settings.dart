@@ -2,19 +2,13 @@ import 'package:endernote/controller/directory_controller.dart';
 import 'package:ficonsax/ficonsax.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:logger/logger.dart';
 
 // 头部添加Get依赖
 import 'package:get/get.dart'; // 新增导入
 import '../../../controller/theme_controller.dart';
 import '../../theme/app_themes.dart';
 import '../../widgets/custom_list_tile.dart';
-
-var logger = Logger(
-  filter: null, // Use the default LogFilter (-> only log in debug mode)
-  printer: PrettyPrinter(), // Use the PrettyPrinter to format and print log
-  output: null, // Use the default LogOutput (-> send everything to console)
-);
+import '../../../common/logger.dart' show logger;
 
 class ScreenSettings extends StatelessWidget {
   const ScreenSettings({super.key}); // 移除构造函数参数

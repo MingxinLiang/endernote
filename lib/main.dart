@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:endernote/controller/directory_controller.dart';
 import 'package:endernote/controller/theme_controller.dart';
 import 'package:flutter/material.dart';
@@ -12,11 +10,14 @@ import 'presentation/screens/search/screen_search.dart';
 import 'presentation/screens/settings/screen_settings.dart';
 import 'presentation/theme/app_themes.dart';
 
+import '../../../common/logger.dart' show logger;
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // 初始化 DirectoryController
   final directoryController = Get.put(DirectoryController());
   // 初始化 ThemeController
+  // ignore: unused_local_variable
   final themeController = Get.put(ThemeController());
   await directoryController.fetchRootPath();
   runApp(MyApp());
@@ -68,7 +69,7 @@ class MyApp extends StatelessWidget {
               );
             } else {
               // 处理参数缺失的情况
-              print('Missing required arguments for /search route');
+              logger.w('Missing required arguments for /search route');
               return Container();
             }
           },
