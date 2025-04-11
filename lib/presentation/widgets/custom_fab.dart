@@ -1,9 +1,12 @@
 import 'dart:io';
+import 'package:endernote/controller/directory_controller.dart';
+import 'package:endernote/presentation/screens/canvas/edit_mode/edit_mode.dart';
+import "package:get/get.dart";
 
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:ficonsax/ficonsax.dart';
+import 'package:path/path.dart';
 
 import '../../bloc/directory/directory_bloc.dart';
 import '../../bloc/directory/directory_events.dart';
@@ -19,6 +22,7 @@ class CustomFAB extends StatelessWidget {
     final ValueNotifier<bool> isDialOpen = ValueNotifier(false);
     final TextEditingController folderController = TextEditingController();
     final TextEditingController fileController = TextEditingController();
+    final directoryController = Get.find<DirectoryController>();
 
     return SpeedDial(
       openCloseDial: isDialOpen,
@@ -32,10 +36,11 @@ class CustomFAB extends StatelessWidget {
           hintText: "Folder name",
           onCreate: () async {
             if (folderController.text.isNotEmpty) {
-              await Directory(
-                '$rootPath/${folderController.text}',
-              ).create(recursive: true);
-              context.read<DirectoryBloc>().add(FetchDirectory(rootPath));
+              final newPath = '$rootPath/${folderController.text}';
+              await Directory(newPath).create(recursive: true);
+              directoryController.fetchDirectory(rootPath);
+              // 直接跳转到目录页面
+              Get.to(DirectoryPage(currentPath: newPath));
             }
           },
         ),
@@ -48,10 +53,11 @@ class CustomFAB extends StatelessWidget {
           hintText: "File name",
           onCreate: () async {
             if (fileController.text.isNotEmpty) {
-              await File(
-                '$rootPath/${fileController.text}.md',
-              ).create(recursive: true);
-              context.read<DirectoryBloc>().add(FetchDirectory(rootPath));
+              final filePath = '$rootPath/${fileController.text}.md';
+              await File(filePath).create(recursive: true);
+              directoryController.fetchDirectory(rootPath);
+              // 直接跳转到编辑器页面
+              Get.to(EditMode(entityPath: filePath));
             }
           },
         ),
