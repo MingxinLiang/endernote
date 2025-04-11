@@ -1,12 +1,14 @@
 import 'dart:io';
 
+import 'package:endernote/controller/directory_controller.dart';
+import 'package:get/get.dart';
 import 'package:ficonsax/ficonsax.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:endernote/common/logger.dart' show logger;
 
 import '../../../bloc/directory/directory_bloc.dart';
 import '../../../bloc/directory/directory_events.dart';
-import '../../../bloc/directory/directory_states.dart';
 import '../../theme/app_themes.dart';
 import '../../widgets/custom_app_bar.dart';
 import '../../widgets/custom_fab.dart';
@@ -18,6 +20,7 @@ class ScreenHome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final directoryController = Get.find<DirectoryController>();
     final TextEditingController searchController = TextEditingController();
     final ValueNotifier<bool> hasText = ValueNotifier<bool>(false);
 
@@ -32,36 +35,33 @@ class ScreenHome extends StatelessWidget {
         showBackButton: true,
         hasText: hasText,
       ),
-      body: BlocBuilder<DirectoryBloc, DirectoryState>(
-        builder: (context, state) {
-          if (state.isLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
+      body: Obx(() {
+        if (directoryController.isLoading.value) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
-          if (state.errorMessage != null) {
-            return Center(
-              child: Text(
-                'Error: ${state.errorMessage}',
-                style: const TextStyle(color: Colors.red),
-              ),
-            );
-          }
+        if (directoryController.error.value.isNotEmpty) {
+          return Center(
+            child: Text(
+              'Error: ${directoryController.error.value}',
+              style: const TextStyle(color: Colors.red),
+            ),
+          );
+        }
 
-          return _buildDirectoryList(context, rootPath, state);
-        },
-      ),
+        return _buildDirectoryList(context, rootPath);
+      }),
       floatingActionButton: CustomFAB(rootPath: rootPath),
     );
   }
 
-  Widget _buildDirectoryList(
-    BuildContext context,
-    String path,
-    DirectoryState state,
-  ) {
-    final contents = state.folderContents[path] ?? [];
+  Widget _buildDirectoryList(BuildContext context, String path) {
+    final directoryController = Get.find<DirectoryController>();
+    directoryController.fetchDirectory(path); // 确保目录内容已加载
+    final contents =
+        directoryController.folderContents[path] ?? []; // 获取当前路径的内容
 
-    if (path == rootPath && contents.isEmpty) {
+    if (contents.isEmpty) {
       return Center(
         child: Text(
           "This folder is feeling lonely.",
@@ -94,7 +94,8 @@ class ScreenHome extends StatelessWidget {
               child: ListTile(
                 leading: Icon(
                   isFolder
-                      ? (state.openFolders.contains(entityPath)
+                      ? (directoryController.openFolders
+                              .contains(entityPath) // 改用GetX状态
                           ? IconsaxOutline.folder_open
                           : IconsaxOutline.folder)
                       : IconsaxOutline.task_square,
@@ -102,26 +103,22 @@ class ScreenHome extends StatelessWidget {
                 title: Text(entityPath.split('/').last),
                 onTap: () {
                   if (isFolder) {
-                    context.read<DirectoryBloc>().add(ToggleFolder(entityPath));
-                    if (!state.folderContents.containsKey(entityPath)) {
-                      context
-                          .read<DirectoryBloc>()
-                          .add(FetchDirectory(entityPath));
+                    directoryController.toggleFolder(entityPath);
+                    if (!directoryController.hasFolder(entityPath)) {
+                      directoryController.fetchDirectory(entityPath);
                     }
                   } else {
-                    Navigator.pushNamed(
-                      context,
-                      '/canvas',
-                      arguments: entityPath,
-                    );
+                    Get.toNamed('/canvas', arguments: entityPath);
                   }
                 },
               ),
             ),
-            if (isFolder && state.openFolders.contains(entityPath))
+            if (isFolder &&
+                directoryController.openFolders
+                    .contains(entityPath)) // 改用GetX状态
               Padding(
                 padding: const EdgeInsets.only(left: 16.0),
-                child: _buildDirectoryList(context, entityPath, state),
+                child: _buildDirectoryList(context, entityPath), // 移除state参数
               ),
           ],
         );
@@ -191,6 +188,7 @@ class ScreenHome extends StatelessWidget {
   }
 
   void _createNewFolder(BuildContext context, String entityPath) {
+    final directoryController = Get.find<DirectoryController>();
     final controller = TextEditingController();
     showDialog(
       context: context,
@@ -220,7 +218,7 @@ class ScreenHome extends StatelessWidget {
               if (controller.text.trim().isNotEmpty) {
                 final newFolderPath = '$entityPath/${controller.text.trim()}';
                 Directory(newFolderPath).createSync();
-                context.read<DirectoryBloc>().add(FetchDirectory(entityPath));
+                directoryController.fetchDirectory(entityPath); // 改用GetX
               }
               Navigator.pop(context);
             },

@@ -39,8 +39,6 @@ class CustomFAB extends StatelessWidget {
               final newPath = '$rootPath/${folderController.text}';
               await Directory(newPath).create(recursive: true);
               directoryController.fetchDirectory(rootPath);
-              // 直接跳转到目录页面
-              Get.to(DirectoryPage(currentPath: newPath));
             }
           },
         ),
@@ -56,8 +54,6 @@ class CustomFAB extends StatelessWidget {
               final filePath = '$rootPath/${fileController.text}.md';
               await File(filePath).create(recursive: true);
               directoryController.fetchDirectory(rootPath);
-              // 直接跳转到编辑器页面
-              Get.to(EditMode(entityPath: filePath));
             }
           },
         ),

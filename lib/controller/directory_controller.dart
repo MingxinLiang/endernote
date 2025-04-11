@@ -10,23 +10,33 @@ class DirectoryController extends GetxController {
   RxBool isLoading = false.obs;
   // 错误信息
   RxString error = ''.obs;
-  RxList<String> folderContents = <String>[].obs; // 修正类型为RxList
+  // 只保留这个Map形式的folderContents
+  final RxMap<String, List<String>> folderContents =
+      <String, List<String>>{}.obs;
+  final RxSet<String> openFolders = <String>{}.obs;
 
-  // 添加目录获取方法
+  void toggleFolder(String path) {
+    if (openFolders.contains(path)) {
+      openFolders.remove(path);
+    } else {
+      openFolders.add(path);
+    }
+  }
+
+  bool hasFolder(String path) => folderContents.containsKey(path);
+
+  // 修改后的 fetchDirectory 方法
   void fetchDirectory(String path) async {
     try {
       isLoading.value = true;
       final folder = Directory(path);
-      if (!await folder.exists()) {
-        await folder.create(recursive: true);
-      }
+      if (!await folder.exists()) await folder.create(recursive: true);
 
       final entities = folder.listSync();
-      folderContents.value = entities.map((e) => e.path).toList();
+      folderContents[path] = entities.map((e) => e.path).toList();
       error.value = '';
     } catch (e) {
       error.value = 'Directory fetch failed: ${e.toString()}';
-      folderContents.value = [];
     } finally {
       isLoading.value = false;
     }
