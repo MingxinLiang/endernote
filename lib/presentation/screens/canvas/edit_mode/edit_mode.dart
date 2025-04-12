@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
 import '../../../theme/app_themes.dart';
 
 class EditMode extends StatelessWidget {
@@ -188,40 +187,6 @@ class EditMode extends StatelessWidget {
           builder: (context, value, _) {
             return Column(
               children: [
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: Focus(
-                      autofocus: true,
-                      onKeyEvent: (node, event) =>
-                          _handleKeyEvent(event, textController)
-                              ? KeyEventResult.handled
-                              : KeyEventResult.ignored,
-                      child: TextField(
-                        controller: textController,
-                        focusNode: focusNode,
-                        expands: true,
-                        minLines: null,
-                        maxLines: null,
-                        style: const TextStyle(fontFamily: 'FiraCode'),
-                        decoration: InputDecoration(
-                          floatingLabelStyle: TextStyle(
-                            color: Theme.of(context)
-                                .extension<EndernoteColors>()
-                                ?.clrText,
-                          ),
-                          border: InputBorder.none,
-                          labelStyle: TextStyle(
-                            color: Theme.of(context)
-                                .extension<EndernoteColors>()
-                                ?.clrText,
-                          ),
-                          enabledBorder: InputBorder.none,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
                 Align(
                   alignment: Alignment.bottomRight,
                   child: Container(
@@ -333,6 +298,40 @@ class EditMode extends StatelessWidget {
                             '\n---\n',
                           ),
                         ],
+                      ),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Focus(
+                      autofocus: true,
+                      onKeyEvent: (node, event) =>
+                          _handleKeyEvent(event, textController)
+                              ? KeyEventResult.handled
+                              : KeyEventResult.ignored,
+                      child: TextField(
+                        controller: textController,
+                        focusNode: focusNode,
+                        expands: true,
+                        minLines: null,
+                        maxLines: null,
+                        style: const TextStyle(fontFamily: 'FiraCode'),
+                        decoration: InputDecoration(
+                          floatingLabelStyle: TextStyle(
+                            color: Theme.of(context)
+                                .extension<EndernoteColors>()
+                                ?.clrText,
+                          ),
+                          border: InputBorder.none,
+                          labelStyle: TextStyle(
+                            color: Theme.of(context)
+                                .extension<EndernoteColors>()
+                                ?.clrText,
+                          ),
+                          enabledBorder: InputBorder.none,
+                        ),
                       ),
                     ),
                   ),

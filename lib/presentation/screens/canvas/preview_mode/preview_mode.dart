@@ -1,8 +1,6 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-
 import '../../../theme/markdown_theme.dart';
 
 class PreviewMode extends StatelessWidget {
@@ -22,7 +20,7 @@ class PreviewMode extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       height: MediaQuery.of(context).size.height -
-                (kToolbarHeight - MediaQuery.of(context).padding.top),
+          (kToolbarHeight - MediaQuery.of(context).padding.top),
       child: FutureBuilder(
         future: _loadFileContent(),
         builder: (context, snapshot) {

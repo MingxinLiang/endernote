@@ -1,15 +1,11 @@
 import 'dart:io';
 import 'package:endernote/controller/directory_controller.dart';
-import 'package:endernote/presentation/screens/canvas/edit_mode/edit_mode.dart';
 import "package:get/get.dart";
 
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:ficonsax/ficonsax.dart';
-import 'package:path/path.dart';
 
-import '../../bloc/directory/directory_bloc.dart';
-import '../../bloc/directory/directory_events.dart';
 import '../theme/app_themes.dart';
 
 class CustomFAB extends StatelessWidget {
