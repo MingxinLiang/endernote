@@ -11,6 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
 
+  sherpa_onnx: 1.11.3
   get: ^4.7.2 # 添加GetX依赖
   flutter_svg: ^2.0.10+1
   flutter_markdown: ^0.7.3
