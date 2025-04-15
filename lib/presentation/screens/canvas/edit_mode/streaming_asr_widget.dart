@@ -2,9 +2,10 @@ import 'package:endernote/controller/streaming_asr_controller.dart'
     show StreamingAsrController;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:record/record.dart';
 
-class StreamingAsrScreen extends StatelessWidget {
-  const StreamingAsrScreen({super.key});
+class StreamingAsrButtom extends StatelessWidget {
+  const StreamingAsrButtom({super.key});
 
   @override
   Widget build(BuildContext context) {

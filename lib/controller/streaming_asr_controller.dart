@@ -43,7 +43,7 @@ Float32List convertBytesToFloat32(Uint8List bytes, [endian = Endian.little]) {
 Future<sherpa_onnx.OnlineModelConfig> getOnlineModelConfig(
     {required int type}) async {
   final modelDir =
-      'assets/sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20';
+      'lib/assets/sherpa-onnx-streaming-zipformer-bilingual-zh-en-2023-02-20';
   return sherpa_onnx.OnlineModelConfig(
     transducer: sherpa_onnx.OnlineTransducerModelConfig(
       encoder:
@@ -81,12 +81,20 @@ class StreamingAsrController extends GetxController {
   sherpa_onnx.OnlineStream? stream;
   int sampleRate = 16000;
 
+  void _updateRecordState(RecordState updateRecordState) {
+    recordState.value = updateRecordState;
+  }
+
+  // 初始化状态
   @override
   void onInit() {
-    audioRecorder.onStateChanged().listen(_updateRecordState);
+    audioRecorder.onStateChanged().listen((recordState) {
+      _updateRecordState(recordState);
+    });
     super.onInit();
   }
 
+  // 关闭状态
   @override
   void onClose() {
     audioRecorder.dispose();
@@ -104,6 +112,8 @@ class StreamingAsrController extends GetxController {
       isInitialized.value = true;
     }
 
+    logger.i("init streaming asr.");
+
     try {
       if (await audioRecorder.hasPermission()) {
         const config = RecordConfig(
@@ -111,6 +121,8 @@ class StreamingAsrController extends GetxController {
           sampleRate: 16000,
           numChannels: 1,
         );
+
+        logger.i('Starting stream with config: $config');
 
         final audioStream = await audioRecorder.startStream(config);
 
@@ -123,6 +135,7 @@ class StreamingAsrController extends GetxController {
           }
 
           final text = recognizer?.getResult(stream!).text ?? '';
+          logger.i('Recognized text: $text');
           updateTextDisplay(text);
         });
       } else {
@@ -158,9 +171,5 @@ class StreamingAsrController extends GetxController {
     stream?.free();
     stream = recognizer?.createStream();
     await audioRecorder.stop();
-  }
-
-  void _updateRecordState(RecordState state) {
-    recordState.value = state;
   }
 }

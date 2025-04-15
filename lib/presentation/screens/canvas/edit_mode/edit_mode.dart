@@ -1,10 +1,11 @@
 import 'dart:io';
 
-import 'package:endernote/common/logger.dart';
 import 'package:endernote/presentation/screens/canvas/edit_mode/functional_bar.dart';
+import 'package:endernote/presentation/screens/canvas/edit_mode/streaming_asr_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../theme/app_themes.dart';
+import 'package:endernote/common/logger.dart' show logger;
 
 class EditMode extends StatelessWidget {
   const EditMode({super.key, required this.entityPath});
@@ -120,6 +121,8 @@ class EditMode extends StatelessWidget {
         final functionalBar =
             FunctionalBar(textController: textController, focusNode: focusNode);
 
+        final asrButtom = StreamingAsrButtom();
+
         textController.addListener(() async {
           await _saveChanges(textController.text, entityPath);
         });
@@ -180,12 +183,7 @@ class EditMode extends StatelessWidget {
                     alignment: Alignment.bottomRight,
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(0, 0, 12, 12),
-                      child: FloatingActionButton(
-                        onPressed: () {
-                          logger.i('onPressed ASR');
-                        },
-                        child: const Icon(Icons.mic),
-                      ),
+                      child: asrButtom,
                     )),
               ],
             );
