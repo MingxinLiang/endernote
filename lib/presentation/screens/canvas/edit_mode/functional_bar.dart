@@ -1,3 +1,4 @@
+import 'package:endernote/common/logger.dart' show logger;
 import 'package:endernote/presentation/theme/app_themes.dart';
 import 'package:flutter/material.dart';
 
@@ -39,10 +40,16 @@ class FunctionalBar extends StatelessWidget {
       TextEditingController controller, FocusNode focusNode, String prefix,
       [String suffix = '']) {
     final text = controller.text;
-    final selection = controller.selection;
+    var selection = controller.selection;
+
+    if (selection.start == -1) {
+      selection = TextSelection.collapsed(offset: 0);
+    }
 
     // If text is selected, wrap it with formatting
     if (selection.start != selection.end) {
+      logger.i(
+          "selection.start: ${selection.start}, selection.end: ${selection.end}");
       controller.text = text.replaceRange(
         selection.start,
         selection.end,
@@ -54,6 +61,8 @@ class FunctionalBar extends StatelessWidget {
         offset: selection.end + prefix.length + suffix.length,
       );
     } else {
+      logger.i(
+          "selection.start: ${selection.start}, selection.end: ${selection.end}");
       // If no text selected, insert the formatting and place cursor between prefix and suffix
       controller.text = text.replaceRange(
         selection.start,
