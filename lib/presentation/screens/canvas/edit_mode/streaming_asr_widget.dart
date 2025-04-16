@@ -5,11 +5,13 @@ import 'package:get/get.dart';
 import 'package:record/record.dart';
 
 class StreamingAsrButtom extends StatelessWidget {
-  const StreamingAsrButtom({super.key});
+  const StreamingAsrButtom({super.key, required this.textEditingController});
+  final TextEditingController textEditingController;
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(StreamingAsrController());
+    final controller =
+        Get.put(StreamingAsrController(textController: textEditingController));
     return _buildRecordStopControl(controller);
   }
 

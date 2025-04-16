@@ -1,3 +1,5 @@
+import 'dart:async' show StreamSubscription;
+
 import 'package:get/get.dart';
 import 'package:record/record.dart';
 import 'package:flutter/widgets.dart';
@@ -28,7 +30,6 @@ Future<String> copyAssetFile(String src, [String? dst]) async {
 
 Float32List convertBytesToFloat32(Uint8List bytes, [endian = Endian.little]) {
   final values = Float32List(bytes.length ~/ 2);
-
   final data = ByteData.view(bytes.buffer);
 
   for (var i = 0; i < bytes.length; i += 2) {
@@ -58,7 +59,6 @@ Future<sherpa_onnx.OnlineModelConfig> getOnlineModelConfig(
 
 Future<sherpa_onnx.OnlineRecognizer> createOnlineRecognizer() async {
   final type = 0;
-
   final modelConfig = await getOnlineModelConfig(type: type);
   final config = sherpa_onnx.OnlineRecognizerConfig(
     model: modelConfig,
@@ -69,13 +69,15 @@ Future<sherpa_onnx.OnlineRecognizer> createOnlineRecognizer() async {
 }
 
 class StreamingAsrController extends GetxController {
-  final TextEditingController textController = TextEditingController();
-  final AudioRecorder audioRecorder = AudioRecorder();
-
   final RxString last = ''.obs;
   final RxInt index = 0.obs;
   final RxBool isInitialized = false.obs;
   final Rx<RecordState> recordState = RecordState.stop.obs;
+  TextEditingController textController;
+  StreamingAsrController({required this.textController});
+
+  AudioRecorder audioRecorder = AudioRecorder();
+  StreamSubscription<RecordState>? _recordSub;
 
   sherpa_onnx.OnlineRecognizer? recognizer;
   sherpa_onnx.OnlineStream? stream;
@@ -88,7 +90,7 @@ class StreamingAsrController extends GetxController {
   // 初始化状态
   @override
   void onInit() {
-    audioRecorder.onStateChanged().listen((recordState) {
+    _recordSub = audioRecorder.onStateChanged().listen((recordState) {
       _updateRecordState(recordState);
     });
     super.onInit();
@@ -97,6 +99,7 @@ class StreamingAsrController extends GetxController {
   // 关闭状态
   @override
   void onClose() {
+    _recordSub?.cancel();
     audioRecorder.dispose();
     stream?.free();
     recognizer?.free();
@@ -110,31 +113,39 @@ class StreamingAsrController extends GetxController {
       recognizer = await createOnlineRecognizer();
       stream = recognizer?.createStream();
       isInitialized.value = true;
+      logger.i("init streaming asr.");
     }
-
-    logger.i("init streaming asr.");
 
     try {
       if (await audioRecorder.hasPermission()) {
+        const encoder = AudioEncoder.pcm16bits;
+
+        if (!await audioRecorder.isEncoderSupported(encoder)) {
+          logger.e('Encoder not supported: $encoder');
+          return;
+        }
+
+        final devs = await audioRecorder.listInputDevices();
+        logger.d(devs.toString());
+
         const config = RecordConfig(
-          encoder: AudioEncoder.pcm16bits,
+          encoder: encoder,
           sampleRate: 16000,
           numChannels: 1,
         );
-
-        logger.i('Starting stream with config: $config');
 
         final audioStream = await audioRecorder.startStream(config);
 
         audioStream.listen((data) {
           final samples = convertBytesToFloat32(Uint8List.fromList(data));
-          stream?.acceptWaveform(samples: samples, sampleRate: sampleRate);
 
-          while (recognizer?.isReady(stream!) ?? false) {
-            recognizer?.decode(stream!);
+          stream!.acceptWaveform(samples: samples, sampleRate: sampleRate);
+
+          while (recognizer!.isReady(stream!)) {
+            recognizer!.decode(stream!);
           }
 
-          final text = recognizer?.getResult(stream!).text ?? '';
+          final text = recognizer!.getResult(stream!).text;
           logger.i('Recognized text: $text');
           updateTextDisplay(text);
         });

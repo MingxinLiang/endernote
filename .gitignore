@@ -1,3 +1,4 @@
+*.onnx
 # Miscellaneous
 *.class
 *.log

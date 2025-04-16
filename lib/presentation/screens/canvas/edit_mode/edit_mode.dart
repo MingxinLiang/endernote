@@ -121,7 +121,7 @@ class EditMode extends StatelessWidget {
         final functionalBar =
             FunctionalBar(textController: textController, focusNode: focusNode);
 
-        final asrButtom = StreamingAsrButtom();
+        final asrButtom = StreamingAsrButtom(textEditingController: textController,);
 
         textController.addListener(() async {
           await _saveChanges(textController.text, entityPath);
