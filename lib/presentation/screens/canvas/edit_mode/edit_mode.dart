@@ -24,7 +24,7 @@ class EditMode extends StatelessWidget {
     try {
       await File(path).writeAsString(content);
     } catch (e) {
-      debugPrint("Error saving file: $e");
+      logger.d("Error saving file: $e");
     }
   }
 
@@ -121,7 +121,9 @@ class EditMode extends StatelessWidget {
         final functionalBar =
             FunctionalBar(textController: textController, focusNode: focusNode);
 
-        final asrButtom = StreamingAsrButtom(textEditingController: textController,);
+        final asrButtom = StreamingAsrButtom(
+          textEditingController: textController,
+        );
 
         textController.addListener(() async {
           await _saveChanges(textController.text, entityPath);

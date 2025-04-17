@@ -1,5 +1,4 @@
 import 'dart:async' show StreamSubscription;
-import 'dart:developer';
 
 import 'package:get/get.dart';
 import 'package:record/record.dart';
@@ -70,9 +69,8 @@ Future<sherpa_onnx.OnlineRecognizer> createOnlineRecognizer() async {
 }
 
 class StreamingAsrController extends GetxController {
-  final RxString last = ''.obs;
-  final RxInt index = 0.obs;
   final RxBool isInitialized = false.obs;
+  final RxInt _cursorPosition = 0.obs;
   final Rx<RecordState> recordState = RecordState.stop.obs;
   StreamSubscription<RecordState>? _recordSub;
 
@@ -96,6 +94,9 @@ class StreamingAsrController extends GetxController {
     _recordSub = _audioRecorder.onStateChanged().listen((recordState) {
       _updateRecordState(recordState);
     });
+    _cursorPosition.value = textController.selection.baseOffset >= 0
+        ? textController.selection.baseOffset
+        : 0;
     super.onInit();
     logger.d('StreamingAsrController init');
   }
@@ -124,13 +125,13 @@ class StreamingAsrController extends GetxController {
         const encoder = AudioEncoder.pcm16bits;
 
         if (!await _audioRecorder.isEncoderSupported(encoder)) {
-          logger.e('Encoder not supported: $encoder');
+          logger.d('Encoder not supported: $encoder');
           return;
         }
 
         final devs = await _audioRecorder.listInputDevices();
         if (devs.isEmpty) {
-          logger.e('No input devices found');
+          logger.d('No input devices found');
           return;
         }
 
@@ -146,23 +147,6 @@ class StreamingAsrController extends GetxController {
 
         audioStream.listen((data) {
           final samples = convertBytesToFloat32(Uint8List.fromList(data));
-
-          // 初始化最大值为 0
-          double maxAbsValue = 0;
-          // 遍历 samples 计算绝对值的最大值
-          for (final sample in samples) {
-            final absValue = sample.abs();
-            if (absValue > maxAbsValue) {
-              maxAbsValue = absValue;
-            }
-          }
-
-          logger.d('samples 绝对值的最大值为: $maxAbsValue');
-          if (maxAbsValue < 0.0001) {
-            logger.d('silence');
-            return;
-          }
-
           stream!.acceptWaveform(samples: samples, sampleRate: sampleRate);
 
           while (recognizer!.isReady(stream!)) {
@@ -170,7 +154,6 @@ class StreamingAsrController extends GetxController {
           }
 
           final text = recognizer!.getResult(stream!).text;
-          logger.i('Recognized text: $text');
           updateTextDisplay(text);
         });
       } else {
@@ -182,24 +165,28 @@ class StreamingAsrController extends GetxController {
   }
 
   void updateTextDisplay(String newText) {
-    String textToDisplay = last.value;
-    if (newText.isNotEmpty) {
-      textToDisplay = last.value.isEmpty
-          ? '${index.value}: $newText'
-          : '${index.value}: $newText\n${last.value}';
-    }
+    //保留上一次的内容
+    // 获取当前光标位置和文本内容
+    final currentText = textController.text;
 
-    if (recognizer?.isEndpoint(stream!) ?? false) {
-      recognizer?.reset(stream!);
-      if (newText.isNotEmpty) {
-        last.value = textToDisplay;
-        index.value++;
+    // 插入新文本到光标位置
+    String modifiedText = currentText.replaceRange(
+      _cursorPosition.value,
+      _cursorPosition.value,
+      newText,
+    );
+
+    if (newText.isNotEmpty) {
+      logger.d("pos: ${_cursorPosition.value} txt: $newText");
+      textController.text = modifiedText;
+
+      // 更新光标到插入后的新位置
+      if (recognizer?.isEndpoint(stream!) ?? false) {
+        recognizer?.reset(stream!);
+        textController.selection = TextSelection.collapsed(
+            offset: _cursorPosition.value + newText.length);
       }
     }
-
-    textController.text = textToDisplay;
-    textController.selection =
-        TextSelection.collapsed(offset: textToDisplay.length);
   }
 
   Future<void> stopRecording() async {
