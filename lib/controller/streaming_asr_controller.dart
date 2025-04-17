@@ -1,4 +1,5 @@
 import 'dart:async' show StreamSubscription;
+import 'dart:developer';
 
 import 'package:get/get.dart';
 import 'package:record/record.dart';
@@ -73,11 +74,12 @@ class StreamingAsrController extends GetxController {
   final RxInt index = 0.obs;
   final RxBool isInitialized = false.obs;
   final Rx<RecordState> recordState = RecordState.stop.obs;
+  StreamSubscription<RecordState>? _recordSub;
+
   TextEditingController textController;
   StreamingAsrController({required this.textController});
 
-  AudioRecorder audioRecorder = AudioRecorder();
-  StreamSubscription<RecordState>? _recordSub;
+  late final AudioRecorder _audioRecorder;
 
   sherpa_onnx.OnlineRecognizer? recognizer;
   sherpa_onnx.OnlineStream? stream;
@@ -90,42 +92,48 @@ class StreamingAsrController extends GetxController {
   // 初始化状态
   @override
   void onInit() {
-    _recordSub = audioRecorder.onStateChanged().listen((recordState) {
+    _audioRecorder = AudioRecorder();
+    _recordSub = _audioRecorder.onStateChanged().listen((recordState) {
       _updateRecordState(recordState);
     });
     super.onInit();
+    logger.d('StreamingAsrController init');
   }
 
   // 关闭状态
   @override
   void onClose() {
     _recordSub?.cancel();
-    audioRecorder.dispose();
+    _audioRecorder.dispose();
     stream?.free();
     recognizer?.free();
     super.onClose();
   }
 
-  // 以下是原有_start()方法重构后的代码
   Future<void> startRecording() async {
     if (!isInitialized.value) {
       sherpa_onnx.initBindings();
       recognizer = await createOnlineRecognizer();
       stream = recognizer?.createStream();
       isInitialized.value = true;
-      logger.i("init streaming asr.");
+      logger.i("start recording");
     }
 
     try {
-      if (await audioRecorder.hasPermission()) {
+      if (await _audioRecorder.hasPermission()) {
         const encoder = AudioEncoder.pcm16bits;
 
-        if (!await audioRecorder.isEncoderSupported(encoder)) {
+        if (!await _audioRecorder.isEncoderSupported(encoder)) {
           logger.e('Encoder not supported: $encoder');
           return;
         }
 
-        final devs = await audioRecorder.listInputDevices();
+        final devs = await _audioRecorder.listInputDevices();
+        if (devs.isEmpty) {
+          logger.e('No input devices found');
+          return;
+        }
+
         logger.d(devs.toString());
 
         const config = RecordConfig(
@@ -134,10 +142,26 @@ class StreamingAsrController extends GetxController {
           numChannels: 1,
         );
 
-        final audioStream = await audioRecorder.startStream(config);
+        final audioStream = await _audioRecorder.startStream(config);
 
         audioStream.listen((data) {
           final samples = convertBytesToFloat32(Uint8List.fromList(data));
+
+          // 初始化最大值为 0
+          double maxAbsValue = 0;
+          // 遍历 samples 计算绝对值的最大值
+          for (final sample in samples) {
+            final absValue = sample.abs();
+            if (absValue > maxAbsValue) {
+              maxAbsValue = absValue;
+            }
+          }
+
+          logger.d('samples 绝对值的最大值为: $maxAbsValue');
+          if (maxAbsValue < 0.0001) {
+            logger.d('silence');
+            return;
+          }
 
           stream!.acceptWaveform(samples: samples, sampleRate: sampleRate);
 
@@ -181,6 +205,6 @@ class StreamingAsrController extends GetxController {
   Future<void> stopRecording() async {
     stream?.free();
     stream = recognizer?.createStream();
-    await audioRecorder.stop();
+    await _audioRecorder.stop();
   }
 }

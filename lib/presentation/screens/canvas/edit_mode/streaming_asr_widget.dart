@@ -20,13 +20,13 @@ class StreamingAsrButtom extends StatelessWidget {
       final isRecording = controller.recordState.value != RecordState.stop;
       final icon = isRecording
           ? Icon(Icons.stop, color: Colors.red, size: 30)
-          : Icon(Icons.mic, color: Colors.black, size: 30);
+          : Icon(Icons.mic, color: Colors.lightBlue, size: 30);
 
       return ClipOval(
         child: Material(
           color: isRecording
               ? Colors.red.withValues(alpha: 0.1)
-              : Colors.black.withValues(alpha: 0.1),
+              : Colors.lightBlue.withValues(alpha: 0.1),
           child: InkWell(
             child: SizedBox(width: 56, height: 56, child: icon),
             onTap: () => isRecording
