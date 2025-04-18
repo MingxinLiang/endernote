@@ -19,7 +19,7 @@ class StreamingAsrButtom extends StatelessWidget {
     return Obx(() {
       final isRecording = controller.recordState.value != RecordState.stop;
       final icon = isRecording
-          ? Icon(Icons.stop, color: Colors.red, size: 30)
+          ? Icon(Icons.stop, color: Colors.red, size: 50)
           : Icon(Icons.mic, color: Colors.lightBlue, size: 30);
 
       return ClipOval(
@@ -27,11 +27,15 @@ class StreamingAsrButtom extends StatelessWidget {
           color: isRecording
               ? Colors.red.withValues(alpha: 0.1)
               : Colors.lightBlue.withValues(alpha: 0.1),
-          child: InkWell(
-            child: SizedBox(width: 56, height: 56, child: icon),
-            onTap: () => isRecording
-                ? controller.stopRecording()
-                : controller.startRecording(),
+          child: GestureDetector(
+            onLongPressStart: (_) => controller.startRecording(),
+            onLongPressEnd: (_) => controller.stopRecording(),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              width: isRecording ? 86 : 56,
+              height: isRecording ? 86 : 56,
+              child: icon,
+            ),
           ),
         ),
       );

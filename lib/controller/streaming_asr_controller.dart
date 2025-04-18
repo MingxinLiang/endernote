@@ -114,6 +114,7 @@ class StreamingAsrController extends GetxController {
     stream?.free();
     recognizer?.free();
     super.onClose();
+    logger.d("StreamingAsrController close");
   }
 
   Future<void> stopRecording() async {
@@ -179,6 +180,13 @@ class StreamingAsrController extends GetxController {
       }
     } catch (e) {
       logger.e(e);
+    } finally {
+      textController.text += "\n";
+      _recordTxt.value = textController.text;
+      _cursorPosition.value = textController.selection.baseOffset;
+      recognizer?.reset(stream!);
+      textController.selection = TextSelection.collapsed(
+          offset: _cursorPosition.value, affinity: TextAffinity.downstream);
     }
   }
 
