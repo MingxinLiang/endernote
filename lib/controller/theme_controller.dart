@@ -1,4 +1,5 @@
 // ThemeController 负责管理应用主题
+import 'package:endernote/common/logger.dart' show logger;
 import 'package:endernote/presentation/theme/app_themes.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
@@ -27,7 +28,7 @@ class ThemeController extends GetxController {
         currentTheme.value = theme;
       }
     } catch (e) {
-      print('Error loading theme: $e');
+      logger.e('Error loading theme: $e');
     }
   }
 
@@ -39,7 +40,7 @@ class ThemeController extends GetxController {
           key: 'app_theme', value: theme.toString().split('.').last);
       update();
     } catch (e) {
-      print('Error changing theme: $e');
+      logger.e("Error changing theme: $e");
     }
   }
 }

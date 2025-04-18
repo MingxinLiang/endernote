@@ -72,13 +72,16 @@ class StreamingAsrController extends GetxController {
   final RxBool isInitialized = false.obs;
   final RxInt _cursorPosition = 0.obs;
   final Rx<RecordState> recordState = RecordState.stop.obs;
+  final _recordTxt = "".obs;
   StreamSubscription<RecordState>? _recordSub;
 
   TextEditingController textController;
   StreamingAsrController({required this.textController});
 
+  // 音频录制器
   late final AudioRecorder _audioRecorder;
 
+  // 识别器
   sherpa_onnx.OnlineRecognizer? recognizer;
   sherpa_onnx.OnlineStream? stream;
   int sampleRate = 16000;
@@ -89,7 +92,7 @@ class StreamingAsrController extends GetxController {
 
   // 初始化状态
   @override
-  void onInit() {
+  Future<void> onInit() async {
     _audioRecorder = AudioRecorder();
     _recordSub = _audioRecorder.onStateChanged().listen((recordState) {
       _updateRecordState(recordState);
@@ -98,6 +101,8 @@ class StreamingAsrController extends GetxController {
         ? textController.selection.baseOffset
         : 0;
     super.onInit();
+    await Future.delayed(const Duration(seconds: 1));
+    initSherpa();
     logger.d('StreamingAsrController init');
   }
 
@@ -111,14 +116,27 @@ class StreamingAsrController extends GetxController {
     super.onClose();
   }
 
+  Future<void> stopRecording() async {
+    stream?.free();
+    stream = recognizer?.createStream();
+    await _audioRecorder.stop();
+  }
+
+  Future<void> initSherpa() async {
+    sherpa_onnx.initBindings();
+    recognizer = await createOnlineRecognizer();
+    stream = recognizer?.createStream();
+    isInitialized.value = true;
+    logger.i("init recording");
+  }
+
   Future<void> startRecording() async {
     if (!isInitialized.value) {
-      sherpa_onnx.initBindings();
-      recognizer = await createOnlineRecognizer();
-      stream = recognizer?.createStream();
-      isInitialized.value = true;
-      logger.i("start recording");
+      await initSherpa();
     }
+
+    // 识别开始时候的原始文本
+    _recordTxt.value = textController.text;
 
     try {
       if (await _audioRecorder.hasPermission()) {
@@ -165,33 +183,19 @@ class StreamingAsrController extends GetxController {
   }
 
   void updateTextDisplay(String newText) {
-    //保留上一次的内容
-    // 获取当前光标位置和文本内容
-    final currentText = textController.text;
-
-    // 插入新文本到光标位置
-    String modifiedText = currentText.replaceRange(
-      _cursorPosition.value,
-      _cursorPosition.value,
-      newText,
-    );
-
+    // 更新文本
     if (newText.isNotEmpty) {
-      logger.d("pos: ${_cursorPosition.value} txt: $newText");
-      textController.text = modifiedText;
+      textController.text = "${_recordTxt.value}$newText";
 
-      // 更新光标到插入后的新位置
       if (recognizer?.isEndpoint(stream!) ?? false) {
+        // 结速一段输入,并换行
+        textController.text += "\n";
+        _recordTxt.value = textController.text;
+        _cursorPosition.value = textController.selection.baseOffset;
         recognizer?.reset(stream!);
         textController.selection = TextSelection.collapsed(
-            offset: _cursorPosition.value + newText.length);
+            offset: _cursorPosition.value, affinity: TextAffinity.downstream);
       }
     }
-  }
-
-  Future<void> stopRecording() async {
-    stream?.free();
-    stream = recognizer?.createStream();
-    await _audioRecorder.stop();
   }
 }
