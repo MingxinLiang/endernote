@@ -23,6 +23,46 @@ Future<void> main() async {
   runApp(MyApp());
 }
 
+// 自定义组件，用于包裹页面并添加全局按钮
+class RightCenterFloatingActionButtonLocation
+    extends FloatingActionButtonLocation {
+  @override
+  Offset getOffset(ScaffoldPrelayoutGeometry scaffoldGeometry) {
+    final double x = scaffoldGeometry.scaffoldSize.width -
+        scaffoldGeometry.floatingActionButtonSize.width -
+        scaffoldGeometry.minInsets.right;
+    final double y = (scaffoldGeometry.scaffoldSize.height -
+            scaffoldGeometry.floatingActionButtonSize.height) /
+        2;
+    return Offset(x, y);
+  }
+}
+
+class GlobalButtonWrapper extends StatelessWidget {
+  final Widget child;
+  final isopen = false.obs;
+
+  GlobalButtonWrapper({super.key, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        body: child,
+        floatingActionButtonLocation: RightCenterFloatingActionButtonLocation(),
+        floatingActionButton: FloatingActionButton.large(
+          onPressed: () {
+            // 在这里添加按钮点击后的逻辑
+            isopen.value = !isopen.value;
+            logger.i('汪汪汪');
+          },
+          backgroundColor: Colors.transparent,
+          child: Obx(() => isopen.value
+              ? Image.asset("lib/assets/icons/xiantuan2.png")
+              : Image.asset("lib/assets/icons/xiantuan1.png")),
+        ));
+  }
+}
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -37,7 +77,8 @@ class MyApp extends StatelessWidget {
         GetPage(
           name: '/',
           page: () => ScreenHero(
-              rootPath: Get.find<DirectoryController>().rootPath.value),
+            rootPath: Get.find<DirectoryController>().rootPath.value,
+          ),
         ),
         GetPage(
           name: '/canvas',
@@ -46,7 +87,8 @@ class MyApp extends StatelessWidget {
         GetPage(
           name: '/home',
           page: () => ScreenHome(
-              rootPath: Get.find<DirectoryController>().rootPath.value),
+            rootPath: Get.find<DirectoryController>().rootPath.value,
+          ),
         ),
         GetPage(
           name: '/settings',
@@ -77,6 +119,10 @@ class MyApp extends StatelessWidget {
       ],
       // 根据当前主题获取对应的 ThemeData
       theme: appThemeData[Get.find<ThemeController>().currentTheme.value],
+      // 使用 builder 参数包裹所有页面
+      builder: (context, child) {
+        return GlobalButtonWrapper(child: child!);
+      },
     );
   }
 }
