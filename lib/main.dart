@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:endernote/controller/directory_controller.dart';
 import 'package:endernote/controller/theme_controller.dart';
+import 'package:endernote/presentation/screens/endDrawer/dialog_llm.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'presentation/screens/about/screen_about.dart';
@@ -38,28 +41,36 @@ class RightCenterFloatingActionButtonLocation
   }
 }
 
-class GlobalButtonWrapper extends StatelessWidget {
+// 全局的实现
+class GlobalWrapper extends StatelessWidget {
   final Widget child;
-  final isopen = false.obs;
+  final endDrawerIsOpen = false.obs;
 
-  GlobalButtonWrapper({super.key, required this.child});
+  GlobalWrapper({super.key, required this.child});
 
   @override
   Widget build(BuildContext context) {
+    logger.d('GlobalButtonWrapper build');
     return Scaffold(
-        body: child,
-        floatingActionButtonLocation: RightCenterFloatingActionButtonLocation(),
-        floatingActionButton: FloatingActionButton.large(
-          onPressed: () {
-            // 在这里添加按钮点击后的逻辑
-            isopen.value = !isopen.value;
-            logger.i('汪汪汪');
-          },
-          backgroundColor: Colors.transparent,
-          child: Obx(() => isopen.value
-              ? Image.asset("lib/assets/icons/xiantuan2.png")
-              : Image.asset("lib/assets/icons/xiantuan1.png")),
-        ));
+      body: Row(
+        children: [
+          Expanded(child: child),
+          // 根据 endDrawerIsOpen 的状态决定是否显示对话界面
+          Obx(() => endDrawerIsOpen.value ? Dialog2LLM() : SizedBox.shrink()),
+        ],
+      ),
+      floatingActionButtonLocation: RightCenterFloatingActionButtonLocation(),
+      floatingActionButton: FloatingActionButton.large(
+        onPressed: () {
+          endDrawerIsOpen.value = !endDrawerIsOpen.value;
+        },
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        child: Obx(() => endDrawerIsOpen.value
+            ? Image.asset("lib/assets/icons/xiantuan2.png")
+            : Image.asset("lib/assets/icons/xiantuan1.png")),
+      ),
+    );
   }
 }
 
@@ -121,7 +132,7 @@ class MyApp extends StatelessWidget {
       theme: appThemeData[Get.find<ThemeController>().currentTheme.value],
       // 使用 builder 参数包裹所有页面
       builder: (context, child) {
-        return GlobalButtonWrapper(child: child!);
+        return GlobalWrapper(child: child!);
       },
     );
   }
