@@ -22,6 +22,7 @@ Future<void> main() async {
   // 初始化 ThemeController
   // ignore: unused_local_variable
   final themeController = Get.put(ThemeController());
+  Get.put(SlideController());
   await directoryController.fetchRootPath();
   runApp(MyApp());
 }
@@ -45,6 +46,7 @@ class RightCenterFloatingActionButtonLocation
 class GlobalWrapper extends StatelessWidget {
   final Widget child;
   final endDrawerIsOpen = false.obs;
+  final endDrawer = Dialog2LLM().obs;
 
   GlobalWrapper({super.key, required this.child});
 
@@ -56,13 +58,21 @@ class GlobalWrapper extends StatelessWidget {
         children: [
           Expanded(child: child),
           // 根据 endDrawerIsOpen 的状态决定是否显示对话界面
-          Obx(() => endDrawerIsOpen.value ? Dialog2LLM() : SizedBox.shrink()),
+          Obx(() =>
+              endDrawerIsOpen.value ? endDrawer.value : SizedBox.shrink()),
         ],
       ),
       floatingActionButtonLocation: RightCenterFloatingActionButtonLocation(),
       floatingActionButton: FloatingActionButton.large(
         onPressed: () {
           endDrawerIsOpen.value = !endDrawerIsOpen.value;
+          try {
+            final controller = Get.find<SlideController>();
+            controller.toggleSlide();
+            logger.d("控制器实例获取成功");
+          } catch (e) {
+            logger.d('获取控制器实例失败: $e');
+          }
         },
         backgroundColor: Colors.transparent,
         elevation: 0,
