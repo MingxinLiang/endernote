@@ -1,8 +1,6 @@
-import 'dart:developer';
-
 import 'package:endernote/controller/directory_controller.dart';
 import 'package:endernote/controller/theme_controller.dart';
-import 'package:endernote/presentation/screens/endDrawer/dialog_llm.dart';
+import 'package:endernote/presentation/screens/chat2llm/dialog_llm.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'presentation/screens/about/screen_about.dart';
@@ -22,7 +20,7 @@ Future<void> main() async {
   // 初始化 ThemeController
   // ignore: unused_local_variable
   final themeController = Get.put(ThemeController());
-  Get.put(SlideController());
+  Get.put(Dialog2LLMController());
   await directoryController.fetchRootPath();
   runApp(MyApp());
 }
@@ -57,7 +55,6 @@ class GlobalWrapper extends StatelessWidget {
       body: Row(
         children: [
           Expanded(child: child),
-          // 根据 endDrawerIsOpen 的状态决定是否显示对话界面
           Obx(() =>
               endDrawerIsOpen.value ? endDrawer.value : SizedBox.shrink()),
         ],
@@ -67,7 +64,7 @@ class GlobalWrapper extends StatelessWidget {
         onPressed: () {
           endDrawerIsOpen.value = !endDrawerIsOpen.value;
           try {
-            final controller = Get.find<SlideController>();
+            final controller = Get.find<Dialog2LLMController>();
             controller.toggleSlide();
             logger.d("控制器实例获取成功");
           } catch (e) {
