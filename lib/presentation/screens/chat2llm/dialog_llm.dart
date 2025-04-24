@@ -8,6 +8,7 @@ import 'package:lottie/lottie.dart' show Lottie;
 // 独立的 SlideController 类
 class Dialog2LLMController extends GetxController
     with GetTickerProviderStateMixin {
+  final isOpen = false.obs;
   late final AnimationController _controller;
   late final Animation<Offset> _offsetAnimation;
   late final ScrollController scrollController = ScrollController();
@@ -16,6 +17,9 @@ class Dialog2LLMController extends GetxController
   late final RxBool isTyping = false.obs;
 
   Animation<Offset> get animation => _offsetAnimation;
+  // set isOpen(bool value) {
+  //   isOpen.value = value;
+  // }
 
   void scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -25,8 +29,10 @@ class Dialog2LLMController extends GetxController
     });
   }
 
-  getResponse({required String prompt}) {
+  // 获取结果
+  getResponse({required String prompt}) async {
     logger.d('getResponse');
+    data.add({"text": "汪汪汪！", "isUser": false});
   }
 
   @override
@@ -87,6 +93,7 @@ class Dialog2LLM extends StatelessWidget {
     logger.d('Dialog2LLM build');
     final maxHeight = MediaQuery.of(context).size.height;
     final maxWidth = MediaQuery.of(context).size.width;
+    logger.d("Dialog2LLM: $maxHeight, $maxWidth");
 
     return SlideTransition(
         position: controller.animation,
@@ -115,8 +122,8 @@ class Dialog2LLM extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Image.asset("lib/assets/icons/xiantuan1.png",
-                              width: maxWidth * 0.3, fit: BoxFit.fill),
-                          SizedBox(height: maxHeight * 0.03),
+                              width: maxWidth * 0.2, fit: BoxFit.fill),
+                          // SizedBox(height: maxHeight * 0.03),
                           Center(
                             child: Text(
                               "你好， 我是线团， 一只集美貌和才华的女子，\n 哦不，狗子 \n 汪汪汪",

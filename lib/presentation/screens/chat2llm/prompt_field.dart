@@ -1,3 +1,4 @@
+import 'package:endernote/common/logger.dart';
 import 'package:flutter/material.dart';
 
 class PromptField extends StatelessWidget {
@@ -11,37 +12,47 @@ class PromptField extends StatelessWidget {
   Widget build(BuildContext context) {
     double maxHeight = MediaQuery.of(context).size.height;
     double maxWidth = MediaQuery.of(context).size.width;
+    logger.d("PromptField build: $maxHeight, $maxWidth");
+    final txtStyle = TextStyle(
+      color: Colors.black,
+      fontSize: maxWidth * 0.04,
+    );
 
     return Container(
       color: Colors.transparent,
       padding: EdgeInsets.symmetric(horizontal: maxWidth * 0.005),
       child: SizedBox(
+        height: maxHeight * 0.12,
         child: Padding(
           padding: EdgeInsets.symmetric(vertical: maxHeight * 0.005),
           child: TextField(
+            style: txtStyle,
             cursorColor: Colors.lightBlue,
             autofocus: false,
             controller: promptController,
             decoration: InputDecoration(
+              // 中间的内容
               contentPadding: EdgeInsets.symmetric(
-                  horizontal: maxWidth * 0.06, vertical: maxHeight * 0.01),
+                  horizontal: maxWidth * 0.03, vertical: maxHeight * 0.01),
+              // 发送按钮
               suffixIcon: Padding(
                 padding: EdgeInsets.symmetric(
                     horizontal: maxWidth * 0.01, vertical: maxHeight * 0.008),
                 child: CircleAvatar(
-                    radius: maxWidth * 0.05,
+                    radius: maxWidth * 0.03,
                     backgroundColor: Colors.lightBlue.shade200,
                     child: IconButton(
                         onPressed: onSend,
+                        padding: EdgeInsets.zero,
                         icon: Icon(
+                          size: maxWidth * 0.03,
                           Icons.send,
-                          size: maxWidth * 0.05,
                           color: Colors.white,
                         ))),
               ),
               hintText: "Write Prompt",
               hintStyle:
-                  TextStyle(color: Colors.grey, fontSize: maxWidth * 0.038),
+                  TextStyle(color: Colors.grey, fontSize: maxWidth * 0.04),
               filled: true,
               fillColor: Colors.blue.shade50,
               border: OutlineInputBorder(
