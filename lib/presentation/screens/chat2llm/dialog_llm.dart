@@ -1,14 +1,19 @@
+import 'dart:nativewrappers/_internal/vm/lib/developer.dart';
+
 import 'package:endernote/common/logger.dart';
 import 'package:endernote/presentation/screens/chat2llm/message_tile.dart';
 import 'package:endernote/presentation/screens/chat2llm/prompt_field.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:lottie/lottie.dart' show Lottie;
+import 'package:dio/dio.dart';
 
 // 独立的 SlideController 类
 class Dialog2LLMController extends GetxController
     with GetTickerProviderStateMixin {
+  // 对话框是否打开
   final isOpen = false.obs;
+  // 是否在等待结果
+  final waiting = false.obs;
   late final AnimationController _controller;
   late final Animation<Offset> _offsetAnimation;
   late final ScrollController scrollController = ScrollController();
@@ -16,10 +21,9 @@ class Dialog2LLMController extends GetxController
   late final RxList data = [].obs;
   late final RxBool isTyping = false.obs;
 
+  //LLM Serve
+  final Dio _dio = Dio();
   Animation<Offset> get animation => _offsetAnimation;
-  // set isOpen(bool value) {
-  //   isOpen.value = value;
-  // }
 
   void scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -29,15 +33,51 @@ class Dialog2LLMController extends GetxController
     });
   }
 
+  final _accessToken = "";
+
   // 获取结果
   getResponse({required String prompt}) async {
-    logger.d('getResponse');
-    data.add({"text": "汪汪汪！", "isUser": false});
+    logger.d('prompt:$prompt, getResponse...');
+    final response = await _dio.post('',
+        data: {
+          "model": "ernie-4.5-turbo-32k",
+          "messages": [
+            {
+              "role": "user",
+              "content": prompt,
+            },
+          ],
+          "web_search": {
+            "enable": false,
+            "enable_citation": false,
+            "enable_trace": false,
+          }
+        },
+        options: Options(
+          headers: {
+            "Content-Type": "application/json",
+            "appid": "",
+            "Authorization": _accessToken,
+          },
+        ));
+    logger.d('response:$response');
+    if (response.statusCode != null && response.statusCode! > 200) {
+      data.add({
+        "text": response.data["choices"][0]["message"]["content"],
+        "isUser": false
+      });
+    } else {
+      logger.e('Request failed with status code: ${response.statusCode}');
+      logger.e(response.toString());
+    }
   }
 
   @override
   void onInit() {
     super.onInit();
+    _dio.options.baseUrl = "https://qianfan.baidubce.com/v2/chat/completions";
+    _dio.options.connectTimeout = const Duration(seconds: 10);
+    _dio.options.receiveTimeout = const Duration(seconds: 10);
 
     // 动画设置
     _controller = AnimationController(
@@ -67,13 +107,16 @@ class Dialog2LLMController extends GetxController
   void toggleSlide() {
     if (_controller.isAnimating) {
       _controller.stop();
+      logger.d("Animation stopped, is open: $isOpen");
     }
     if (_controller.isDismissed) {
       _controller.forward();
-      logger.d('Animation started');
+      isOpen.value = true;
+      logger.d('Animation started, is open: $isOpen');
     } else {
       _controller.reverse();
-      logger.d('Animation reversed');
+      isOpen.value = false;
+      logger.d('Animation reversed, is open: $isOpen');
     }
   }
 

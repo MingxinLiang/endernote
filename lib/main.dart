@@ -114,11 +114,8 @@ class MyApp extends StatelessWidget {
                         RightCenterFloatingActionButtonLocation(),
                     floatingActionButton: FloatingActionButton.large(
                       onPressed: () {
-                        llmController.isOpen.value =
-                            !llmController.isOpen.value;
                         try {
-                          final controller = Get.find<Dialog2LLMController>();
-                          controller.toggleSlide();
+                          llmController.toggleSlide();
                           logger.d("控制器实例获取成功");
                         } catch (e) {
                           logger.d('获取控制器实例失败: $e');
