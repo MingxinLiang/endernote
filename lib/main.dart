@@ -102,36 +102,34 @@ class MyApp extends StatelessWidget {
       // 使用 builder 参数包裹所有页面
       builder: (context, child) {
         final llmController = Get.find<Dialog2LLMController>();
-        return Overlay(initialEntries: [
-          OverlayEntry(
-              builder: (context) => Scaffold(
-                    body: Row(
-                      children: [
-                        Expanded(child: child!),
-                        Obx(() => llmController.isOpen.value
-                            ? Dialog2LLM()
-                            : SizedBox.shrink()),
-                      ],
-                    ),
-                    floatingActionButtonLocation:
-                        RightCenterFloatingActionButtonLocation(),
-                    floatingActionButton: FloatingActionButton.large(
-                      onPressed: () {
-                        try {
-                          llmController.toggleSlide();
-                          logger.d("控制器实例获取成功");
-                        } catch (e) {
-                          logger.d('获取控制器实例失败: $e');
-                        }
-                      },
-                      backgroundColor: Colors.transparent,
-                      elevation: 0,
-                      child: Obx(() => llmController.isOpen.value
-                          ? Image.asset("lib/assets/icons/xiantuan2.png")
-                          : Image.asset("lib/assets/icons/xiantuan1.png")),
-                    ),
-                  ))
-        ]);
+        return Scaffold(
+          body: Row(children: [
+            Expanded(child: child!),
+            Obx(() {
+              return Visibility(
+                visible: llmController.isOpen.value,
+                child: Dialog2LLM(),
+              );
+            })
+          ]),
+          floatingActionButtonLocation:
+              RightCenterFloatingActionButtonLocation(),
+          floatingActionButton: FloatingActionButton.large(
+            onPressed: () {
+              try {
+                llmController.toggleSlide();
+                logger.d("控制器实例获取成功");
+              } catch (e) {
+                logger.d('获取控制器实例失败: $e');
+              }
+            },
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            child: Obx(() => llmController.isOpen.value
+                ? Image.asset("lib/assets/icons/xiantuan2.png")
+                : Image.asset("lib/assets/icons/xiantuan1.png")),
+          ),
+        );
       },
     );
   }

@@ -1,5 +1,4 @@
 import 'dart:math' show max;
-
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:endernote/common/logger.dart';
 import 'package:endernote/presentation/screens/chat2llm/message_tile.dart';
@@ -26,6 +25,7 @@ class Dialog2LLMController extends GetxController
   final Dio _dio = Dio();
   Animation<Offset> get animation => _offsetAnimation;
 
+  // 滚到最底部
   void scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (scrollController.hasClients) {
@@ -77,7 +77,7 @@ class Dialog2LLMController extends GetxController
     }
   }
 
-  void onSend(String text) async {
+  onSend(String text) async {
     scrollToBottom();
     if (text.isNotEmpty) {
       data.add({"content": text, "role": "user"});
@@ -159,72 +159,83 @@ class Dialog2LLM extends StatelessWidget {
 
     return SlideTransition(
         position: controller.animation,
-        child: Container(
-          width: maxWidth * 0.5,
-          padding: EdgeInsets.symmetric(horizontal: maxWidth * 0.03),
-          decoration: BoxDecoration(
-            // 修复 color 问题
-            color: Colors.lightBlue.withAlpha(10),
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(42),
-              topRight: Radius.circular(42),
-            ),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              // 使用 Expanded 让其在垂直方向填充可用空间
-              Expanded(
-                  child: Obx(
-                () => controller.data.length <= 1
-                    ? Center(
-                        child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Image.asset("lib/assets/icons/xiantuan1.png",
-                              width: maxWidth * 0.2, fit: BoxFit.fill),
-                          // SizedBox(height: maxHeight * 0.03),
-                          Center(
-                            child: Text(
-                              "你好， 我是线团， 一只集美貌和才华的女子，\n 哦不，狗子 \n 汪汪汪",
-                              textAlign: TextAlign.center,
-                              style:
-                                  TextStyle(fontSize: max(maxWidth * 0.03, 20)),
-                            ),
-                          )
-                        ],
-                      ))
-                    : ListView.builder(
-                        controller: controller.scrollController,
-                        itemCount: controller.data.length,
-                        itemBuilder: (context, index) {
-                          if (index == 0) {
-                            return const SizedBox.shrink();
-                          }
-                          if (controller.data.isNotEmpty) {
-                            return Padding(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: maxHeight * 0.02),
-                              child: MessageTile(
-                                message: controller.data[index]["content"],
-                                isUser:
-                                    controller.data[index]["role"] == "user",
+        child: Overlay(initialEntries: [
+          OverlayEntry(
+              canSizeOverlay: true,
+              maintainState: true,
+              builder: (context) => Container(
+                  width: maxWidth * 0.5,
+                  padding: EdgeInsets.symmetric(horizontal: maxWidth * 0.03),
+                  decoration: BoxDecoration(
+                    color: Colors.lightBlue.withAlpha(10),
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(42),
+                      topRight: Radius.circular(42),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      // 使用 Expanded 让其在垂直方向填充可用空间
+                      Expanded(
+                          child: Obx(
+                        () => controller.data.length <= 1
+                            ? Center(
+                                child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Image.asset("lib/assets/icons/xiantuan1.png",
+                                      width: maxWidth * 0.2, fit: BoxFit.fill),
+                                  // SizedBox(height: maxHeight * 0.03),
+                                  Center(
+                                    child: Text(
+                                      "你好， 我是线团， 一只集美貌和才华的女子，\n 哦不，狗子 \n 汪汪汪",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          fontSize: max(maxWidth * 0.03, 20)),
+                                    ),
+                                  )
+                                ],
+                              ))
+                            : ListView.builder(
+                                controller: controller.scrollController,
+                                itemCount: controller.data.length,
+                                itemBuilder: (context, index) {
+                                  if (index == 0) {
+                                    return const SizedBox.shrink();
+                                  }
+                                  if (controller.data.isNotEmpty) {
+                                    return Padding(
+                                      padding: EdgeInsets.symmetric(
+                                          vertical: maxHeight * 0.02),
+                                      child: MessageTile(
+                                        message: controller.data[index]
+                                            ["content"],
+                                        isUser: controller.data[index]
+                                                ["role"] ==
+                                            "user",
+                                      ),
+                                    );
+                                  } else {
+                                    return null;
+                                  }
+                                },
                               ),
-                            );
-                          } else {
-                            return null;
-                          }
-                        },
+                      )),
+                      Obx(() => controller.isTyping.value
+                          ? const Align(
+                              alignment: Alignment.centerLeft,
+                              child: CircularProgressIndicator(),
+                            )
+                          : const SizedBox.shrink()),
+                      PromptField(
+                        promptController: controller.promptController,
+                        onSend: controller.onSend,
                       ),
-              )),
-              PromptField(
-                promptController: controller.promptController,
-                onSend: controller.onSend,
-              ),
-            ],
-          ),
-        ));
+                    ],
+                  )))
+        ]));
   }
 }
