@@ -91,7 +91,7 @@ class Dialog2LLMController extends GetxController
     super.onInit();
     _dio.options.baseUrl = "https://qianfan.baidubce.com/v2/chat/completions";
     _dio.options.connectTimeout = const Duration(seconds: 10);
-    _dio.options.receiveTimeout = const Duration(seconds: 10);
+    _dio.options.receiveTimeout = const Duration(seconds: 30);
 
     data.add({
       "role": "user",
