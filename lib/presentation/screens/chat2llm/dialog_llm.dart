@@ -39,21 +39,13 @@ class Dialog2LLMController extends GetxController
   getResponse({required String prompt}) async {
     logger.d('prompt:$prompt, getResponse...');
     isTyping.value = true;
+    logger.d(data);
     try {
       final response = await _dio.post('',
           data: {
             "model": "ernie-4.5-turbo-32k",
             "max_completion_tokens": 500,
-            "messages": [
-              {
-                "role": "user",
-                "content": "#角色任务扮演一个集美貌和才才华于一身的女子，叫线团，当一个助手辅助主人完成他想做的事。",
-              },
-              {
-                "role": "user",
-                "content": prompt,
-              },
-            ],
+            "messages": data.toList(),
             "web_search": {
               "enable": false,
               "enable_citation": false,
@@ -69,9 +61,10 @@ class Dialog2LLMController extends GetxController
           ));
       logger.d('response:$response');
       if (response.statusCode != null && response.statusCode! >= 200) {
+        // TODO 多输入检测
         data.add({
-          "text": response.data["choices"][0]["message"]["content"],
-          "isUser": false
+          "content": response.data["choices"][0]["message"]["content"],
+          "role": "assistant"
         });
       } else {
         logger.e('Request failed with status code: ${response.statusCode}');
@@ -87,7 +80,7 @@ class Dialog2LLMController extends GetxController
   void onSend(String text) async {
     scrollToBottom();
     if (text.isNotEmpty) {
-      data.add({"text": text, "isUser": true});
+      data.add({"content": text, "role": "user"});
       await getResponse(prompt: text);
       scrollToBottom();
     }
@@ -99,6 +92,11 @@ class Dialog2LLMController extends GetxController
     _dio.options.baseUrl = "https://qianfan.baidubce.com/v2/chat/completions";
     _dio.options.connectTimeout = const Duration(seconds: 10);
     _dio.options.receiveTimeout = const Duration(seconds: 10);
+
+    data.add({
+      "role": "user",
+      "content": "#角色任务扮演一个叫线团的全能助手，尽可能简单的回答问题，主要任务助手辅助主人完成他想做的事。",
+    });
 
     // 动画设置
     _controller = AnimationController(
@@ -179,7 +177,7 @@ class Dialog2LLM extends StatelessWidget {
               // 使用 Expanded 让其在垂直方向填充可用空间
               Expanded(
                   child: Obx(
-                () => controller.data.isEmpty
+                () => controller.data.length <= 1
                     ? Center(
                         child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -202,13 +200,17 @@ class Dialog2LLM extends StatelessWidget {
                         controller: controller.scrollController,
                         itemCount: controller.data.length,
                         itemBuilder: (context, index) {
+                          if (index == 0) {
+                            return const SizedBox.shrink();
+                          }
                           if (controller.data.isNotEmpty) {
                             return Padding(
                               padding: EdgeInsets.symmetric(
                                   vertical: maxHeight * 0.02),
                               child: MessageTile(
-                                message: controller.data[index]["text"],
-                                isUser: controller.data[index]["isUser"],
+                                message: controller.data[index]["content"],
+                                isUser:
+                                    controller.data[index]["role"] == "user",
                               ),
                             );
                           } else {

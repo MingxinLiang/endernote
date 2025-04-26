@@ -1,13 +1,13 @@
 import 'dart:math' show min;
-
 import 'package:endernote/common/logger.dart';
 import 'package:flutter/material.dart';
 
 class PromptField extends StatelessWidget {
   final void Function(String text) onSend;
   final TextEditingController promptController;
+  final FocusNode _focusNode = FocusNode();
 
-  const PromptField(
+  PromptField(
       {super.key, required this.onSend, required this.promptController});
 
   @override
@@ -31,12 +31,14 @@ class PromptField extends StatelessWidget {
           padding: EdgeInsets.symmetric(vertical: maxHeight * 0.005),
           child: TextField(
             style: txtStyle,
+            focusNode: _focusNode,
             cursorColor: Colors.lightBlue,
             autofocus: false,
             textInputAction: TextInputAction.send,
             onSubmitted: (text) {
               onSend(text.trim()); // 发送消息
               promptController.clear(); // 清空输入框
+              _focusNode.requestFocus(); // 保有焦点
             },
             maxLines: 1, // 允许多行输入
             controller: promptController,
@@ -53,10 +55,11 @@ class PromptField extends StatelessWidget {
                     radius: min(maxWidth * 0.03, 40), // 按钮大小
                     backgroundColor: Colors.lightBlue.shade200,
                     child: IconButton(
-                        onPressed: () => {
-                              onSend(promptController.text.trim()),
-                              promptController.clear()
-                            },
+                        onPressed: () {
+                          onSend(promptController.text.trim());
+                          promptController.clear();
+                          _focusNode.requestFocus();
+                        },
                         padding: EdgeInsets.zero,
                         icon: Icon(
                           size: min(maxWidth * 0.03, 30),
