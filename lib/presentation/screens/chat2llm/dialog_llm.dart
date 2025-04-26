@@ -1,5 +1,6 @@
-import 'dart:nativewrappers/_internal/vm/lib/developer.dart';
+import 'dart:math' show max;
 
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:endernote/common/logger.dart';
 import 'package:endernote/presentation/screens/chat2llm/message_tile.dart';
 import 'package:endernote/presentation/screens/chat2llm/prompt_field.dart';
@@ -11,15 +12,15 @@ import 'package:dio/dio.dart';
 class Dialog2LLMController extends GetxController
     with GetTickerProviderStateMixin {
   // 对话框是否打开
-  final isOpen = false.obs;
+  final RxBool isOpen = false.obs;
   // 是否在等待结果
-  final waiting = false.obs;
+  final RxBool isTyping = false.obs;
+
   late final AnimationController _controller;
   late final Animation<Offset> _offsetAnimation;
   late final ScrollController scrollController = ScrollController();
   late final promptController = TextEditingController();
   late final RxList data = [].obs;
-  late final RxBool isTyping = false.obs;
 
   //LLM Serve
   final Dio _dio = Dio();
@@ -33,42 +34,62 @@ class Dialog2LLMController extends GetxController
     });
   }
 
-  final _accessToken = "";
-
+  final _accessToken = dotenv.env['ACCESS_TOKEN'] ?? '';
   // 获取结果
   getResponse({required String prompt}) async {
     logger.d('prompt:$prompt, getResponse...');
-    final response = await _dio.post('',
-        data: {
-          "model": "ernie-4.5-turbo-32k",
-          "messages": [
-            {
-              "role": "user",
-              "content": prompt,
-            },
-          ],
-          "web_search": {
-            "enable": false,
-            "enable_citation": false,
-            "enable_trace": false,
-          }
-        },
-        options: Options(
-          headers: {
-            "Content-Type": "application/json",
-            "appid": "",
-            "Authorization": _accessToken,
+    isTyping.value = true;
+    try {
+      final response = await _dio.post('',
+          data: {
+            "model": "ernie-4.5-turbo-32k",
+            "max_completion_tokens": 500,
+            "messages": [
+              {
+                "role": "user",
+                "content": "#角色任务扮演一个集美貌和才才华于一身的女子，叫线团，当一个助手辅助主人完成他想做的事。",
+              },
+              {
+                "role": "user",
+                "content": prompt,
+              },
+            ],
+            "web_search": {
+              "enable": false,
+              "enable_citation": false,
+              "enable_trace": false,
+            }
           },
-        ));
-    logger.d('response:$response');
-    if (response.statusCode != null && response.statusCode! > 200) {
-      data.add({
-        "text": response.data["choices"][0]["message"]["content"],
-        "isUser": false
-      });
-    } else {
-      logger.e('Request failed with status code: ${response.statusCode}');
-      logger.e(response.toString());
+          options: Options(
+            headers: {
+              "Content-Type": "application/json",
+              "appid": "",
+              "Authorization": _accessToken,
+            },
+          ));
+      logger.d('response:$response');
+      if (response.statusCode != null && response.statusCode! >= 200) {
+        data.add({
+          "text": response.data["choices"][0]["message"]["content"],
+          "isUser": false
+        });
+      } else {
+        logger.e('Request failed with status code: ${response.statusCode}');
+        logger.e(response.toString());
+      }
+    } catch (e) {
+      logger.e('Error: $e');
+    } finally {
+      isTyping.value = false;
+    }
+  }
+
+  void onSend(String text) async {
+    scrollToBottom();
+    if (text.isNotEmpty) {
+      data.add({"text": text, "isUser": true});
+      await getResponse(prompt: text);
+      scrollToBottom();
     }
   }
 
@@ -171,9 +192,8 @@ class Dialog2LLM extends StatelessWidget {
                             child: Text(
                               "你好， 我是线团， 一只集美貌和才华的女子，\n 哦不，狗子 \n 汪汪汪",
                               textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  fontSize: maxWidth * 0.03,
-                                  fontWeight: FontWeight.bold),
+                              style:
+                                  TextStyle(fontSize: max(maxWidth * 0.03, 20)),
                             ),
                           )
                         ],
@@ -197,27 +217,9 @@ class Dialog2LLM extends StatelessWidget {
                         },
                       ),
               )),
-              //controller.isTyping.value
-              //    ? SizedBox(
-              //        width: maxWidth * 0.18,
-              //        child: Lottie.asset("assets/animations/typing.json",
-              //            fit: BoxFit.fill))
-              //    : const SizedBox()
               PromptField(
                 promptController: controller.promptController,
-                onSend: () async {
-                  controller.scrollToBottom();
-                  final text =
-                      controller.promptController.text.toString().trim();
-                  controller.promptController.clear();
-
-                  if (text.isNotEmpty) {
-                    controller.data.add({"text": text, "isUser": true});
-
-                    await controller.getResponse(prompt: text);
-                    controller.scrollToBottom();
-                  }
-                },
+                onSend: controller.onSend,
               ),
             ],
           ),

@@ -47,3 +47,4 @@ app.*.map.json
 
 # api keys
 lib/api_key.dart
+lib/assets/.evn

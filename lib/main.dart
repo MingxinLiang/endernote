@@ -2,6 +2,7 @@ import 'package:endernote/controller/directory_controller.dart';
 import 'package:endernote/controller/theme_controller.dart';
 import 'package:endernote/presentation/screens/chat2llm/dialog_llm.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart' show dotenv;
 import 'package:get/get.dart';
 import 'presentation/screens/about/screen_about.dart';
 import 'presentation/screens/canvas/screen_canvas.dart';
@@ -15,11 +16,13 @@ import '../../../common/logger.dart' show logger;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // 加载环境变量
+  await dotenv.load(fileName: "lib/assets/.evn");
   // 初始化 DirectoryController
   final directoryController = Get.put(DirectoryController());
   // 初始化 ThemeController
   // ignore: unused_local_variable
-  final themeController = Get.put(ThemeController());
+  Get.put(ThemeController());
   Get.put(Dialog2LLMController());
   await directoryController.fetchRootPath();
   runApp(MyApp());
