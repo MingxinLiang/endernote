@@ -6,7 +6,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart' show dotenv;
 import 'package:get/get.dart';
 import 'presentation/screens/about/screen_about.dart';
 import 'presentation/screens/canvas/screen_canvas.dart';
-import 'presentation/screens/hero/screen_hero.dart';
+import 'presentation/screens/hello/screen_hello.dart';
 import 'presentation/screens/home/screen_home.dart';
 import 'presentation/screens/search/screen_search.dart';
 import 'presentation/screens/settings/screen_settings.dart';
@@ -56,7 +56,7 @@ class MyApp extends StatelessWidget {
       getPages: [
         GetPage(
           name: '/',
-          page: () => ScreenHero(
+          page: () => ScreenHello(
             rootPath: Get.find<DirectoryController>().rootPath.value,
           ),
         ),

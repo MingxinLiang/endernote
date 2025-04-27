@@ -36,6 +36,12 @@ class Dialog2LLMController extends GetxController
 
   final _accessToken = dotenv.env['ACCESS_TOKEN'] ?? '';
   // 获取结果
+  // TODO:
+  // 1. 增加错误处理
+  // 2. 流式接口
+  // 3. 增加上下文
+  // 4. 人设
+  // 5. max_completion_tokens
   getResponse({required String prompt}) async {
     logger.d('prompt:$prompt, getResponse...');
     isTyping.value = true;
