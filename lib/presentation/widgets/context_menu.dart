@@ -9,11 +9,18 @@ import '../../bloc/directory/directory_events.dart';
 import '../theme/app_themes.dart';
 
 void showContextMenu(
-  BuildContext context,
-  String entityPath,
-  bool isFolder,
-  String searchQuery,
-) {
+    BuildContext context, String entityPath, bool isFolder, String searchQuery,
+    {required Offset position}) {
+  final RenderBox overlay =
+      Overlay.of(context).context.findRenderObject() as RenderBox;
+
+  final RelativeRect relatedPosition = RelativeRect.fromLTRB(
+    position.dx,
+    position.dy,
+    overlay.size.width - position.dx,
+    overlay.size.height - position.dy,
+  );
+
   final menuItems = <PopupMenuEntry<String>>[
     const PopupMenuItem(
       value: 'rename',
@@ -55,7 +62,7 @@ void showContextMenu(
   showMenu(
     color: Theme.of(context).extension<EndernoteColors>()?.clrBase,
     context: context,
-    position: const RelativeRect.fromLTRB(100, 100, 100, 100),
+    position: relatedPosition,
     items: menuItems,
   ).then((value) {
     switch (value) {

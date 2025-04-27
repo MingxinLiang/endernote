@@ -6,11 +6,6 @@ import 'package:endernote/presentation/widgets/context_menu.dart'
 import 'package:get/get.dart';
 import 'package:ficonsax/ficonsax.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:endernote/common/logger.dart' show logger;
-
-import '../../../bloc/directory/directory_bloc.dart';
-import '../../../bloc/directory/directory_events.dart';
 import '../../theme/app_themes.dart';
 import '../../widgets/custom_app_bar.dart';
 import '../../widgets/custom_fab.dart';
@@ -90,10 +85,12 @@ class ScreenHome extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             GestureDetector(
-              onLongPress: () =>
-                  showContextMenu(context, entityPath, isFolder, ""),
-              onSecondaryTap: () =>
-                  showContextMenu(context, entityPath, isFolder, ""),
+              onLongPressStart: (details) => showContextMenu(
+                  context, entityPath, isFolder, "",
+                  position: details.globalPosition),
+              onSecondaryTapDown: (details) => showContextMenu(
+                  context, entityPath, isFolder, "",
+                  position: details.globalPosition),
               child: ListTile(
                 leading: Icon(
                   isFolder
