@@ -7,8 +7,8 @@ import 'package:ficonsax/ficonsax.dart';
 import '../../widgets/custom_app_bar.dart';
 import '../../widgets/custom_fab.dart';
 
-class ScreenHero extends StatelessWidget {
-  const ScreenHero({super.key, required this.rootPath});
+class ScreenHello extends StatelessWidget {
+  const ScreenHello({super.key, required this.rootPath});
 
   final String rootPath;
 

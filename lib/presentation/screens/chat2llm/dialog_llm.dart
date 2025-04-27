@@ -1,5 +1,3 @@
-import 'dart:nativewrappers/_internal/vm/lib/developer.dart';
-
 import 'package:endernote/common/logger.dart';
 import 'package:endernote/presentation/screens/chat2llm/message_tile.dart';
 import 'package:endernote/presentation/screens/chat2llm/prompt_field.dart';
