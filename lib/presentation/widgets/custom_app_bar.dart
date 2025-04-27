@@ -52,6 +52,15 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                             ? null
                             : const EdgeInsets.only(left: 15),
                       ),
+                      onSubmitted: (value) {
+                        if (controller!.text.trim().isNotEmpty) {
+                          Navigator.pushNamed(context, '/search', arguments: {
+                            'query': controller!.text.trim(),
+                            'rootPath': rootPath
+                          });
+                        }
+                        controller!.clear();
+                      },
                     )
                   : Text('Results for "$searchQuery"'),
             ),
@@ -60,14 +69,16 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 valueListenable: hasText!,
                 builder: (_, hasTextValue, __) => IconButton(
                   onPressed: () {
-                    final query = controller!.text.trim();
-                    if (hasTextValue && query.isNotEmpty) {
-                      Navigator.pushNamed(context, '/search',
-                          arguments: {'query': query, 'rootPath': rootPath});
+                    if (hasTextValue && controller!.text.trim().isNotEmpty) {
+                      Navigator.pushNamed(context, '/search', arguments: {
+                        'query': controller!.text.trim(),
+                        'rootPath': rootPath
+                      });
                     } else {
                       Navigator.pushNamed(context, '/settings');
                     }
                   },
+                  tooltip: hasTextValue ? 'Search' : 'Settings',
                   icon: Icon(
                     hasTextValue
                         ? IconsaxOutline.search_normal_1

@@ -61,8 +61,9 @@ class ScreenCanvas extends StatelessWidget {
                 ),
                 Obx(() => IconButton(
                       icon: Icon(ctrl.editOrPreview.value
-                          ? IconsaxOutline.edit_2
-                          : IconsaxOutline.book_1),
+                          ? IconsaxOutline.book_1
+                          : IconsaxOutline.edit_2),
+                      tooltip: ctrl.editOrPreview.value ? "Preview" : "Edit",
                       onPressed: ctrl.toggleEditMode,
                     )),
               ],

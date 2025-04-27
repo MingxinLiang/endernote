@@ -8,6 +8,7 @@ import '../../../bloc/directory/directory_bloc.dart';
 import '../../../bloc/directory/directory_events.dart';
 import '../../../bloc/directory/directory_states.dart';
 import '../../theme/app_themes.dart';
+import '../../widgets/context_menu.dart';
 import '../../widgets/custom_app_bar.dart';
 
 class ScreenSearch extends StatelessWidget {
@@ -65,30 +66,128 @@ class ScreenSearch extends StatelessWidget {
           }
 
           return ListView.builder(
+            shrinkWrap: true,
             itemCount: searchResults.length,
             physics: const BouncingScrollPhysics(),
             itemBuilder: (context, index) {
               final entityPath = searchResults[index];
               final isFolder = Directory(entityPath).existsSync();
 
-              return ListTile(
+              return Column(
+                children: [
+                  GestureDetector(
+                    onLongPress: () => showContextMenu(
+                        context, entityPath, isFolder, searchQuery),
+                    onSecondaryTap: () => showContextMenu(
+                        context, entityPath, isFolder, searchQuery),
+                    child: ListTile(
+                      leading: Icon(
+                        isFolder
+                            ? (state.openFolders.contains(entityPath)
+                                ? IconsaxOutline.folder_open
+                                : IconsaxOutline.folder)
+                            : IconsaxOutline.task_square,
+                      ),
+                      title: Text(entityPath.split('/').last),
+                      subtitle: Text(
+                        entityPath.replaceFirst(rootPath, ''),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Theme.of(context)
+                              .extension<EndernoteColors>()
+                              ?.clrText
+                              .withAlpha(150),
+                        ),
+                      ),
+                      onTap: () {
+                        if (isFolder) {
+                          context
+                              .read<DirectoryBloc>()
+                              .add(ToggleFolder(entityPath));
+                          if (!state.folderContents.containsKey(entityPath)) {
+                            context
+                                .read<DirectoryBloc>()
+                                .add(FetchDirectory(entityPath));
+                          }
+                        } else {
+                          Navigator.pushNamed(
+                            context,
+                            '/canvas',
+                            arguments: entityPath,
+                          );
+                        }
+                      },
+                    ),
+                  ),
+                  if (isFolder && state.openFolders.contains(entityPath))
+                    Padding(
+                      padding: const EdgeInsets.only(left: 16.0),
+                      child: _buildDirectoryList(context, entityPath, state),
+                    ),
+                ],
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildDirectoryList(
+    BuildContext context,
+    String path,
+    DirectoryState state,
+  ) {
+    final contents = state.folderContents[path] ?? [];
+
+    if (path == rootPath && contents.isEmpty) {
+      return Center(
+        child: Text(
+          "This folder is feeling lonely.",
+          style: TextStyle(
+            fontSize: 16,
+            color: Theme.of(context)
+                .extension<EndernoteColors>()
+                ?.clrText
+                .withAlpha(100),
+          ),
+        ),
+      );
+    }
+
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const BouncingScrollPhysics(),
+      itemCount: contents.length,
+      itemBuilder: (context, index) {
+        final entityPath = contents[index];
+        final isFolder = Directory(entityPath).existsSync();
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            GestureDetector(
+              onSecondaryTap: () =>
+                  showContextMenu(context, entityPath, isFolder, searchQuery),
+              onLongPress: () =>
+                  showContextMenu(context, entityPath, isFolder, searchQuery),
+              child: ListTile(
                 leading: Icon(
-                  isFolder ? IconsaxOutline.folder : IconsaxOutline.task_square,
+                  isFolder
+                      ? (state.openFolders.contains(entityPath)
+                          ? IconsaxOutline.folder_open
+                          : IconsaxOutline.folder)
+                      : IconsaxOutline.task_square,
                 ),
                 title: Text(entityPath.split('/').last),
-                subtitle: Text(
-                  entityPath.replaceFirst(rootPath, ''),
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Theme.of(context)
-                        .extension<EndernoteColors>()
-                        ?.clrText
-                        .withAlpha(150),
-                  ),
-                ),
                 onTap: () {
                   if (isFolder) {
-                    // idk what to do...
+                    context.read<DirectoryBloc>().add(ToggleFolder(entityPath));
+                    if (!state.folderContents.containsKey(entityPath)) {
+                      context
+                          .read<DirectoryBloc>()
+                          .add(FetchDirectory(entityPath));
+                    }
                   } else {
                     Navigator.pushNamed(
                       context,
@@ -97,11 +196,16 @@ class ScreenSearch extends StatelessWidget {
                     );
                   }
                 },
-              );
-            },
-          );
-        },
-      ),
+              ),
+            ),
+            if (isFolder && state.openFolders.contains(entityPath))
+              Padding(
+                padding: const EdgeInsets.only(left: 16.0),
+                child: _buildDirectoryList(context, entityPath, state),
+              ),
+          ],
+        );
+      },
     );
   }
 }
