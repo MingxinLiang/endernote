@@ -4,6 +4,7 @@ import 'package:endernote/presentation/screens/chat2llm/dialog_llm.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart' show dotenv;
 import 'package:get/get.dart';
+import 'package:markdown_widget/markdown_widget.dart';
 import 'presentation/screens/about/screen_about.dart';
 import 'presentation/screens/canvas/screen_canvas.dart';
 import 'presentation/screens/hello/screen_hello.dart';
@@ -19,12 +20,10 @@ Future<void> main() async {
   // 加载环境变量
   await dotenv.load(fileName: "lib/assets/.evn");
   // 初始化 DirectoryController
-  final directoryController = Get.put(FileController());
-  // 初始化 ThemeController
-  // ignore: unused_local_variable
+  Get.put(FileController()).fetchRootPath();
   Get.put(ThemeController());
   Get.put(Dialog2LLMController());
-  await directoryController.fetchRootPath();
+  Get.put(TocController());
   runApp(MyApp());
 }
 
@@ -103,15 +102,20 @@ class MyApp extends StatelessWidget {
       builder: (context, child) {
         final llmController = Get.find<Dialog2LLMController>();
         return Scaffold(
-          body: Row(children: [
-            Expanded(child: child!),
-            Obx(() {
-              return Visibility(
+          drawer: Drawer(
+            child: SizedBox(
+              width: 100,
+            ),
+          ),
+          body: Obx(() {
+            return Row(children: [
+              Expanded(child: child!),
+              Visibility(
                 visible: llmController.isOpen.value,
                 child: Dialog2LLM(),
-              );
-            })
-          ]),
+              )
+            ]);
+          }),
           floatingActionButtonLocation:
               RightCenterFloatingActionButtonLocation(),
           floatingActionButton: FloatingActionButton.large(

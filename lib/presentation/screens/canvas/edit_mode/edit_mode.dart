@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:endernote/presentation/screens/canvas/edit_mode/functional_bar.dart';
-import 'package:endernote/presentation/screens/canvas/edit_mode/streaming_asr_widget.dart';
+import 'package:endernote/presentation/widgets/streaming_asr_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../theme/app_themes.dart';

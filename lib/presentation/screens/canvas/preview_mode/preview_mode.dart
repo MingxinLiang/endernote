@@ -1,15 +1,13 @@
 import 'dart:io';
-
+import 'package:endernote/common/logger.dart' show logger;
+import 'package:markdown_widget/markdown_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:url_launcher/url_launcher.dart';
-
-import '../../../theme/markdown_theme.dart';
 
 class PreviewMode extends StatelessWidget {
-  const PreviewMode({super.key, required this.entityPath});
-
+  final TocController tocController;
   final String entityPath;
+  const PreviewMode(
+      {super.key, required this.entityPath, required this.tocController});
 
   Future<String> _loadFileContent() async {
     try {
@@ -28,23 +26,21 @@ class PreviewMode extends StatelessWidget {
         future: _loadFileContent(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
+            // 等待加载
             return const Center(
               child: CircularProgressIndicator(),
             );
-          } else {
-            return Markdown(
-              selectable: true,
-              data: snapshot.data!,
-              styleSheet: mdTheme(context),
-              physics: const BouncingScrollPhysics(),
-              onTapLink: (text, href, title) async {
-                if (Uri.parse(href!).hasScheme) {
-                  await launchUrl(Uri.parse(href));
-                } else if (href.isNotEmpty) {
-                  await launchUrl(Uri(scheme: 'https', path: href));
-                }
-              },
+          } else if (snapshot.hasError) {
+            logger.e("Error loading file: ${snapshot.error}");
+            return Center(
+              child: Text("Error loading file: ${snapshot.error}"),
             );
+          } else {
+            return Expanded(
+                child: MarkdownWidget(
+              data: snapshot.data!,
+              tocController: tocController,
+            ));
           }
         },
       ),

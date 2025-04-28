@@ -67,7 +67,7 @@ class Dialog2LLMController extends GetxController
           ));
       logger.d('response:$response');
       if (response.statusCode != null && response.statusCode! >= 200) {
-        // TODO 多输入检测
+        // TODO: 多输入检测
         data.add({
           "content": response.data["choices"][0]["message"]["content"],
           "role": "assistant"
