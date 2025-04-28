@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 
-class DirectoryController extends GetxController {
+class FileController extends GetxController {
   // 根目录路径
   RxString rootPath = ''.obs;
   // 加载状态

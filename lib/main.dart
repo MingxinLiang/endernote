@@ -1,4 +1,4 @@
-import 'package:endernote/controller/directory_controller.dart';
+import 'package:endernote/controller/file_controller.dart';
 import 'package:endernote/controller/theme_controller.dart';
 import 'package:endernote/presentation/screens/chat2llm/dialog_llm.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +19,7 @@ Future<void> main() async {
   // 加载环境变量
   await dotenv.load(fileName: "lib/assets/.evn");
   // 初始化 DirectoryController
-  final directoryController = Get.put(DirectoryController());
+  final directoryController = Get.put(FileController());
   // 初始化 ThemeController
   // ignore: unused_local_variable
   Get.put(ThemeController());
@@ -57,7 +57,7 @@ class MyApp extends StatelessWidget {
         GetPage(
           name: '/',
           page: () => ScreenHello(
-            rootPath: Get.find<DirectoryController>().rootPath.value,
+            rootPath: Get.find<FileController>().rootPath.value,
           ),
         ),
         GetPage(
@@ -67,7 +67,7 @@ class MyApp extends StatelessWidget {
         GetPage(
           name: '/home',
           page: () => ScreenHome(
-            rootPath: Get.find<DirectoryController>().rootPath.value,
+            rootPath: Get.find<FileController>().rootPath.value,
           ),
         ),
         GetPage(

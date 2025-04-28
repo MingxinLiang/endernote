@@ -1,8 +1,10 @@
 import 'dart:io';
 
+import 'package:endernote/controller/file_controller.dart';
 import 'package:ficonsax/ficonsax.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
 
 import '../../bloc/directory/directory_bloc.dart';
 import '../../bloc/directory/directory_events.dart';
@@ -84,6 +86,7 @@ void showContextMenu(
 
 void _createNewFolder(BuildContext context, String entityPath) {
   final controller = TextEditingController();
+  final FileController fileController = Get.find<FileController>();
   showDialog(
     context: context,
     builder: (context) => AlertDialog(
@@ -105,7 +108,7 @@ void _createNewFolder(BuildContext context, String entityPath) {
             Directory(
               '$entityPath/${value.trim()}', // new folder path
             ).createSync();
-            context.read<DirectoryBloc>().add(FetchDirectory(entityPath));
+            fileController.fetchDirectory(entityPath);
           }
           Navigator.pop(context);
         },
@@ -121,7 +124,7 @@ void _createNewFolder(BuildContext context, String entityPath) {
               Directory(
                 '$entityPath/${controller.text.trim()}', // new folder path
               ).createSync();
-              context.read<DirectoryBloc>().add(FetchDirectory(entityPath));
+              fileController.fetchDirectory(entityPath);
             }
             Navigator.pop(context);
           },
@@ -134,6 +137,7 @@ void _createNewFolder(BuildContext context, String entityPath) {
 
 void _createNewFile(BuildContext context, String entityPath) {
   final controller = TextEditingController();
+  final fileController = Get.find<FileController>();
   showDialog(
     context: context,
     builder: (context) => AlertDialog(
@@ -155,7 +159,7 @@ void _createNewFile(BuildContext context, String entityPath) {
             File(
               '$entityPath/${value.trim()}.md', // new file name
             ).createSync();
-            context.read<DirectoryBloc>().add(FetchDirectory(entityPath));
+            fileController.fetchDirectory(entityPath);
           }
           Navigator.pop(context);
         },
@@ -171,7 +175,7 @@ void _createNewFile(BuildContext context, String entityPath) {
               File(
                 '$entityPath/${controller.text.trim()}.md', // new file name
               ).createSync();
-              context.read<DirectoryBloc>().add(FetchDirectory(entityPath));
+              fileController.fetchDirectory(entityPath);
             }
             Navigator.pop(context);
           },
@@ -189,6 +193,7 @@ void _renameEntity(
   bool isFolder,
 ) {
   final controller = TextEditingController();
+  final FileController fileController = Get.find<FileController>();
   showDialog(
     context: context,
     builder: (context) => AlertDialog(
@@ -216,16 +221,7 @@ void _renameEntity(
                 '${Directory(entityPath).parent.path}/${value.trim()}.md', // updated file name
               );
             }
-
-            // refresh home screen
-            context
-                .read<DirectoryBloc>()
-                .add(FetchDirectory(Directory(entityPath).parent.path));
-
-            // refresh search screen
-            context
-                .read<DirectoryBloc>()
-                .add(FetchDirectory(Directory(entityPath).parent.path));
+            fileController.fetchDirectory(Directory(entityPath).parent.path);
           }
           Navigator.pop(context);
         },
@@ -247,15 +243,7 @@ void _renameEntity(
                   '${Directory(entityPath).parent.path}/${controller.text.trim()}.md', // updated file name
                 );
               }
-
-              // refresh home screen
-              context
-                  .read<DirectoryBloc>()
-                  .add(FetchDirectory(Directory(entityPath).parent.path));
-
-              // refresh search screen
-              context.read<DirectoryBloc>().add(SearchDirectory(
-                  Directory(entityPath).parent.path, searchQuery));
+              fileController.fetchDirectory(Directory(entityPath).parent.path);
             }
             Navigator.pop(context);
           },
@@ -267,6 +255,7 @@ void _renameEntity(
 }
 
 void _deleteEntity(BuildContext context, String entityPath, bool isFolder) {
+  final fileController = Get.find<FileController>();
   showDialog(
     context: context,
     builder: (context) => AlertDialog(
@@ -293,9 +282,7 @@ void _deleteEntity(BuildContext context, String entityPath, bool isFolder) {
             } else {
               File(entityPath).deleteSync();
             }
-            context
-                .read<DirectoryBloc>()
-                .add(FetchDirectory(Directory(entityPath).parent.path));
+            fileController.fetchDirectory(Directory(entityPath).parent.path);
             Navigator.pop(context);
           },
           child: const Text('Delete'),

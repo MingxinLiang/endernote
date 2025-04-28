@@ -1,4 +1,4 @@
-import 'package:endernote/controller/directory_controller.dart';
+import 'package:endernote/controller/file_controller.dart';
 import 'package:ficonsax/ficonsax.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
@@ -16,7 +16,7 @@ class ScreenSettings extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeController = Get.find<ThemeController>();
-    final dirController = Get.find<DirectoryController>(); // 获取目录控制器
+    final dirController = Get.find<FileController>(); // 获取目录控制器
 
     return Scaffold(
       appBar: AppBar(

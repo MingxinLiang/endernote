@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:endernote/controller/directory_controller.dart';
+import 'package:endernote/controller/file_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -39,7 +39,7 @@ class CanvasController extends GetxController {
       try {
         File(oldPath).renameSync(newPath);
         curFilePath.value = newPath;
-        Get.find<DirectoryController>().fetchDirectory(parentDir.path);
+        Get.find<FileController>().fetchDirectory(parentDir.path);
       } catch (e) {
         debugPrint("Error renaming file: $e");
       }
