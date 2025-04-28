@@ -14,7 +14,7 @@ class ScreenCanvas extends StatelessWidget {
     Get.lazyPut(() => CanvasController());
   }
 
-  final tocController = Get.find<TocController>();
+  final tocController = TocController();
   @override
   Widget build(BuildContext context) {
     return GetBuilder<CanvasController>(

@@ -23,7 +23,6 @@ Future<void> main() async {
   Get.put(FileController()).fetchRootPath();
   Get.put(ThemeController());
   Get.put(Dialog2LLMController());
-  Get.put(TocController());
   runApp(MyApp());
 }
 
