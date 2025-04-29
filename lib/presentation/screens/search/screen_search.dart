@@ -1,12 +1,12 @@
 import 'dart:io';
 
+import 'package:endernote/controller/dir_controller.dart';
 import 'package:ficonsax/ficonsax.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 
-import '../../../bloc/directory/directory_bloc.dart';
-import '../../../bloc/directory/directory_events.dart';
-import '../../../bloc/directory/directory_states.dart';
 import '../../theme/app_themes.dart';
 import '../../widgets/context_menu.dart';
 import '../../widgets/custom_app_bar.dart';
@@ -23,32 +23,30 @@ class ScreenSearch extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<DirectoryBloc>().add(SearchDirectory(rootPath, searchQuery));
-    });
-
+    final dirController = Get.find<DirController>();
     return Scaffold(
       appBar: CustomAppBar(
         rootPath: rootPath,
         searchQuery: searchQuery,
         showBackButton: true,
       ),
-      body: BlocBuilder<DirectoryBloc, DirectoryState>(
-        builder: (context, state) {
-          if (state.isSearching) {
+      body: FutureBuilder(
+        future: dirController.searchDirectory(searchQuery),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          if (state.searchErrorMessage != null) {
+          if (snapshot.hasError) {
             return Center(
               child: Text(
-                'Error: ${state.searchErrorMessage}',
+                'Error: ${snapshot.error}',
                 style: const TextStyle(color: Colors.red),
               ),
             );
           }
 
-          final searchResults = state.searchResults ?? [];
+          final searchResults = snapshot.data ?? [];
 
           if (searchResults.isEmpty) {
             return Center(
@@ -89,7 +87,7 @@ class ScreenSearch extends StatelessWidget {
                     child: ListTile(
                       leading: Icon(
                         isFolder
-                            ? (state.openFolders.contains(entityPath)
+                            ? (dirController.openFolders.contains(entityPath)
                                 ? IconsaxOutline.folder_open
                                 : IconsaxOutline.folder)
                             : IconsaxOutline.task_square,
@@ -107,13 +105,10 @@ class ScreenSearch extends StatelessWidget {
                       ),
                       onTap: () {
                         if (isFolder) {
-                          context
-                              .read<DirectoryBloc>()
-                              .add(ToggleFolder(entityPath));
-                          if (!state.folderContents.containsKey(entityPath)) {
-                            context
-                                .read<DirectoryBloc>()
-                                .add(FetchDirectory(entityPath));
+                          dirController.toggleFolder(entityPath);
+                          if (dirController.folderContents
+                              .containsKey(entityPath)) {
+                            dirController.fetchDirectory(entityPath);
                           }
                         } else {
                           Navigator.pushNamed(
@@ -125,10 +120,12 @@ class ScreenSearch extends StatelessWidget {
                       },
                     ),
                   ),
-                  if (isFolder && state.openFolders.contains(entityPath))
+                  if (isFolder &&
+                      dirController.openFolders.contains(entityPath))
                     Padding(
                       padding: const EdgeInsets.only(left: 16.0),
-                      child: _buildDirectoryList(context, entityPath, state),
+                      child: _buildDirectoryList(
+                          context, entityPath, dirController),
                     ),
                 ],
               );
@@ -142,9 +139,9 @@ class ScreenSearch extends StatelessWidget {
   Widget _buildDirectoryList(
     BuildContext context,
     String path,
-    DirectoryState state,
+    DirController controller,
   ) {
-    final contents = state.folderContents[path] ?? [];
+    final contents = controller.folderContents[path] ?? [];
 
     if (path == rootPath && contents.isEmpty) {
       return Center(
@@ -182,7 +179,7 @@ class ScreenSearch extends StatelessWidget {
               child: ListTile(
                 leading: Icon(
                   isFolder
-                      ? (state.openFolders.contains(entityPath)
+                      ? (controller.openFolders.contains(entityPath)
                           ? IconsaxOutline.folder_open
                           : IconsaxOutline.folder)
                       : IconsaxOutline.task_square,
@@ -190,11 +187,9 @@ class ScreenSearch extends StatelessWidget {
                 title: Text(entityPath.split('/').last),
                 onTap: () {
                   if (isFolder) {
-                    context.read<DirectoryBloc>().add(ToggleFolder(entityPath));
-                    if (!state.folderContents.containsKey(entityPath)) {
-                      context
-                          .read<DirectoryBloc>()
-                          .add(FetchDirectory(entityPath));
+                    controller.toggleFolder(entityPath);
+                    if (!controller.folderContents.containsKey(entityPath)) {
+                      controller.fetchDirectory(entityPath);
                     }
                   } else {
                     Navigator.pushNamed(
@@ -206,10 +201,10 @@ class ScreenSearch extends StatelessWidget {
                 },
               ),
             ),
-            if (isFolder && state.openFolders.contains(entityPath))
+            if (isFolder && controller.openFolders.contains(entityPath))
               Padding(
                 padding: const EdgeInsets.only(left: 16.0),
-                child: _buildDirectoryList(context, entityPath, state),
+                child: _buildDirectoryList(context, entityPath, controller),
               ),
           ],
         );

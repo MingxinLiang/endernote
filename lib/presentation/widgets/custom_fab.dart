@@ -1,17 +1,13 @@
 import 'dart:io';
-
+import 'package:endernote/controller/dir_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:ficonsax/ficonsax.dart';
-
-import '../../bloc/directory/directory_bloc.dart';
-import '../../bloc/directory/directory_events.dart';
+import 'package:get/get.dart';
 import '../theme/app_themes.dart';
 
 class CustomFAB extends StatelessWidget {
   const CustomFAB({super.key, required this.rootPath});
-
   final String rootPath;
 
   @override
@@ -19,6 +15,7 @@ class CustomFAB extends StatelessWidget {
     final ValueNotifier<bool> isDialOpen = ValueNotifier(false);
     final TextEditingController folderController = TextEditingController();
     final TextEditingController fileController = TextEditingController();
+    final dirController = Get.find<DirController>();
 
     return SpeedDial(
       openCloseDial: isDialOpen,
@@ -33,7 +30,7 @@ class CustomFAB extends StatelessWidget {
               await Directory(
                 '$rootPath/${folderController.text}',
               ).create(recursive: true);
-              context.read<DirectoryBloc>().add(FetchDirectory(rootPath));
+              dirController.fetchDirectory(rootPath);
             }
             Navigator.pop(context);
             folderController.clear();
@@ -49,7 +46,7 @@ class CustomFAB extends StatelessWidget {
               await File(
                 '$rootPath/${fileController.text}.md',
               ).create(recursive: true);
-              context.read<DirectoryBloc>().add(FetchDirectory(rootPath));
+              dirController.fetchDirectory(rootPath);
             }
             Navigator.pop(context);
             fileController.clear();

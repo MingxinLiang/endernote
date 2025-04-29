@@ -10,9 +10,13 @@ class StreamingAsrButtom extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller =
-        Get.put(StreamingAsrController(textController: textEditingController));
-    return _buildRecordStopControl(controller);
+    return GetBuilder<StreamingAsrController>(
+      init: StreamingAsrController(
+        textController: textEditingController,
+      ),
+      autoRemove: true,
+      builder: (controller) => _buildRecordStopControl(controller),
+    );
   }
 
   Widget _buildRecordStopControl(StreamingAsrController controller) {

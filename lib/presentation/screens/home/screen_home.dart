@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:endernote/controller/file_controller.dart';
+import 'package:endernote/controller/dir_controller.dart';
 import 'package:endernote/presentation/widgets/context_menu.dart'
     show showContextMenu;
 import 'package:get/get.dart';
@@ -17,7 +17,7 @@ class ScreenHome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final directoryController = Get.find<FileController>();
+    final directoryController = Get.find<DirController>();
     final TextEditingController searchController = TextEditingController();
     final ValueNotifier<bool> hasText = ValueNotifier<bool>(false);
 
@@ -53,7 +53,7 @@ class ScreenHome extends StatelessWidget {
   }
 
   Widget _buildDirectoryList(BuildContext context, String path) {
-    final directoryController = Get.find<FileController>();
+    final directoryController = Get.find<DirController>();
     directoryController.fetchDirectory(path); // 确保目录内容已加载
     final contents =
         directoryController.folderContents[path] ?? []; // 获取当前路径的内容

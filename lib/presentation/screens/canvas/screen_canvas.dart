@@ -10,7 +10,6 @@ import 'package:get/get.dart';
 class ScreenCanvas extends StatelessWidget {
   ScreenCanvas({super.key}) {
     // 注册控制器
-    // TODO: 合并重复控制器
     Get.lazyPut(() => CanvasController());
   }
 
