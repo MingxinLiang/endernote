@@ -48,7 +48,7 @@ class CanvasController extends GetxController {
 
   void _startAutoSave() {
     _autoSaveTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (curFilePath.value.isNotEmpty) {
+      if (curFilePath.value.isNotEmpty && editOrPreview.value) {
         saveChanges(contentControllter.text, curFilePath.value);
       }
     });

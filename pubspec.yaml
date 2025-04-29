@@ -16,7 +16,6 @@ dependencies:
   get: ^4.7.2 # 添加GetX依赖
   lottie: ^3.0.0
   flutter_svg: ^2.0.10+1
-  flutter_markdown: ^0.7.3
   ficonsax: ^0.0.3
   equatable: ^2.0.5
   flutter_bloc: ^9.0.0
@@ -32,6 +31,8 @@ dependencies:
   shared_preferences: ^2.5.3
   dio: ^5.8.0+1
   flutter_dotenv: ^5.2.1
+  markdown: ^7.3.0
+  flutter_markdown: ^0.7.7
   markdown_widget: ^2.3.2+8
   markdown_toolbar: ^0.5.0
 

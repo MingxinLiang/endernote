@@ -4,12 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:markdown_toolbar/markdown_toolbar.dart';
 import 'package:get/get.dart';
+import 'package:markdown_widget/markdown_widget.dart';
 import '../../../theme/app_themes.dart';
 import 'package:endernote/common/logger.dart' show logger;
 
 class EditMode extends StatelessWidget {
-  const EditMode({super.key, required this.entityPath});
+  const EditMode(
+      {super.key, required this.entityPath, required this.tocController});
   final String entityPath;
+  final TocController tocController;
   // Handle key events for auto-continuation of lists.
   // Returns true if it handled the event.
   bool _handleKeyEvent(KeyEvent event, TextEditingController controller) {

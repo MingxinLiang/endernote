@@ -4,7 +4,6 @@ import 'package:endernote/presentation/screens/chat2llm/dialog_llm.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart' show dotenv;
 import 'package:get/get.dart';
-import 'package:markdown_widget/markdown_widget.dart';
 import 'presentation/screens/about/screen_about.dart';
 import 'presentation/screens/canvas/screen_canvas.dart';
 import 'presentation/screens/hello/screen_hello.dart';

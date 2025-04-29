@@ -1,11 +1,12 @@
 import 'package:endernote/controller/canvas_controller.dart';
 import 'package:ficonsax/ficonsax.dart';
 import 'package:flutter/material.dart';
-import 'package:markdown_widget/config/toc.dart';
+import 'package:markdown_widget/markdown_widget.dart';
+import 'package:get/get.dart';
+
 import '../../theme/app_themes.dart';
 import 'edit_mode/edit_mode.dart';
 import 'preview_mode/preview_mode.dart';
-import 'package:get/get.dart';
 
 class ScreenCanvas extends StatelessWidget {
   ScreenCanvas({super.key}) {
@@ -74,9 +75,15 @@ class ScreenCanvas extends StatelessWidget {
           ),
           body: Row(children: [
             Expanded(
+              flex: 1,
+              child: TocWidget(controller: tocController),
+            ),
+            Expanded(
               flex: 3,
               child: Obx(() => ctrl.editOrPreview.value
-                  ? EditMode(entityPath: ctrl.curFilePath.value)
+                  ? EditMode(
+                      entityPath: ctrl.curFilePath.value,
+                      tocController: tocController)
                   : PreviewMode(
                       entityPath: ctrl.curFilePath.value,
                       tocController: tocController)),

@@ -3,9 +3,7 @@ import 'dart:io';
 import 'package:endernote/controller/dir_controller.dart';
 import 'package:ficonsax/ficonsax.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 
 import '../../theme/app_themes.dart';
 import '../../widgets/context_menu.dart';
