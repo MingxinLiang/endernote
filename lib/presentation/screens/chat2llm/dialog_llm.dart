@@ -39,9 +39,6 @@ class Dialog2LLMController extends GetxController
   // TODO:
   // 1. 增加错误处理
   // 2. 流式接口
-  // 3. 增加上下文
-  // 4. 人设
-  // 5. max_completion_tokens
   getResponse({required String prompt}) async {
     logger.d('prompt:$prompt, getResponse...');
     isTyping.value = true;

@@ -3,13 +3,14 @@ import 'dart:io';
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 
-class FileController extends GetxController {
+class DirController extends GetxController {
   // 根目录路径
   RxString rootPath = ''.obs;
   // 加载状态
   RxBool isLoading = false.obs;
   // 错误信息
   RxString error = ''.obs;
+
   // 只保留这个Map形式的folderContents
   final RxMap<String, List<String>> folderContents =
       <String, List<String>>{}.obs;
@@ -66,18 +67,45 @@ class FileController extends GetxController {
     }
   }
 
+  Future<List<String>> searchDirectory(String query) async {
+    if (query.isEmpty) return [];
+
+    final results = <String>[];
+
+    try {
+      await for (final entity
+          in Directory(rootPath.value).list(recursive: true)) {
+        final path = entity.path;
+
+        // Skip hidden files/directories
+        if (path.split('/').last.startsWith('.')) continue;
+
+        // Check if file name contains query
+        if (path.split('/').last.toLowerCase().contains(query.toLowerCase())) {
+          results.add(path);
+          continue;
+        }
+
+        // If it's a file, also check its content
+        if (entity is File && path.endsWith('.md')) {
+          try {
+            final content = await File(path).readAsString();
+            if (content.toLowerCase().contains(query.toLowerCase())) {
+              results.add(path);
+            }
+          } catch (_) {}
+        }
+      }
+      return results;
+    } catch (e) {
+      throw Exception('Failed to search directory: $e');
+    }
+  }
+
   // 新增路径更新方法
   void updateRootPath(String newPath) {
     rootPath.value = newPath;
     // 这里可以添加路径持久化逻辑
     // _saveToPreferences(newPath);
   }
-
-  // Future<void> _saveToPreferences(String path) async {
-  //   // 实现本地存储逻辑（如使用 shared_preferences）
-  // }
-
-  // Future<void> _loadFromPreferences() async {
-  //   // 实现本地加载逻辑
-  // }
 }

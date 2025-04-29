@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:endernote/controller/file_controller.dart';
+import 'package:endernote/controller/dir_controller.dart';
 import 'package:ficonsax/ficonsax.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -82,7 +82,7 @@ void showContextMenu(
 
 void _createNewFolder(BuildContext context, String entityPath) {
   final controller = TextEditingController();
-  final FileController fileController = Get.find<FileController>();
+  final DirController fileController = Get.find<DirController>();
   showDialog(
     context: context,
     builder: (context) => AlertDialog(
@@ -133,7 +133,7 @@ void _createNewFolder(BuildContext context, String entityPath) {
 
 void _createNewFile(BuildContext context, String entityPath) {
   final controller = TextEditingController();
-  final fileController = Get.find<FileController>();
+  final fileController = Get.find<DirController>();
   showDialog(
     context: context,
     builder: (context) => AlertDialog(
@@ -189,7 +189,7 @@ void _renameEntity(
   bool isFolder,
 ) {
   final controller = TextEditingController();
-  final FileController fileController = Get.find<FileController>();
+  final DirController fileController = Get.find<DirController>();
   showDialog(
     context: context,
     builder: (context) => AlertDialog(
@@ -251,7 +251,7 @@ void _renameEntity(
 }
 
 void _deleteEntity(BuildContext context, String entityPath, bool isFolder) {
-  final fileController = Get.find<FileController>();
+  final fileController = Get.find<DirController>();
   showDialog(
     context: context,
     builder: (context) => AlertDialog(

@@ -8,9 +8,8 @@ import '../../widgets/custom_app_bar.dart';
 import '../../widgets/custom_fab.dart';
 
 class ScreenHello extends StatelessWidget {
-  const ScreenHello({super.key, required this.rootPath});
-
   final String rootPath;
+  const ScreenHello({super.key, required this.rootPath});
 
   @override
   Widget build(BuildContext context) {

@@ -1,32 +1,18 @@
-import 'dart:io';
-
-import 'package:endernote/presentation/screens/canvas/edit_mode/functional_bar.dart';
+import 'package:endernote/controller/canvas_controller.dart';
 import 'package:endernote/presentation/widgets/streaming_asr_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:markdown_toolbar/markdown_toolbar.dart';
+import 'package:get/get.dart';
+import 'package:markdown_widget/markdown_widget.dart';
 import '../../../theme/app_themes.dart';
 import 'package:endernote/common/logger.dart' show logger;
 
 class EditMode extends StatelessWidget {
-  const EditMode({super.key, required this.entityPath});
+  const EditMode(
+      {super.key, required this.entityPath, required this.tocController});
   final String entityPath;
-
-  Future<String> _loadFileContent() async {
-    try {
-      return await File(entityPath).readAsString();
-    } catch (e) {
-      return "Error reading file: $e";
-    }
-  }
-
-  Future<void> _saveChanges(String content, String path) async {
-    try {
-      await File(path).writeAsString(content);
-    } catch (e) {
-      logger.d("Error saving file: $e");
-    }
-  }
-
+  final TocController tocController;
   // Handle key events for auto-continuation of lists.
   // Returns true if it handled the event.
   bool _handleKeyEvent(KeyEvent event, TextEditingController controller) {
@@ -102,94 +88,92 @@ class EditMode extends StatelessWidget {
     controller.selection = TextSelection.collapsed(
       offset: (currentPosition + text.length).clamp(0, controller.text.length),
     );
-
-    _saveChanges(controller.text, entityPath);
   }
 
   @override
   Widget build(BuildContext context) {
+    logger.d("EditMode build");
+    final CanvasController canvasController = Get.find<CanvasController>();
+    if (canvasController.curFilePath.value != entityPath) {
+      canvasController.updateCurFilePath(entityPath);
+    }
+
+    final functionalBar = MarkdownToolbar(
+      useIncludedTextField: false,
+      controller: canvasController.contentControllter,
+      focusNode: canvasController.contentFocusNode,
+    );
+
+    final asrButtom = StreamingAsrButtom(
+      textEditingController: canvasController.contentControllter,
+    );
+
     return FutureBuilder<String>(
-      future: _loadFileContent(),
+      future: canvasController.loadFileContent(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
 
-        final textController = TextEditingController(text: snapshot.data ?? "");
-        final focusNode = FocusNode();
-        final functionalBar =
-            FunctionalBar(textController: textController, focusNode: focusNode);
-
-        final asrButtom = StreamingAsrButtom(
-          textEditingController: textController,
-        );
-
-        textController.addListener(() async {
-          await _saveChanges(textController.text, entityPath);
-        });
-
-        return ValueListenableBuilder<TextEditingValue>(
-          valueListenable: textController,
-          builder: (context, value, _) {
-            return Column(
-              children: [
-                Align(
-                  alignment: Alignment.topRight,
-                  child: Container(
-                      margin: const EdgeInsets.fromLTRB(12, 0, 0, 12),
-                      decoration: BoxDecoration(
-                        color: Colors.black54,
-                        borderRadius: const BorderRadius.only(
-                          bottomLeft: Radius.circular(20),
-                          topLeft: Radius.circular(20),
-                        ),
+        return Column(
+          children: [
+            Align(
+              alignment: Alignment.topRight,
+              child: Container(
+                  margin: const EdgeInsets.fromLTRB(12, 0, 0, 12),
+                  decoration: BoxDecoration(
+                    color: Colors.black54,
+                    borderRadius: const BorderRadius.only(
+                      bottomLeft: Radius.circular(20),
+                      topLeft: Radius.circular(20),
+                    ),
+                  ),
+                  child: functionalBar),
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Focus(
+                  autofocus: true,
+                  onKeyEvent: (node, event) => _handleKeyEvent(
+                          event, canvasController.contentControllter)
+                      ? KeyEventResult.handled
+                      : KeyEventResult.ignored,
+                  child: TextField(
+                    controller: canvasController.contentControllter,
+                    focusNode: canvasController.contentFocusNode,
+                    expands: true,
+                    minLines: null,
+                    maxLines: null,
+                    style: const TextStyle(fontFamily: 'FiraCode'),
+                    decoration: InputDecoration(
+                      floatingLabelStyle: TextStyle(
+                        color: Theme.of(context)
+                            .extension<EndernoteColors>()
+                            ?.clrText,
                       ),
-                      child: functionalBar),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: Focus(
-                      autofocus: true,
-                      onKeyEvent: (node, event) =>
-                          _handleKeyEvent(event, textController)
-                              ? KeyEventResult.handled
-                              : KeyEventResult.ignored,
-                      child: TextField(
-                        controller: textController,
-                        focusNode: focusNode,
-                        expands: true,
-                        minLines: null,
-                        maxLines: null,
-                        style: const TextStyle(fontFamily: 'FiraCode'),
-                        decoration: InputDecoration(
-                          floatingLabelStyle: TextStyle(
-                            color: Theme.of(context)
-                                .extension<EndernoteColors>()
-                                ?.clrText,
-                          ),
-                          border: InputBorder.none,
-                          labelStyle: TextStyle(
-                            color: Theme.of(context)
-                                .extension<EndernoteColors>()
-                                ?.clrText,
-                          ),
-                          enabledBorder: InputBorder.none,
-                        ),
+                      border: InputBorder.none,
+                      labelStyle: TextStyle(
+                        color: Theme.of(context)
+                            .extension<EndernoteColors>()
+                            ?.clrText,
                       ),
+                      enabledBorder: InputBorder.none,
                     ),
                   ),
                 ),
-                Align(
-                    alignment: Alignment.bottomRight,
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 0, 12, 12),
-                      child: asrButtom,
-                    )),
-              ],
-            );
-          },
+              ),
+            ),
+            Align(
+                alignment: Alignment.bottomRight,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 0, 12, 12),
+                  child: asrButtom,
+                )),
+          ],
         );
+        //   },
+        // );
       },
     );
   }

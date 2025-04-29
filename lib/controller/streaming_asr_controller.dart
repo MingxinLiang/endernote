@@ -75,6 +75,7 @@ class StreamingAsrController extends GetxController {
   final _recordTxt = "".obs;
   StreamSubscription<RecordState>? _recordSub;
 
+  // TODO: 跟随光标输入,而不是末尾
   TextEditingController textController;
   StreamingAsrController({required this.textController});
 
