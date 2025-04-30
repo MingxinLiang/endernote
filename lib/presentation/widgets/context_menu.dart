@@ -106,12 +106,12 @@ void _createNewFolder(BuildContext context, String entityPath) {
             ).createSync();
             fileController.fetchDirectory(entityPath);
           }
-          Navigator.pop(context);
+          Get.back();
         },
       ),
       actions: [
         TextButton(
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => Get.back(),
           child: const Text('Cancel'),
         ),
         TextButton(
@@ -122,7 +122,7 @@ void _createNewFolder(BuildContext context, String entityPath) {
               ).createSync();
               fileController.fetchDirectory(entityPath);
             }
-            Navigator.pop(context);
+            Get.back();
           },
           child: const Text('Create'),
         ),
@@ -157,12 +157,12 @@ void _createNewFile(BuildContext context, String entityPath) {
             ).createSync();
             fileController.fetchDirectory(entityPath);
           }
-          Navigator.pop(context);
+          Get.back();
         },
       ),
       actions: [
         TextButton(
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => Get.back(),
           child: const Text('Cancel'),
         ),
         TextButton(
@@ -173,7 +173,7 @@ void _createNewFile(BuildContext context, String entityPath) {
               ).createSync();
               fileController.fetchDirectory(entityPath);
             }
-            Navigator.pop(context);
+            Get.back();
           },
           child: const Text('Create'),
         ),
@@ -219,12 +219,12 @@ void _renameEntity(
             }
             fileController.fetchDirectory(Directory(entityPath).parent.path);
           }
-          Navigator.pop(context);
+          Get.back();
         },
       ),
       actions: [
         TextButton(
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => Get.back(),
           child: const Text('Cancel'),
         ),
         TextButton(
@@ -241,7 +241,7 @@ void _renameEntity(
               }
               fileController.fetchDirectory(Directory(entityPath).parent.path);
             }
-            Navigator.pop(context);
+            Get.back();
           },
           child: const Text('Rename'),
         ),
@@ -268,7 +268,7 @@ void _deleteEntity(BuildContext context, String entityPath, bool isFolder) {
       ),
       actions: [
         TextButton(
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => Get.back(),
           child: const Text('Cancel'),
         ),
         TextButton(
@@ -279,7 +279,7 @@ void _deleteEntity(BuildContext context, String entityPath, bool isFolder) {
               File(entityPath).deleteSync();
             }
             fileController.fetchDirectory(Directory(entityPath).parent.path);
-            Navigator.pop(context);
+            Get.back();
           },
           child: const Text('Delete'),
         ),

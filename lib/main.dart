@@ -7,7 +7,7 @@ import 'package:get/get.dart';
 import 'presentation/screens/about/screen_about.dart';
 import 'presentation/screens/canvas/screen_canvas.dart';
 import 'presentation/screens/hello/screen_hello.dart';
-import 'presentation/screens/home/screen_home.dart';
+import 'presentation/screens/list/screen_note_list.dart';
 import 'presentation/screens/search/screen_search.dart';
 import 'presentation/screens/settings/screen_settings.dart';
 import 'presentation/theme/app_themes.dart';
@@ -62,8 +62,8 @@ class MyApp extends StatelessWidget {
           page: () => ScreenCanvas(),
         ),
         GetPage(
-          name: '/home',
-          page: () => ScreenHome(
+          name: '/noteList',
+          page: () => ScreenNoteList(
             rootPath: Get.find<DirController>().rootPath.value,
           ),
         ),

@@ -15,6 +15,7 @@ class ScreenCanvas extends StatelessWidget {
   }
 
   final tocController = TocController();
+
   @override
   Widget build(BuildContext context) {
     return GetBuilder<CanvasController>(

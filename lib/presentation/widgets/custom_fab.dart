@@ -32,7 +32,7 @@ class CustomFAB extends StatelessWidget {
               ).create(recursive: true);
               dirController.fetchDirectory(rootPath);
             }
-            Navigator.pop(context);
+            Get.back();
             folderController.clear();
           },
         ),
@@ -48,7 +48,7 @@ class CustomFAB extends StatelessWidget {
               ).create(recursive: true);
               dirController.fetchDirectory(rootPath);
             }
-            Navigator.pop(context);
+            Get.back();
             fileController.clear();
           },
         ),
@@ -89,7 +89,7 @@ class CustomFAB extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.pop(context);
+                Get.back();
                 controller.clear();
               },
               child: const Text('Cancel'),
