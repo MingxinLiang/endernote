@@ -4,8 +4,8 @@ import 'package:markdown_widget/markdown_widget.dart';
 import 'package:flutter/material.dart';
 
 class PreviewMode extends StatelessWidget {
-  final TocController tocController;
   final String entityPath;
+  final TocController tocController;
   const PreviewMode(
       {super.key, required this.entityPath, required this.tocController});
 

@@ -14,7 +14,6 @@ class ScreenCanvas extends StatelessWidget {
     Get.lazyPut(() => CanvasController());
   }
 
-  final tocController = TocController();
   @override
   Widget build(BuildContext context) {
     return GetBuilder<CanvasController>(
@@ -76,17 +75,18 @@ class ScreenCanvas extends StatelessWidget {
           body: Row(children: [
             Expanded(
               flex: 1,
-              child: TocWidget(controller: tocController),
+              child: TocWidget(controller: ctrl.tocController),
             ),
             Expanded(
               flex: 3,
               child: Obx(() => ctrl.editOrPreview.value
                   ? EditMode(
                       entityPath: ctrl.curFilePath.value,
-                      tocController: tocController)
+                    )
                   : PreviewMode(
                       entityPath: ctrl.curFilePath.value,
-                      tocController: tocController)),
+                      tocController: ctrl.tocController,
+                    )),
             )
           ])),
     );

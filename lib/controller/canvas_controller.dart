@@ -1,23 +1,30 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:endernote/common/logger.dart' show logger;
+import 'package:endernote/common/utils.dart';
 import 'package:endernote/controller/dir_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:markdown_widget/config/toc.dart';
 
 // 编辑器管理
 class CanvasController extends GetxController {
   final RxBool editOrPreview = true.obs;
+
   final RxString curFilePath = "".obs;
   final TextEditingController titleController = TextEditingController();
   final FocusNode titleFocusNode = FocusNode();
   final TextEditingController contentControllter = TextEditingController();
   final FocusNode contentFocusNode = FocusNode();
+
+  final tocController = TocController();
+
   Timer? _autoSaveTimer;
 
   updateCurFilePath(String path) {
     curFilePath.value = path;
     titleController.text = _getNameWithoutExtension(path);
+    loadFileContent(filePath: path);
   }
 
   updateContentController(TextEditingController controller) {
@@ -30,6 +37,7 @@ class CanvasController extends GetxController {
     try {
       logger.d("Loading file: $filePath");
       final curText = await File(filePath).readAsString();
+      tocController.setTocList(getMarkDownToc(curText));
       contentControllter.text = curText;
       return curText;
     } catch (e) {
@@ -41,6 +49,7 @@ class CanvasController extends GetxController {
   Future<void> saveChanges(String content, String path) async {
     try {
       await File(path).writeAsString(content);
+      tocController.setTocList(getMarkDownToc(content));
     } catch (e) {
       logger.d("Error saving file: $e");
     }
