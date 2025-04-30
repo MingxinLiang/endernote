@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:ficonsax/ficonsax.dart';
+import 'package:get/get.dart';
 
 import '../../widgets/custom_app_bar.dart';
 import '../../widgets/custom_fab.dart';
@@ -26,6 +27,7 @@ class ScreenHello extends StatelessWidget {
         controller: searchController,
         hasText: hasText,
       ),
+      // TODO: 优化入门页面
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -122,11 +124,7 @@ class ScreenHello extends StatelessWidget {
                     );
                     await newFile.create();
 
-                    Navigator.pushNamed(
-                      context,
-                      '/canvas',
-                      arguments: newFile.path,
-                    );
+                    Get.to("/canvas", arguments: newFile.path);
                   },
                 ),
                 OutlinedButton.icon(
@@ -148,7 +146,7 @@ class ScreenHello extends StatelessWidget {
                       borderRadius: BorderRadius.circular(25),
                     ),
                   ),
-                  onPressed: () => Navigator.pushNamed(context, '/home'),
+                  onPressed: () => Get.to("/noteList", arguments: rootPath),
                 ),
               ],
             ),

@@ -1,5 +1,6 @@
 import 'package:ficonsax/ficonsax.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   const CustomAppBar({
@@ -32,7 +33,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           children: [
             if (showBackButton)
               IconButton(
-                onPressed: () => Navigator.pop(context),
+                onPressed: () => Get.back(),
                 icon: const Icon(IconsaxOutline.arrow_left_2),
               ),
             Expanded(
@@ -54,7 +55,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                       ),
                       onSubmitted: (value) {
                         if (controller!.text.trim().isNotEmpty) {
-                          Navigator.pushNamed(context, '/search', arguments: {
+                          Get.to("/search", arguments: {
                             'query': controller!.text.trim(),
                             'rootPath': rootPath
                           });
@@ -70,12 +71,12 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 builder: (_, hasTextValue, __) => IconButton(
                   onPressed: () {
                     if (hasTextValue && controller!.text.trim().isNotEmpty) {
-                      Navigator.pushNamed(context, '/search', arguments: {
+                      Get.to("./search", arguments: {
                         'query': controller!.text.trim(),
                         'rootPath': rootPath
                       });
                     } else {
-                      Navigator.pushNamed(context, '/settings');
+                      Get.to("./settings");
                     }
                   },
                   tooltip: hasTextValue ? 'Search' : 'Settings',
