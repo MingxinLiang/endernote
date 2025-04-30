@@ -55,7 +55,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                       ),
                       onSubmitted: (value) {
                         if (controller!.text.trim().isNotEmpty) {
-                          Get.to("/search", arguments: {
+                          Get.toNamed("/search", arguments: {
                             'query': controller!.text.trim(),
                             'rootPath': rootPath
                           });
@@ -71,12 +71,12 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 builder: (_, hasTextValue, __) => IconButton(
                   onPressed: () {
                     if (hasTextValue && controller!.text.trim().isNotEmpty) {
-                      Get.to("./search", arguments: {
+                      Get.toNamed("./search", arguments: {
                         'query': controller!.text.trim(),
                         'rootPath': rootPath
                       });
                     } else {
-                      Get.to("./settings");
+                      Get.toNamed("./settings");
                     }
                   },
                   tooltip: hasTextValue ? 'Search' : 'Settings',

@@ -124,7 +124,7 @@ class ScreenHello extends StatelessWidget {
                     );
                     await newFile.create();
 
-                    Get.to("/canvas", arguments: newFile.path);
+                    Get.toNamed("/canvas", arguments: newFile.path);
                   },
                 ),
                 OutlinedButton.icon(
@@ -146,7 +146,8 @@ class ScreenHello extends StatelessWidget {
                       borderRadius: BorderRadius.circular(25),
                     ),
                   ),
-                  onPressed: () => Get.to("/noteList", arguments: rootPath),
+                  onPressed: () =>
+                      Get.toNamed("/noteList", arguments: rootPath),
                 ),
               ],
             ),

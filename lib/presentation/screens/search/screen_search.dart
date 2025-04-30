@@ -109,7 +109,7 @@ class ScreenSearch extends StatelessWidget {
                             dirController.fetchDirectory(entityPath);
                           }
                         } else {
-                          Get.to("/canvas", arguments: entityPath);
+                          Get.toNamed("/canvas", arguments: entityPath);
                         }
                       },
                     ),
@@ -186,7 +186,7 @@ class ScreenSearch extends StatelessWidget {
                       controller.fetchDirectory(entityPath);
                     }
                   } else {
-                    Get.to("/canvas", arguments: entityPath);
+                    Get.toNamed("/canvas", arguments: entityPath);
                   }
                 },
               ),
