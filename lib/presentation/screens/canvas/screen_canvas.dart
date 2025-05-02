@@ -1,4 +1,7 @@
-import 'package:endernote/controller/canvas_controller.dart';
+import 'package:endernote/common/utils.dart';
+import 'package:endernote/controller/markdown_controller.dart';
+import 'package:endernote/controller/dir_controller.dart';
+import 'package:endernote/presentation/screens/canvas/screen_toc.dart';
 import 'package:ficonsax/ficonsax.dart';
 import 'package:flutter/material.dart';
 import 'package:markdown_widget/markdown_widget.dart';
@@ -11,12 +14,12 @@ import 'preview_mode/preview_mode.dart';
 class ScreenCanvas extends StatelessWidget {
   ScreenCanvas({super.key}) {
     // 注册控制器
-    Get.lazyPut(() => CanvasController());
+    Get.lazyPut(() => MarkDownController());
   }
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<CanvasController>(
+    return GetBuilder<MarkDownController>(
       builder: (ctrl) => Scaffold(
           appBar: AppBar(
             automaticallyImplyLeading: false,
@@ -38,8 +41,15 @@ class ScreenCanvas extends StatelessWidget {
                     child: TextField(
                       controller: ctrl.titleController,
                       focusNode: ctrl.titleFocusNode,
-                      onSubmitted: (newName) => // 回车时重命名文件
-                          ctrl.renameFile(ctrl.curFilePath.value, newName),
+                      onSubmitted: (newName) {
+                        String? newPath =
+                            renameFile(ctrl.curFilePath.value, newName);
+                        if (newPath != null) {
+                          ctrl.curFilePath.value = newPath;
+                          Get.find<DirController>().fetchDirectory(null);
+                          ctrl.titleFocusNode.unfocus();
+                        }
+                      }, // 回车时重命名文件
                       style: TextStyle(
                         fontFamily: 'FiraCode',
                         color: Theme.of(context)
@@ -75,7 +85,8 @@ class ScreenCanvas extends StatelessWidget {
           body: Row(children: [
             Expanded(
               flex: 1,
-              child: TocWidget(controller: ctrl.tocController),
+              // child: TocWidget(controller: ctrl.tocController),
+              child: ToIWidget(markdownController: ctrl),
             ),
             Expanded(
               flex: 3,

@@ -1,24 +1,23 @@
 import 'package:endernote/common/logger.dart' show logger;
 import 'package:endernote/common/utils.dart';
+import 'package:endernote/controller/markdown_controller.dart';
 import 'package:flutter/material.dart';
 import "package:get/get.dart";
 
 const defaultTocTextStyle = TextStyle(fontSize: 16);
 const defaultCurrentTocTextStyle = TextStyle(fontSize: 16, color: Colors.blue);
 
-class TocWidget extends StatelessWidget {
-  final List<ToI> listToI;
-  final textEditController;
+class ToIWidget extends StatelessWidget {
+  final MarkDownController markdownController;
   final currentIndex = 0.obs;
 
   /// use [tocTextStyle] to set the style of the toc item
   final TextStyle tocTextStyle = defaultTocTextStyle;
   final TextStyle currentTocTextStyle = defaultCurrentTocTextStyle;
 
-  TocWidget(
-      {super.key, required this.listToI, required this.textEditController});
+  ToIWidget({super.key, required this.markdownController});
 
-  itermBuilder(ToI toi, isCurrent) {
+  Widget itermBuilder(ToI toi, bool isCurrent) {
     final child = ListTile(
       title: Container(
         margin: EdgeInsets.only(left: 20.0 * toi.headLevel),
@@ -27,7 +26,8 @@ class TocWidget extends StatelessWidget {
       ),
       onTap: () {
         currentIndex.value = toi.widgetIndex;
-        logger.d(toi.text);
+        markdownController.moveCursorToPosition(toi.offSet);
+        logger.d("Toi index: $currentIndex, offSet: ${toi.offSet}");
       },
     );
     return child;
@@ -35,14 +35,19 @@ class TocWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemBuilder: (ctx, index) {
-        final currentToc = listToI[index];
-        bool isCurrentToc = index == currentIndex;
-        final itemBuilder = itermBuilder;
-        return itemBuilder.call(currentToc, isCurrentToc);
-      },
-      itemCount: listToI.length,
-    );
+    // 使用 Obx 监听 RxList 的变化
+    return Obx(() {
+      RxList<ToI> listToI = markdownController.listToI;
+      logger.d(
+          "build toc widget, listToI.length: ${listToI.length}, index: $currentIndex");
+      return ListView.builder(
+        itemBuilder: (ctx, index) {
+          final currentToc = listToI[index];
+          bool isCurrentToc = index == currentIndex.value;
+          return itermBuilder(currentToc, isCurrentToc);
+        },
+        itemCount: listToI.length,
+      );
+    });
   }
 }

@@ -1,4 +1,4 @@
-import 'package:endernote/controller/canvas_controller.dart';
+import 'package:endernote/controller/markdown_controller.dart';
 import 'package:endernote/presentation/widgets/streaming_asr_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -91,7 +91,7 @@ class EditMode extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     logger.d("EditMode build");
-    final CanvasController canvasController = Get.find<CanvasController>();
+    final MarkDownController canvasController = Get.find<MarkDownController>();
     if (canvasController.curFilePath.value != entityPath) {
       canvasController.updateCurFilePath(entityPath);
     }

@@ -27,7 +27,9 @@ class DirController extends GetxController {
   bool hasFolder(String path) => folderContents.containsKey(path);
 
   // 修改后的 fetchDirectory 方法
-  void fetchDirectory(String path) async {
+  void fetchDirectory(String? path) async {
+    path ??= rootPath.value;
+
     try {
       isLoading.value = true;
       final folder = Directory(path);

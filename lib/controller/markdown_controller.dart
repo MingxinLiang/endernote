@@ -2,22 +2,22 @@ import 'dart:async';
 import 'dart:io';
 import 'package:endernote/common/logger.dart' show logger;
 import 'package:endernote/common/utils.dart';
-import 'package:endernote/controller/dir_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:markdown_widget/config/toc.dart';
 
 // 编辑器管理
-class CanvasController extends GetxController {
+class MarkDownController extends GetxController {
   final RxBool editOrPreview = true.obs;
-
   final RxString curFilePath = "".obs;
+
   final TextEditingController titleController = TextEditingController();
   final FocusNode titleFocusNode = FocusNode();
   final TextEditingController contentControllter = TextEditingController();
   final FocusNode contentFocusNode = FocusNode();
 
   final tocController = TocController();
+  final listToI = <ToI>[].obs;
 
   Timer? _autoSaveTimer;
 
@@ -32,12 +32,19 @@ class CanvasController extends GetxController {
     contentControllter.selection = controller.selection;
   }
 
+  void moveCursorToPosition(int position) {
+    logger.d("moveCursorToPosition: $position");
+    contentControllter.selection = TextSelection.collapsed(offset: position);
+    contentFocusNode.requestFocus();
+  }
+
   Future<String> loadFileContent({String? filePath}) async {
     filePath ??= curFilePath.value;
     try {
       logger.d("Loading file: $filePath");
       final curText = await File(filePath).readAsString();
       tocController.setTocList(getMarkDownToc(curText));
+      listToI.value = getMarkDownToI(curText);
       contentControllter.text = curText;
       return curText;
     } catch (e) {
@@ -50,6 +57,7 @@ class CanvasController extends GetxController {
     try {
       await File(path).writeAsString(content);
       tocController.setTocList(getMarkDownToc(content));
+      listToI.value = getMarkDownToI(content);
     } catch (e) {
       logger.d("Error saving file: $e");
     }
@@ -69,34 +77,6 @@ class CanvasController extends GetxController {
   }
 
   void toggleEditMode() => editOrPreview.toggle();
-
-  void renameFile(String oldPath, String newName) {
-    final newNameTrimmed = newName.trim();
-    if (newNameTrimmed.isEmpty || oldPath.isEmpty) return;
-
-    final parentDir = Directory(oldPath).parent;
-    final newPath = _getAvailablePath(parentDir, newNameTrimmed);
-
-    if (newPath != oldPath) {
-      try {
-        File(oldPath).renameSync(newPath);
-        curFilePath.value = newPath;
-        Get.find<DirController>().fetchDirectory(parentDir.path);
-      } catch (e) {
-        debugPrint("Error renaming file: $e");
-      }
-    }
-  }
-
-  String _getAvailablePath(Directory parent, String name) {
-    var basePath = '${parent.path}${Platform.pathSeparator}$name';
-    var newPath = '$basePath.md';
-
-    for (var i = 1; File(newPath).existsSync(); i++) {
-      newPath = '$basePath ($i).md';
-    }
-    return newPath;
-  }
 
   @override
   void onInit() {
