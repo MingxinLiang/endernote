@@ -1,6 +1,7 @@
 import 'package:endernote/common/logger.dart' show logger;
 import 'package:endernote/common/utils.dart';
 import 'package:endernote/controller/markdown_controller.dart';
+import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:flutter/material.dart';
 import "package:get/get.dart";
 
@@ -10,14 +11,16 @@ const defaultCurrentTocTextStyle = TextStyle(fontSize: 16, color: Colors.blue);
 class ToIWidget extends StatelessWidget {
   final MarkDownController markdownController;
   final currentIndex = 0.obs;
+  late final AutoScrollController? scrollController;
 
   /// use [tocTextStyle] to set the style of the toc item
   final TextStyle tocTextStyle = defaultTocTextStyle;
   final TextStyle currentTocTextStyle = defaultCurrentTocTextStyle;
 
-  ToIWidget({super.key, required this.markdownController});
+  ToIWidget(
+      {super.key, required this.markdownController, this.scrollController});
 
-  Widget itermBuilder(ToI toi, bool isCurrent) {
+  Widget toiItermBuilder(ToI toi, bool isCurrent) {
     final child = ListTile(
       title: Container(
         margin: EdgeInsets.only(left: 20.0 * toi.headLevel),
@@ -44,7 +47,7 @@ class ToIWidget extends StatelessWidget {
         itemBuilder: (ctx, index) {
           final currentToc = listToI[index];
           bool isCurrentToc = index == currentIndex.value;
-          return itermBuilder(currentToc, isCurrentToc);
+          return toiItermBuilder(currentToc, isCurrentToc);
         },
         itemCount: listToI.length,
       );
