@@ -1,7 +1,6 @@
 import 'package:endernote/common/logger.dart' show logger;
 import 'package:endernote/common/utils.dart';
 import 'package:endernote/controller/markdown_controller.dart';
-import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:flutter/material.dart';
 import "package:get/get.dart";
 
@@ -9,18 +8,20 @@ const defaultTocTextStyle = TextStyle(fontSize: 16);
 const defaultCurrentTocTextStyle = TextStyle(fontSize: 16, color: Colors.blue);
 
 class ToIWidget extends StatelessWidget {
+  // preview model 和 edit model 目前用不同的内容建立索引
+  // 主要是因为目前edit model 目前只支持单行分析
   final MarkDownController markdownController;
   final currentIndex = 0.obs;
-  late final AutoScrollController? scrollController;
 
   /// use [tocTextStyle] to set the style of the toc item
   final TextStyle tocTextStyle = defaultTocTextStyle;
   final TextStyle currentTocTextStyle = defaultCurrentTocTextStyle;
 
-  ToIWidget(
-      {super.key, required this.markdownController, this.scrollController});
+  ToIWidget({super.key, required this.markdownController});
 
-  Widget toiItermBuilder(ToI toi, bool isCurrent) {
+  // for edit model
+  // ignore: non_constant_identifier_names
+  Widget ToIBuilder(ToI toi, bool isCurrent) {
     final child = ListTile(
       title: Container(
         margin: EdgeInsets.only(left: 20.0 * toi.headLevel),
@@ -29,8 +30,26 @@ class ToIWidget extends StatelessWidget {
       ),
       onTap: () {
         currentIndex.value = toi.widgetIndex;
-        markdownController.moveCursorToPosition(toi.offSet);
+        markdownController.jumpCursorToPosition(toi.offSet);
         logger.d("Toi index: $currentIndex, offSet: ${toi.offSet}");
+      },
+    );
+    return child;
+  }
+
+  // for preview model
+  // ignore: non_constant_identifier_names
+  Widget ToCBuilder(ToI toi, bool isCurrent) {
+    final child = ListTile(
+      title: Container(
+        margin: EdgeInsets.only(left: 20.0 * (toi.headLevel)),
+        child: Text(toi.text,
+            style: isCurrent ? currentTocTextStyle : tocTextStyle),
+      ),
+      onTap: () {
+        currentIndex.value = toi.widgetIndex;
+        markdownController.jumpScrollToIndex(toi.widgetIndex);
+        logger.d("Toi index: $currentIndex, toiIndex: ${toi.widgetIndex}");
       },
     );
     return child;
@@ -40,17 +59,27 @@ class ToIWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     // 使用 Obx 监听 RxList 的变化
     return Obx(() {
-      RxList<ToI> listToI = markdownController.listToI;
-      logger.d(
-          "build toc widget, listToI.length: ${listToI.length}, index: $currentIndex");
-      return ListView.builder(
-        itemBuilder: (ctx, index) {
-          final currentToc = listToI[index];
-          bool isCurrentToc = index == currentIndex.value;
-          return toiItermBuilder(currentToc, isCurrentToc);
-        },
-        itemCount: listToI.length,
-      );
+      if (markdownController.editOrPreview.value) {
+        RxList<ToI> listToI = markdownController.listToI;
+        return ListView.builder(
+          itemBuilder: (ctx, index) {
+            final currentToc = listToI[index];
+            bool isCurrentToc = index == currentIndex.value;
+            return ToIBuilder(currentToc, isCurrentToc);
+          },
+          itemCount: listToI.length,
+        );
+      } else {
+        RxList<ToI> listToI = markdownController.listToC;
+        return ListView.builder(
+          itemBuilder: (ctx, index) {
+            final currentToc = listToI[index];
+            bool isCurrentToc = index == currentIndex.value;
+            return ToCBuilder(currentToc, isCurrentToc);
+          },
+          itemCount: listToI.length,
+        );
+      }
     });
   }
 }

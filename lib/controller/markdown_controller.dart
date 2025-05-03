@@ -4,7 +4,7 @@ import 'package:endernote/common/logger.dart' show logger;
 import 'package:endernote/common/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:markdown_widget/config/toc.dart';
+import 'package:scroll_to_index/scroll_to_index.dart';
 
 // 编辑器管理
 class MarkDownController extends GetxController {
@@ -16,10 +16,15 @@ class MarkDownController extends GetxController {
   final TextEditingController contentControllter = TextEditingController();
   final FocusNode contentFocusNode = FocusNode();
 
-  final tocController = TocController();
   final listToI = <ToI>[].obs;
+  final listToC = <ToI>[].obs;
+  late final AutoScrollController? autoScrollController;
 
-  Timer? _autoSaveTimer;
+  late final Timer? _autoSaveTimer;
+
+  setScrollController(AutoScrollController controller) {
+    autoScrollController = controller;
+  }
 
   updateCurFilePath(String path) {
     curFilePath.value = path;
@@ -32,10 +37,20 @@ class MarkDownController extends GetxController {
     contentControllter.selection = controller.selection;
   }
 
-  void moveCursorToPosition(int position) {
+  void jumpCursorToPosition(int position) {
     logger.d("moveCursorToPosition: $position");
     contentControllter.selection = TextSelection.collapsed(offset: position);
     contentFocusNode.requestFocus();
+  }
+
+  void jumpScrollToIndex(int index) {
+    logger.d("jumpScrollToIndex: $index");
+    if (autoScrollController != null) {
+      autoScrollController?.scrollToIndex(
+        index,
+        preferPosition: AutoScrollPosition.begin,
+      );
+    }
   }
 
   Future<String> loadFileContent({String? filePath}) async {
@@ -43,7 +58,7 @@ class MarkDownController extends GetxController {
     try {
       logger.d("Loading file: $filePath");
       final curText = await File(filePath).readAsString();
-      tocController.setTocList(getMarkDownToc(curText));
+      listToC.value = getMarkDownToc(curText);
       listToI.value = getMarkDownToI(curText);
       contentControllter.text = curText;
       return curText;
@@ -56,7 +71,7 @@ class MarkDownController extends GetxController {
   Future<void> saveChanges(String content, String path) async {
     try {
       await File(path).writeAsString(content);
-      tocController.setTocList(getMarkDownToc(content));
+      listToC.value = getMarkDownToc(content);
       listToI.value = getMarkDownToI(content);
     } catch (e) {
       logger.d("Error saving file: $e");

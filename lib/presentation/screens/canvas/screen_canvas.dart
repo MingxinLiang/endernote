@@ -4,11 +4,10 @@ import 'package:endernote/controller/dir_controller.dart';
 import 'package:endernote/presentation/screens/canvas/screen_toc.dart';
 import 'package:ficonsax/ficonsax.dart';
 import 'package:flutter/material.dart';
-import 'package:markdown_widget/markdown_widget.dart';
 import 'package:get/get.dart';
 
 import '../../theme/app_themes.dart';
-import 'edit_mode/edit_mode.dart';
+import 'edit_mode/markdown_editor.dart';
 import 'preview_mode/preview_mode.dart';
 
 class ScreenCanvas extends StatelessWidget {
@@ -91,20 +90,20 @@ class ScreenCanvas extends StatelessWidget {
                 ),
                 Expanded(
                   flex: 3,
-                  child: EditMode(entityPath: ctrl.curFilePath.value),
+                  child: MarkdownEditMode(entityPath: ctrl.curFilePath.value),
                 )
               ]);
             } else {
               return Row(children: [
                 Expanded(
                   flex: 1,
-                  child: TocWidget(controller: ctrl.tocController),
+                  //child: TocWidget(controller: ctrl.tocController),
+                  child: ToIWidget(markdownController: ctrl),
                 ),
                 Expanded(
                   flex: 3,
                   child: PreviewMode(
                     entityPath: ctrl.curFilePath.value,
-                    tocController: ctrl.tocController,
                   ),
                 )
               ]);

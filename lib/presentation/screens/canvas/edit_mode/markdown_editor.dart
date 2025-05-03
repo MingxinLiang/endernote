@@ -7,8 +7,8 @@ import 'package:get/get.dart';
 import '../../../theme/app_themes.dart';
 import 'package:endernote/common/logger.dart' show logger;
 
-class EditMode extends StatelessWidget {
-  const EditMode({super.key, required this.entityPath});
+class MarkdownEditMode extends StatelessWidget {
+  const MarkdownEditMode({super.key, required this.entityPath});
   final String entityPath;
 
   // Handle key events for auto-continuation of lists.

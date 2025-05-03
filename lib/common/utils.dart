@@ -1,13 +1,10 @@
 import 'dart:io';
-import 'package:endernote/common/logger.dart' show logger;
 import 'package:flutter/widgets.dart';
-import 'package:markdown_widget/config/toc.dart' show Toc;
 import 'package:markdown/markdown.dart' as md;
-import 'package:markdown_widget/widget/blocks/leaf/heading.dart'
-    show HeadingNode;
-import 'package:markdown_widget/widget/widget_visitor.dart';
 
 // 用于文本索引
+RegExp headRegExp = RegExp(r'^h[1-6]$');
+
 class ToI {
   ///the HeadingNode
   final int headLevel;
@@ -24,17 +21,29 @@ class ToI {
       this.offSet = 0});
 }
 
-List<Toc> getMarkDownToc(String text) {
+List<ToI> getMarkDownToc(String text) {
   final nodes = md.Document(encodeHtml: false).parse(text);
-  final listToc = <Toc>[];
-  final visitor = WidgetVisitor(onNodeAccepted: (node, index) {
-    if (node is HeadingNode) {
-      final listLength = listToc.length;
-      logger.d("indx: $index, selfIndex: $listLength");
-      listToc.add(Toc(node: node, widgetIndex: index, selfIndex: listLength));
+  final listToc = <ToI>[];
+  int lastLevel = 1;
+
+  // TODO: 预览模式显示内容
+  for (var node in nodes) {
+    if (node is md.Element) {
+      String tag = node.tag;
+      int headLevel = lastLevel;
+      if (headRegExp.hasMatch(tag)) {
+        headLevel = int.parse(tag.substring(1));
+        lastLevel = headLevel;
+
+        String content = node.textContent;
+        listToc.add(ToI(
+          headLevel: headLevel,
+          text: content,
+          widgetIndex: listToc.length,
+        ));
+      }
     }
-  });
-  visitor.visit(nodes);
+  }
 
   return listToc; // 添加返回语句
 }

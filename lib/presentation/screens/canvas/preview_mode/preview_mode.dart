@@ -1,13 +1,11 @@
 import 'dart:io';
 import 'package:endernote/common/logger.dart' show logger;
-import 'package:markdown_widget/markdown_widget.dart';
+import 'package:endernote/presentation/screens/canvas/preview_mode/markdown_preview.dart';
 import 'package:flutter/material.dart';
 
 class PreviewMode extends StatelessWidget {
   final String entityPath;
-  final TocController tocController;
-  const PreviewMode(
-      {super.key, required this.entityPath, required this.tocController});
+  const PreviewMode({super.key, required this.entityPath});
 
   Future<String> _loadFileContent() async {
     try {
@@ -39,7 +37,6 @@ class PreviewMode extends StatelessWidget {
             return Expanded(
                 child: MarkdownWidget(
               data: snapshot.data!,
-              tocController: tocController,
             ));
           }
         },

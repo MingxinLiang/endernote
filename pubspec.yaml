@@ -23,7 +23,6 @@ dependencies:
   flutter_secure_storage: ^9.2.2
   url_launcher: ^6.3.1
   package_info_plus: ^8.1.2
-  bloc: ^9.0.0
   path: ^1.9.0
   flutter_speed_dial: ^7.0.0
   file_picker: ^9.2.1
@@ -35,6 +34,7 @@ dependencies:
   flutter_markdown: ^0.7.7
   markdown_widget: ^2.3.2+8
   markdown_toolbar: ^0.5.0
+  scroll_to_index: ^3.0.1
 
 dev_dependencies:
   flutter_test:

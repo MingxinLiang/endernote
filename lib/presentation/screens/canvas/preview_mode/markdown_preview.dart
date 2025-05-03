@@ -1,17 +1,17 @@
 import 'dart:collection';
 
+import 'package:endernote/controller/markdown_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:markdown_widget/markdown_widget.dart';
+import 'package:get/get.dart' show Get, Inst;
+import 'package:markdown_widget/markdown_widget.dart'
+    show MarkdownConfig, MarkdownGenerator;
 import 'package:scroll_to_index/scroll_to_index.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 class MarkdownWidget extends StatefulWidget {
   ///the markdown data
   final String data;
-
-  ///if [tocController] is not null, you can use [tocListener] to get current TOC index
-  final TocController? tocController;
 
   ///set the desired scroll physics for the markdown item list
   final ScrollPhysics? physics;
@@ -34,7 +34,6 @@ class MarkdownWidget extends StatefulWidget {
   const MarkdownWidget({
     super.key,
     required this.data,
-    this.tocController,
     this.physics,
     this.shrinkWrap = false,
     this.selectable = true,
@@ -54,9 +53,6 @@ class MarkdownWidgetState extends State<MarkdownWidget> {
   ///The markdown string converted by MarkdownGenerator will be retained in the [_widgets]
   final List<Widget> _widgets = [];
 
-  ///[TocController] combines [TocWidget] and [MarkdownWidget]
-  TocController? _tocController;
-
   ///[AutoScrollController] provides the scroll to index mechanism
   final AutoScrollController controller = AutoScrollController();
 
@@ -69,11 +65,8 @@ class MarkdownWidgetState extends State<MarkdownWidget> {
   @override
   void initState() {
     super.initState();
-    _tocController = widget.tocController;
-    _tocController?.jumpToIndexCallback = (index) {
-      controller.scrollToIndex(index, preferPosition: AutoScrollPosition.begin);
-    };
     updateState();
+    Get.find<MarkDownController>().setScrollController(controller);
   }
 
   ///when we've got the data, we need update data without setState() to avoid the flicker of the view
@@ -82,9 +75,6 @@ class MarkdownWidgetState extends State<MarkdownWidget> {
     markdownGenerator = widget.markdownGenerator ?? MarkdownGenerator();
     final result = markdownGenerator.buildWidgets(
       widget.data,
-      onTocList: (tocList) {
-        _tocController?.setTocList(tocList);
-      },
       config: widget.config,
     );
     _widgets.addAll(result);
@@ -100,7 +90,6 @@ class MarkdownWidgetState extends State<MarkdownWidget> {
   void dispose() {
     clearState();
     controller.dispose();
-    _tocController?.jumpToIndexCallback = null;
     super.dispose();
   }
 
@@ -145,9 +134,6 @@ class MarkdownWidgetState extends State<MarkdownWidget> {
               ? indexTreeSet.add(index)
               : indexTreeSet.remove(index);
         }
-        if (indexTreeSet.isNotEmpty) {
-          _tocController?.onIndexChanged(indexTreeSet.first);
-        }
       },
       child: child,
     );
@@ -168,7 +154,7 @@ Widget wrapByAutoScroll(
     key: Key(index.toString()),
     controller: controller,
     index: index,
+    highlightColor: Colors.black.withValues(alpha: 10),
     child: child,
-    highlightColor: Colors.black.toOpacity(0.1),
   );
 }
