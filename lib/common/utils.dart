@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:flutter/widgets.dart';
 import 'package:markdown/markdown.dart' as md;
+import 'package:markdown_widget/config/configs.dart' show MarkdownConfig;
+import 'package:markdown_widget/widget/widget_visitor.dart' show WidgetVisitor;
 
 // 用于文本索引
 RegExp headRegExp = RegExp(r'^h[1-6]$');
@@ -21,8 +23,7 @@ class ToI {
       this.offSet = 0});
 }
 
-List<ToI> getMarkDownToc(String text) {
-  final nodes = md.Document(encodeHtml: false).parse(text);
+List<ToI> getMarkDownToc(List<md.Node> nodes) {
   final listToc = <ToI>[];
   int lastLevel = 1;
 
@@ -127,4 +128,21 @@ String _getAvailablePath(Directory parent, String name) {
     newPath = '$basePath ($i).md';
   }
   return newPath;
+}
+
+List<Widget> getMarkDownWidgets(markDownNodes) {
+  final visitor = WidgetVisitor(
+    config: MarkdownConfig.defaultConfig,
+    generators: const [],
+  );
+  final spans = visitor.visit(markDownNodes);
+
+  final List<Widget> widgets = [];
+  for (var span in spans) {
+    final textSpan = span.build();
+    final richText = Text.rich(textSpan);
+    widgets.add(Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8), child: richText));
+  }
+  return widgets;
 }

@@ -1,46 +1,18 @@
-import 'dart:io';
-import 'package:endernote/common/logger.dart' show logger;
 import 'package:endernote/presentation/screens/canvas/preview_mode/markdown_preview.dart';
 import 'package:flutter/material.dart';
 
 class PreviewMode extends StatelessWidget {
-  final String entityPath;
-  const PreviewMode({super.key, required this.entityPath});
-
-  Future<String> _loadFileContent() async {
-    try {
-      return await File(entityPath).readAsString();
-    } catch (e) {
-      return "Error reading file: $e";
-    }
-  }
+  final String data;
+  const PreviewMode({super.key, required this.data});
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: MediaQuery.of(context).size.height -
-          (kToolbarHeight - MediaQuery.of(context).padding.top),
-      child: FutureBuilder(
-        future: _loadFileContent(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            // 等待加载
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          } else if (snapshot.hasError) {
-            logger.e("Error loading file: ${snapshot.error}");
-            return Center(
-              child: Text("Error loading file: ${snapshot.error}"),
-            );
-          } else {
-            return Expanded(
-                child: MarkdownWidget(
-              data: snapshot.data!,
-            ));
-          }
-        },
-      ),
-    );
+        height: MediaQuery.of(context).size.height -
+            (kToolbarHeight - MediaQuery.of(context).padding.top),
+        child: Expanded(
+            child: MarkdownWidget(
+          data: data,
+        )));
   }
 }
