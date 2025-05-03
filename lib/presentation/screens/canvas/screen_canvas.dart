@@ -82,24 +82,34 @@ class ScreenCanvas extends StatelessWidget {
               ),
             ),
           ),
-          body: Row(children: [
-            Expanded(
-              flex: 1,
-              // child: TocWidget(controller: ctrl.tocController),
-              child: ToIWidget(markdownController: ctrl),
-            ),
-            Expanded(
-              flex: 3,
-              child: Obx(() => ctrl.editOrPreview.value
-                  ? EditMode(
-                      entityPath: ctrl.curFilePath.value,
-                    )
-                  : PreviewMode(
-                      entityPath: ctrl.curFilePath.value,
-                      tocController: ctrl.tocController,
-                    )),
-            )
-          ])),
+          body: Obx(() {
+            if (ctrl.editOrPreview.value) {
+              return Row(children: [
+                Expanded(
+                  flex: 1,
+                  child: ToIWidget(markdownController: ctrl),
+                ),
+                Expanded(
+                  flex: 3,
+                  child: EditMode(entityPath: ctrl.curFilePath.value),
+                )
+              ]);
+            } else {
+              return Row(children: [
+                Expanded(
+                  flex: 1,
+                  child: TocWidget(controller: ctrl.tocController),
+                ),
+                Expanded(
+                  flex: 3,
+                  child: PreviewMode(
+                    entityPath: ctrl.curFilePath.value,
+                    tocController: ctrl.tocController,
+                  ),
+                )
+              ]);
+            }
+          })),
     );
   }
 }
