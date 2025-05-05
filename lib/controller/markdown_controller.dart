@@ -11,6 +11,7 @@ import 'package:scroll_to_index/scroll_to_index.dart';
 class MarkDownController extends GetxController {
   final RxBool editOrPreview = true.obs;
   final RxString curFilePath = "".obs;
+  final RxInt curOffset = 0.obs;
   final RxList<md.Node> curNodes = <md.Node>[].obs;
 
   final TextEditingController titleController = TextEditingController();
@@ -18,7 +19,7 @@ class MarkDownController extends GetxController {
   final TextEditingController contentControllter = TextEditingController();
   final FocusNode contentFocusNode = FocusNode();
 
-  // TODO: 统一两边toc index
+  // 这两边的索引是不一样的，因为编辑模式是逐行分析，而预览模式是逐模块生成
   final listToI = <ToI>[].obs;
   final listToC = <ToI>[].obs;
   late final AutoScrollController? autoScrollController;
@@ -42,18 +43,15 @@ class MarkDownController extends GetxController {
     contentControllter.selection = controller.selection;
   }
 
-  //TODO: 优化合并, 转toc实现, 保持两边index
-  void jumpCursorToPosition(int position) {
-    logger.d("moveCursorToPosition: $position");
-    contentControllter.selection = TextSelection.collapsed(offset: position);
-    contentFocusNode.requestFocus();
-  }
-
   void jumpScrollToIndex(int index) {
     logger.d("jumpScrollToIndex: $index");
-    if (autoScrollController != null) {
-      autoScrollController?.scrollToIndex(
-        index,
+    if (editOrPreview.value) {
+      contentControllter.selection =
+          TextSelection.collapsed(offset: listToI[index].offSet);
+      contentFocusNode.requestFocus();
+    } else {
+      autoScrollController!.scrollToIndex(
+        listToC[index].widgetIndex,
         preferPosition: AutoScrollPosition.begin,
       );
     }

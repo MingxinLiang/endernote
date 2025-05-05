@@ -21,28 +21,10 @@ class ToIWidget extends StatelessWidget {
 
   // for edit model
   // ignore: non_constant_identifier_names
-  Widget ToIBuilder(ToI toi, bool isCurrent) {
+  Widget ItemBuilder(ToI toi, bool isCurrent) {
     final child = ListTile(
       title: Container(
         margin: EdgeInsets.only(left: 20.0 * toi.headLevel),
-        child: Text(toi.text,
-            style: isCurrent ? currentTocTextStyle : tocTextStyle),
-      ),
-      onTap: () {
-        currentIndex.value = toi.widgetIndex;
-        markdownController.jumpCursorToPosition(toi.offSet);
-        logger.d("Toi index: $currentIndex, offSet: ${toi.offSet}");
-      },
-    );
-    return child;
-  }
-
-  // for preview model
-  // ignore: non_constant_identifier_names
-  Widget ToCBuilder(ToI toi, bool isCurrent) {
-    final child = ListTile(
-      title: Container(
-        margin: EdgeInsets.only(left: 20.0 * (toi.headLevel)),
         child: Text(toi.text,
             style: isCurrent ? currentTocTextStyle : tocTextStyle),
       ),
@@ -59,27 +41,17 @@ class ToIWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     // 使用 Obx 监听 RxList 的变化
     return Obx(() {
-      if (markdownController.editOrPreview.value) {
-        RxList<ToI> listToI = markdownController.listToI;
-        return ListView.builder(
-          itemBuilder: (ctx, index) {
-            final currentToc = listToI[index];
-            bool isCurrentToc = index == currentIndex.value;
-            return ToIBuilder(currentToc, isCurrentToc);
-          },
-          itemCount: listToI.length,
-        );
-      } else {
-        RxList<ToI> listToI = markdownController.listToC;
-        return ListView.builder(
-          itemBuilder: (ctx, index) {
-            final currentToc = listToI[index];
-            bool isCurrentToc = index == currentIndex.value;
-            return ToCBuilder(currentToc, isCurrentToc);
-          },
-          itemCount: listToI.length,
-        );
-      }
+      RxList<ToI> listToI = markdownController.editOrPreview.value
+          ? markdownController.listToI
+          : markdownController.listToC;
+      return ListView.builder(
+        itemBuilder: (ctx, index) {
+          final currentToc = listToI[index];
+          bool isCurrentToc = index == currentIndex.value;
+          return ItemBuilder(currentToc, isCurrentToc);
+        },
+        itemCount: listToI.length,
+      );
     });
   }
 }
