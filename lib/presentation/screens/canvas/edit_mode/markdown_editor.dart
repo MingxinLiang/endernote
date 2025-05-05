@@ -91,27 +91,29 @@ class MarkdownEditMode extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     logger.d("EditMode build");
-    final MarkDownController canvasController = Get.find<MarkDownController>();
-    if (canvasController.curFilePath.value != entityPath) {
-      canvasController.updateCurFilePath(entityPath);
+    final MarkDownController markdownController =
+        Get.find<MarkDownController>();
+    if (markdownController.curFilePath.value != entityPath) {
+      markdownController.updateCurFilePath(entityPath);
     }
 
     final functionalBar = MarkdownToolbar(
       useIncludedTextField: false,
-      controller: canvasController.contentControllter,
-      focusNode: canvasController.contentFocusNode,
+      controller: markdownController.contentControllter,
+      focusNode: markdownController.contentFocusNode,
     );
 
     final asrButtom = StreamingAsrButtom(
-      textEditingController: canvasController.contentControllter,
+      textEditingController: markdownController.contentControllter,
     );
 
     return FutureBuilder<String>(
-      future: canvasController.loadFileContent(),
+      future: markdownController.loadFileContent(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
+        markdownController.jumpScrollToIndex(null);
 
         return Column(
           children: [
@@ -134,12 +136,12 @@ class MarkdownEditMode extends StatelessWidget {
                 child: Focus(
                   autofocus: true,
                   onKeyEvent: (node, event) => _handleKeyEvent(
-                          event, canvasController.contentControllter)
+                          event, markdownController.contentControllter)
                       ? KeyEventResult.handled
                       : KeyEventResult.ignored,
                   child: TextField(
-                    controller: canvasController.contentControllter,
-                    focusNode: canvasController.contentFocusNode,
+                    controller: markdownController.contentControllter,
+                    focusNode: markdownController.contentFocusNode,
                     expands: true,
                     minLines: null,
                     maxLines: null,

@@ -1,4 +1,3 @@
-import 'package:endernote/common/logger.dart' show logger;
 import 'package:endernote/common/utils.dart';
 import 'package:endernote/controller/markdown_controller.dart';
 import 'package:flutter/material.dart';
@@ -11,13 +10,12 @@ class ToIWidget extends StatelessWidget {
   // preview model 和 edit model 目前用不同的内容建立索引
   // 主要是因为目前edit model 目前只支持单行分析
   final MarkDownController markdownController;
-  final currentIndex = 0.obs;
 
   /// use [tocTextStyle] to set the style of the toc item
   final TextStyle tocTextStyle = defaultTocTextStyle;
   final TextStyle currentTocTextStyle = defaultCurrentTocTextStyle;
 
-  ToIWidget({super.key, required this.markdownController});
+  const ToIWidget({super.key, required this.markdownController});
 
   // for edit model
   // ignore: non_constant_identifier_names
@@ -29,9 +27,8 @@ class ToIWidget extends StatelessWidget {
             style: isCurrent ? currentTocTextStyle : tocTextStyle),
       ),
       onTap: () {
-        currentIndex.value = toi.widgetIndex;
         markdownController.jumpScrollToIndex(toi.widgetIndex);
-        logger.d("Toi index: $currentIndex, toiIndex: ${toi.widgetIndex}");
+        markdownController.curIndex.value = toi.widgetIndex;
       },
     );
     return child;
@@ -47,7 +44,7 @@ class ToIWidget extends StatelessWidget {
       return ListView.builder(
         itemBuilder: (ctx, index) {
           final currentToc = listToI[index];
-          bool isCurrentToc = index == currentIndex.value;
+          bool isCurrentToc = index == markdownController.curIndex.value;
           return ItemBuilder(currentToc, isCurrentToc);
         },
         itemCount: listToI.length,

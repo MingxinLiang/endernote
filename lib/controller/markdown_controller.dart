@@ -11,7 +11,7 @@ import 'package:scroll_to_index/scroll_to_index.dart';
 class MarkDownController extends GetxController {
   final RxBool editOrPreview = true.obs;
   final RxString curFilePath = "".obs;
-  final RxInt curOffset = 0.obs;
+  final RxInt curIndex = 0.obs;
   final RxList<md.Node> curNodes = <md.Node>[].obs;
 
   final TextEditingController titleController = TextEditingController();
@@ -22,9 +22,10 @@ class MarkDownController extends GetxController {
   // 这两边的索引是不一样的，因为编辑模式是逐行分析，而预览模式是逐模块生成
   final listToI = <ToI>[].obs;
   final listToC = <ToI>[].obs;
-  late final AutoScrollController? autoScrollController;
+  AutoScrollController? autoScrollController;
 
   late final Timer? _autoSaveTimer;
+
 
   setScrollController(AutoScrollController controller) {
     autoScrollController = controller;
@@ -43,17 +44,27 @@ class MarkDownController extends GetxController {
     contentControllter.selection = controller.selection;
   }
 
-  void jumpScrollToIndex(int index) {
-    logger.d("jumpScrollToIndex: $index");
-    if (editOrPreview.value) {
-      contentControllter.selection =
-          TextSelection.collapsed(offset: listToI[index].offSet);
-      contentFocusNode.requestFocus();
+  void jumpScrollToIndex(int? index) {
+    if (index == null) {
+      index = curIndex.value;
     } else {
-      autoScrollController!.scrollToIndex(
-        listToC[index].widgetIndex,
-        preferPosition: AutoScrollPosition.begin,
-      );
+      curIndex.value = index;
+    }
+
+    if (index >= 0 && index < listToI.length) {
+      if (editOrPreview.value) {
+        contentControllter.selection =
+            TextSelection.collapsed(offset: listToI[index].offSet);
+        contentFocusNode.requestFocus();
+        logger.d("jumpScrollToIndex: $index, offset ${listToI[index].offSet}");
+      } else {
+        autoScrollController!.scrollToIndex(
+          listToC[index].widgetIndex,
+          preferPosition: AutoScrollPosition.begin,
+        );
+        logger.d(
+            "jumpScrollToIndex: $index, widgetIndex ${listToI[index].widgetIndex}");
+      }
     }
   }
 

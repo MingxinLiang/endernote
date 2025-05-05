@@ -62,6 +62,7 @@ class MarkdownWidgetState extends State<MarkdownWidget> {
     markDownController.setScrollController(controller);
     nodes = markDownController.curNodes;
     updateState();
+    markDownController.jumpScrollToIndex(null);
   }
 
   /// 当获取到新数据时，更新状态而不调用 setState() 以避免视图闪烁

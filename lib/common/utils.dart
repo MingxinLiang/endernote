@@ -49,38 +49,23 @@ List<ToI> getMarkDownToc(List<md.Node> nodes) {
   return listToc; // 添加返回语句
 }
 
+// 按行解析
 ToI? getToIline(String text) {
   var lineSp = text.split(" ");
   var tag = lineSp[0];
-  String content = "";
 
-  if (lineSp.length > 1) {
-    content = text.substring(tag.length + 1);
+  RegExp headRegExp = RegExp(r'^#+$');
+
+  if (headRegExp.hasMatch(tag)) {
+    int headLevel = tag.length;
+    String content = text.substring(tag.length + 1).trim();
+    return ToI(
+      headLevel: headLevel,
+      text: content,
+    );
   }
 
-  if (tag == "#") {
-    return ToI(
-      headLevel: 1,
-      text: content,
-    );
-  } else if (tag == "##") {
-    return ToI(
-      headLevel: 2,
-      text: content,
-    );
-  } else if (tag == "###") {
-    return ToI(
-      headLevel: 3,
-      text: content,
-    );
-  } else if (tag == "####") {
-    return ToI(
-      headLevel: 4,
-      text: content,
-    );
-  } else {
-    return null;
-  }
+  return null;
 }
 
 List<ToI> getMarkDownToI(String text) {
@@ -130,6 +115,7 @@ String _getAvailablePath(Directory parent, String name) {
   return newPath;
 }
 
+// 用于展示
 List<Widget> getMarkDownWidgets(markDownNodes) {
   final visitor = WidgetVisitor(
     config: MarkdownConfig.defaultConfig,
