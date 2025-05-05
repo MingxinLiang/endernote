@@ -18,6 +18,7 @@ class MarkDownController extends GetxController {
   final TextEditingController contentControllter = TextEditingController();
   final FocusNode contentFocusNode = FocusNode();
 
+  // TODO: 统一两边toc index
   final listToI = <ToI>[].obs;
   final listToC = <ToI>[].obs;
   late final AutoScrollController? autoScrollController;
@@ -29,9 +30,11 @@ class MarkDownController extends GetxController {
   }
 
   updateCurFilePath(String path) {
-    curFilePath.value = path;
-    titleController.text = _getNameWithoutExtension(path);
-    loadFileContent(filePath: path);
+    if (path != curFilePath.value) {
+      curFilePath.value = path;
+      titleController.text = _getNameWithoutExtension(path);
+      loadFileContent(filePath: path);
+    }
   }
 
   updateContentController(TextEditingController controller) {
@@ -39,6 +42,7 @@ class MarkDownController extends GetxController {
     contentControllter.selection = controller.selection;
   }
 
+  //TODO: 优化合并, 转toc实现, 保持两边index
   void jumpCursorToPosition(int position) {
     logger.d("moveCursorToPosition: $position");
     contentControllter.selection = TextSelection.collapsed(offset: position);
