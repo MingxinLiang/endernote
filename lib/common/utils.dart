@@ -23,11 +23,10 @@ class ToI {
       this.offSet = 0});
 }
 
-List<ToI> getMarkDownToc(List<md.Node> nodes) {
+List<ToI> getMarkDownToC(List<md.Node> nodes) {
   final listToc = <ToI>[];
   int lastLevel = 1;
 
-  // TODO: 预览模式显示内容
   for (var node in nodes) {
     if (node is md.Element) {
       String tag = node.tag;

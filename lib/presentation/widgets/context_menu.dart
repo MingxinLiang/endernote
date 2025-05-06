@@ -86,7 +86,8 @@ void _createNewFolder(BuildContext context, String entityPath) {
   showDialog(
     context: context,
     builder: (context) => AlertDialog(
-      backgroundColor: Theme.of(context).extension<EndernoteColors>()?.clrBase,
+      backgroundColor:
+          Theme.of(context).extension<EndernoteColors>()?.clrbackground,
       title: Text(
         'New Folder',
         style: TextStyle(
@@ -137,7 +138,8 @@ void _createNewFile(BuildContext context, String entityPath) {
   showDialog(
     context: context,
     builder: (context) => AlertDialog(
-      backgroundColor: Theme.of(context).extension<EndernoteColors>()?.clrBase,
+      backgroundColor:
+          Theme.of(context).extension<EndernoteColors>()?.clrbackground,
       title: Text(
         'New File',
         style: TextStyle(
@@ -193,7 +195,8 @@ void _renameEntity(
   showDialog(
     context: context,
     builder: (context) => AlertDialog(
-      backgroundColor: Theme.of(context).extension<EndernoteColors>()?.clrBase,
+      backgroundColor:
+          Theme.of(context).extension<EndernoteColors>()?.clrbackground,
       title: Text(
         'Rename',
         style: TextStyle(
@@ -255,7 +258,8 @@ void _deleteEntity(BuildContext context, String entityPath, bool isFolder) {
   showDialog(
     context: context,
     builder: (context) => AlertDialog(
-      backgroundColor: Theme.of(context).extension<EndernoteColors>()?.clrBase,
+      backgroundColor:
+          Theme.of(context).extension<EndernoteColors>()?.clrbackground,
       title: Text(
         'Delete',
         style: TextStyle(

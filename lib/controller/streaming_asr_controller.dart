@@ -93,17 +93,11 @@ class StreamingAsrController extends GetxController {
 
   // 初始化状态
   @override
-  Future<void> onInit() async {
-    _audioRecorder = AudioRecorder();
-    _recordSub = _audioRecorder.onStateChanged().listen((recordState) {
-      _updateRecordState(recordState);
-    });
+  onInit() async {
     _cursorPosition.value = textController.selection.baseOffset >= 0
         ? textController.selection.baseOffset
         : 0;
     super.onInit();
-    await Future.delayed(const Duration(seconds: 1));
-    initSherpa();
     logger.d('StreamingAsrController init');
   }
 
@@ -124,7 +118,16 @@ class StreamingAsrController extends GetxController {
     await _audioRecorder.stop();
   }
 
-  Future<void> initSherpa() async {
+  // 模型初始化
+  initSherpa() async {
+    if (isInitialized.value) {
+      return;
+    }
+
+    _audioRecorder = AudioRecorder();
+    _recordSub = _audioRecorder.onStateChanged().listen((recordState) {
+      _updateRecordState(recordState);
+    });
     sherpa_onnx.initBindings();
     recognizer = await createOnlineRecognizer();
     stream = recognizer?.createStream();

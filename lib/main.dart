@@ -21,7 +21,7 @@ Future<void> main() async {
   // 根据配置初始化controller
   await Get.put(DirController()).fetchRootPath();
   Get.put(ThemeController());
-  Get.put(Dialog2LLMController());
+  Get.lazyPut(() => Dialog2LLMController());
   runApp(MyApp());
 }
 
@@ -100,11 +100,6 @@ class MyApp extends StatelessWidget {
       builder: (context, child) {
         final llmController = Get.find<Dialog2LLMController>();
         return Scaffold(
-          drawer: Drawer(
-            child: SizedBox(
-              width: 100,
-            ),
-          ),
           body: Obx(() {
             return Row(children: [
               Expanded(child: child!),

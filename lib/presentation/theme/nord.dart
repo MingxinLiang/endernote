@@ -71,9 +71,10 @@ final ThemeData nordDarkTheme = ThemeData(
   ),
   extensions: const <ThemeExtension<dynamic>>{
     EndernoteColors(
-      clrBase: nordDarkBase,
-      clrText: nordDarkText,
-    ),
+        clrBase: nordDarkBase,
+        clrText: nordDarkText,
+        clrbackground: nordDarkPrimary,
+        clrbackText: Colors.black54),
   },
 );
 
@@ -136,8 +137,9 @@ final ThemeData nordLightTheme = ThemeData(
   ),
   extensions: const <ThemeExtension<dynamic>>{
     EndernoteColors(
-      clrBase: nordLightBase,
-      clrText: nordLightText,
-    ),
+        clrBase: nordLightBase,
+        clrText: nordLightText,
+        clrbackground: nordLightPrimary,
+        clrbackText: Color.fromARGB(31, 0, 0, 0)),
   },
 );

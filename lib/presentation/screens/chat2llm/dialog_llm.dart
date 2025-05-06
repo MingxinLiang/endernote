@@ -138,6 +138,7 @@ class Dialog2LLMController extends GetxController
     } else {
       _controller.reverse();
       isOpen.value = false;
+      promptController.clear();
       logger.d('Animation reversed, is open: $isOpen');
     }
   }
@@ -167,13 +168,13 @@ class Dialog2LLM extends StatelessWidget {
               canSizeOverlay: true,
               maintainState: true,
               builder: (context) => Container(
-                  width: maxWidth * 0.5,
+                  width: maxWidth * 0.4,
                   padding: EdgeInsets.symmetric(horizontal: maxWidth * 0.03),
                   decoration: BoxDecoration(
-                    color: Colors.lightBlue.withAlpha(10),
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(42),
-                      topRight: Radius.circular(42),
+                    border: Border.all(color: Colors.grey, width: 5),
+                    color: Colors.lightBlue.withAlpha(0),
+                    borderRadius: const BorderRadius.all(
+                      Radius.circular(20),
                     ),
                   ),
                   child: Column(

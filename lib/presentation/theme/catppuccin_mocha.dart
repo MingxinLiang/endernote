@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'app_themes.dart';
 
-const Color _clrBase = Color(0xFF1e1e2e);
+const Color _clrBase = Color.fromARGB(255, 33, 33, 53);
 const Color _clrText = Color(0xFFcdd6f4);
+const Color _clrbackground = Color.fromARGB(255, 0, 0, 0);
+const Color _clrbackText = Color.fromARGB(255, 137, 137, 137);
 
 final ThemeData catppuccinMochaTheme = ThemeData(
   colorScheme: const ColorScheme.dark(primary: _clrText),
@@ -63,8 +65,9 @@ final ThemeData catppuccinMochaTheme = ThemeData(
   ),
   extensions: const <ThemeExtension<dynamic>>{
     EndernoteColors(
-      clrBase: _clrBase,
-      clrText: _clrText,
-    ),
+        clrBase: _clrBase,
+        clrText: _clrText,
+        clrbackground: _clrbackground,
+        clrbackText: _clrbackText)
   },
 );

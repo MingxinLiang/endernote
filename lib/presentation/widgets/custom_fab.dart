@@ -6,6 +6,8 @@ import 'package:ficonsax/ficonsax.dart';
 import 'package:get/get.dart';
 import '../theme/app_themes.dart';
 
+// 右下角悬浮按钮
+// 功能：创建文件夹、创建文件
 class CustomFAB extends StatelessWidget {
   const CustomFAB({super.key, required this.rootPath});
   final String rootPath;

@@ -1,3 +1,4 @@
+import 'package:endernote/presentation/theme/app_themes.dart';
 import 'package:ficonsax/ficonsax.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -25,7 +26,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       toolbarHeight: 80,
       title: Container(
         decoration: BoxDecoration(
-          color: Colors.black.withAlpha(80),
+          color: Theme.of(context).extension<EndernoteColors>()?.clrbackground,
           borderRadius: BorderRadius.circular(12),
         ),
         padding: const EdgeInsets.all(3),
@@ -43,7 +44,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                       decoration: InputDecoration(
                         hintText: "Search your notes",
                         hintStyle: TextStyle(
-                          color: Colors.white.withAlpha(100),
+                          color: Theme.of(context)
+                              .extension<EndernoteColors>()
+                              ?.clrbackText,
                           fontSize: 14,
                           fontFamily: 'FiraCode',
                         ),

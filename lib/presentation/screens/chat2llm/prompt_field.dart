@@ -24,6 +24,8 @@ class PromptField extends StatelessWidget {
     );
 
     final double hight = min(maxHeight * 0.15, 66);
+    // 自动焦点
+    _focusNode.requestFocus();
 
     sendPromt() {
       if (istyping.value) {
@@ -66,7 +68,6 @@ class PromptField extends StatelessWidget {
             style: txtStyle,
             focusNode: _focusNode,
             cursorColor: Colors.lightBlue,
-            autofocus: false,
             textInputAction: TextInputAction.send,
             onSubmitted: (_) {
               sendPromt();

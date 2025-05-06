@@ -1,3 +1,4 @@
+import 'package:endernote/common/logger.dart';
 import 'package:endernote/common/utils.dart';
 import 'package:endernote/controller/markdown_controller.dart';
 import 'package:flutter/material.dart';
@@ -19,18 +20,22 @@ class ToIWidget extends StatelessWidget {
 
   // for edit model
   // ignore: non_constant_identifier_names
-  Widget ItemBuilder(ToI toi, bool isCurrent) {
-    final child = ListTile(
-      title: Container(
-        margin: EdgeInsets.only(left: 20.0 * toi.headLevel),
-        child: Text(toi.text,
-            style: isCurrent ? currentTocTextStyle : tocTextStyle),
-      ),
-      onTap: () {
-        markdownController.jumpScrollToIndex(toi.widgetIndex);
-        markdownController.curIndex.value = toi.widgetIndex;
-      },
-    );
+  Widget ItemBuilder(ToI toi) {
+    final markdownController = Get.find<MarkDownController>();
+    final curIndex = markdownController.curIndex;
+    final child = Obx(() => ListTile(
+          title: Container(
+            margin: EdgeInsets.only(left: 20.0 * toi.headLevel),
+            child: Text(toi.text,
+                style: curIndex.value == toi.widgetIndex
+                    ? currentTocTextStyle
+                    : tocTextStyle),
+          ),
+          onTap: () {
+            markdownController.jumpScrollToIndex(index: toi.widgetIndex);
+            markdownController.curIndex.value = toi.widgetIndex;
+          },
+        ));
     return child;
   }
 
@@ -44,8 +49,7 @@ class ToIWidget extends StatelessWidget {
       return ListView.builder(
         itemBuilder: (ctx, index) {
           final currentToc = listToI[index];
-          bool isCurrentToc = index == markdownController.curIndex.value;
-          return ItemBuilder(currentToc, isCurrentToc);
+          return ItemBuilder(currentToc);
         },
         itemCount: listToI.length,
       );

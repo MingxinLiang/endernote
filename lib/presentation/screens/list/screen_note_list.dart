@@ -1,6 +1,8 @@
 import 'dart:io';
 
+import 'package:endernote/common/logger.dart' show logger;
 import 'package:endernote/controller/dir_controller.dart';
+import 'package:endernote/controller/markdown_controller.dart';
 import 'package:endernote/presentation/widgets/context_menu.dart'
     show showContextMenu;
 import 'package:get/get.dart';
@@ -46,83 +48,91 @@ class ScreenNoteList extends StatelessWidget {
           );
         }
 
-        return _buildDirectoryList(context, rootPath);
+        return buildDirectoryList(context, path: rootPath);
       }),
       floatingActionButton: CustomFAB(rootPath: rootPath),
     );
   }
+}
 
-  Widget _buildDirectoryList(BuildContext context, String path) {
-    final directoryController = Get.find<DirController>();
+// TODO: 多级目录优化
+Widget buildDirectoryList(BuildContext context, {String? path}) {
+  final directoryController = Get.find<DirController>();
+  late final List<String> contents;
+  if (path?.isNotEmpty ?? false) {
     directoryController.fetchDirectory(path); // 确保目录内容已加载
-    final contents =
-        directoryController.folderContents[path] ?? []; // 获取当前路径的内容
+    contents = directoryController.folderContents[path] ?? []; // 获取当前路径的内容
+  } else {
+    contents = directoryController
+            .folderContents[directoryController.rootPath.value] ??
+        []; // 获取根路径的内容
+  }
 
-    if (contents.isEmpty) {
-      return Center(
-        child: Text(
-          "This folder is feeling lonely.",
-          style: TextStyle(
-            fontSize: 16,
-            color: Theme.of(context)
-                .extension<EndernoteColors>()
-                ?.clrText
-                .withAlpha(100),
-          ),
+  if (contents.isEmpty) {
+    return Center(
+      child: Text(
+        "This folder is feeling lonely.",
+        style: TextStyle(
+          fontSize: 16,
+          color: Theme.of(context)
+              .extension<EndernoteColors>()
+              ?.clrText
+              .withAlpha(100),
         ),
-      );
-    }
-
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: const BouncingScrollPhysics(),
-      itemCount: contents.length,
-      itemBuilder: (context, index) {
-        final entityPath = contents[index];
-        final isFolder = Directory(entityPath).existsSync();
-
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            GestureDetector(
-              onLongPressStart: (details) => showContextMenu(
-                  context, entityPath, isFolder, "",
-                  position: details.globalPosition),
-              onSecondaryTapDown: (details) => showContextMenu(
-                  context, entityPath, isFolder, "",
-                  position: details.globalPosition),
-              child: ListTile(
-                leading: Icon(
-                  isFolder
-                      ? (directoryController.openFolders
-                              .contains(entityPath) // 改用GetX状态
-                          ? IconsaxOutline.folder_open
-                          : IconsaxOutline.folder)
-                      : IconsaxOutline.task_square,
-                ),
-                title: Text(entityPath.split('/').last),
-                onTap: () {
-                  if (isFolder) {
-                    directoryController.toggleFolder(entityPath);
-                    if (!directoryController.hasFolder(entityPath)) {
-                      directoryController.fetchDirectory(entityPath);
-                    }
-                  } else {
-                    Get.toNamed('/canvas', arguments: entityPath);
-                  }
-                },
-              ),
-            ),
-            if (isFolder &&
-                directoryController.openFolders
-                    .contains(entityPath)) // 改用GetX状态
-              Padding(
-                padding: const EdgeInsets.only(left: 16.0),
-                child: _buildDirectoryList(context, entityPath), // 移除state参数
-              ),
-          ],
-        );
-      },
+      ),
     );
   }
+
+  return ListView.builder(
+    shrinkWrap: true,
+    physics: const BouncingScrollPhysics(),
+    itemCount: contents.length,
+    itemBuilder: (context, index) {
+      final entityPath = contents[index];
+      final isFolder = Directory(entityPath).existsSync();
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          GestureDetector(
+            onLongPressStart: (details) => showContextMenu(
+                context, entityPath, isFolder, "",
+                position: details.globalPosition),
+            onSecondaryTapDown: (details) => showContextMenu(
+                context, entityPath, isFolder, "",
+                position: details.globalPosition),
+            child: ListTile(
+              leading: Icon(
+                isFolder
+                    ? (directoryController.openFolders
+                            .contains(entityPath) // 改用GetX状态
+                        ? IconsaxOutline.folder_open
+                        : IconsaxOutline.folder)
+                    : IconsaxOutline.task_square,
+              ),
+              title: Text(entityPath.split('/').last),
+              onTap: () async {
+                if (isFolder) {
+                  directoryController.toggleFolder(entityPath);
+                  if (!directoryController.hasFolder(entityPath)) {
+                    directoryController.fetchDirectory(entityPath);
+                  }
+                } else {
+                  logger.d("open file: $entityPath");
+                  await Get.toNamed('/canvas', arguments: entityPath);
+                  Get.find<MarkDownController>().updateCurFilePath(entityPath);
+                }
+              },
+            ),
+          ),
+          if (isFolder &&
+              directoryController.openFolders.contains(entityPath)) // 改用GetX状态
+            Padding(
+              padding: const EdgeInsets.only(left: 16.0),
+              child: buildDirectoryList(context, path: entityPath), // 移除state参数
+            ),
+        ],
+      );
+    },
+  );
 }

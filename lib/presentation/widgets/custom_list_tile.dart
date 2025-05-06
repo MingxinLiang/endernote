@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+// about和setting的样式
+
 class CustomListTile extends StatelessWidget {
   const CustomListTile({
     super.key,

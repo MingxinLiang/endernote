@@ -27,6 +27,7 @@ class ScreenHello extends StatelessWidget {
         controller: searchController,
         hasText: hasText,
       ),
+
       // TODO: 优化入门页面
       body: Center(
         child: Column(

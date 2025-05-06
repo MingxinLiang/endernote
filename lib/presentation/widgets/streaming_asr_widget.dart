@@ -10,13 +10,9 @@ class StreamingAsrButtom extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<StreamingAsrController>(
-      init: StreamingAsrController(
-        textController: textEditingController,
-      ),
-      autoRemove: true,
-      builder: (controller) => _buildRecordStopControl(controller),
-    );
+    final asrController =
+        StreamingAsrController(textController: textEditingController);
+    return _buildRecordStopControl(asrController);
   }
 
   Widget _buildRecordStopControl(StreamingAsrController controller) {
@@ -32,6 +28,7 @@ class StreamingAsrButtom extends StatelessWidget {
               ? Colors.red.withValues(alpha: 0.1)
               : Colors.lightBlue.withValues(alpha: 0.1),
           child: GestureDetector(
+            onTap: () => controller.initSherpa(),
             onLongPressStart: (_) => controller.startRecording(),
             onLongPressEnd: (_) => controller.stopRecording(),
             child: AnimatedContainer(

@@ -21,7 +21,7 @@ class ScreenSettings extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          onPressed: Get.back, // 简写形式
+          onPressed: () => Get.back(), // 简写形式
           icon: const Icon(IconsaxOutline.arrow_left_2),
         ),
         title: const Text('Settings'),
@@ -82,7 +82,7 @@ class ScreenSettings extends StatelessWidget {
                 const SizedBox(height: 20),
                 ...AppTheme.values.map((theme) => ListTile(
                       title: Text(theme.toString().split('.').last),
-                      trailing: themeController.currentTheme == theme
+                      trailing: themeController.currentTheme.value == theme
                           ? const Icon(IconsaxOutline.tick_circle)
                           : null,
                       onTap: () {

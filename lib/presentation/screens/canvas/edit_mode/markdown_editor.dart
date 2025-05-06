@@ -97,6 +97,7 @@ class MarkdownEditMode extends StatelessWidget {
       markdownController.updateCurFilePath(entityPath);
     }
 
+    // 优化布局
     final functionalBar = MarkdownToolbar(
       useIncludedTextField: false,
       controller: markdownController.contentControllter,
@@ -113,7 +114,7 @@ class MarkdownEditMode extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
-        markdownController.jumpScrollToIndex(null);
+        markdownController.jumpScrollToIndex();
 
         return Column(
           children: [
@@ -122,7 +123,7 @@ class MarkdownEditMode extends StatelessWidget {
               child: Container(
                   margin: const EdgeInsets.fromLTRB(12, 0, 0, 12),
                   decoration: BoxDecoration(
-                    color: Colors.black54,
+                    color: Colors.transparent,
                     borderRadius: const BorderRadius.only(
                       bottomLeft: Radius.circular(20),
                       topLeft: Radius.circular(20),
@@ -142,6 +143,7 @@ class MarkdownEditMode extends StatelessWidget {
                   child: TextField(
                     controller: markdownController.contentControllter,
                     focusNode: markdownController.contentFocusNode,
+                    autofocus: true,
                     expands: true,
                     minLines: null,
                     maxLines: null,

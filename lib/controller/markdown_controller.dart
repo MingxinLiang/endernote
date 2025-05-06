@@ -26,7 +26,6 @@ class MarkDownController extends GetxController {
 
   late final Timer? _autoSaveTimer;
 
-
   setScrollController(AutoScrollController controller) {
     autoScrollController = controller;
   }
@@ -34,7 +33,7 @@ class MarkDownController extends GetxController {
   updateCurFilePath(String path) {
     if (path != curFilePath.value) {
       curFilePath.value = path;
-      titleController.text = _getNameWithoutExtension(path);
+      titleController.text = _getFileName(path);
       loadFileContent(filePath: path);
     }
   }
@@ -44,7 +43,7 @@ class MarkDownController extends GetxController {
     contentControllter.selection = controller.selection;
   }
 
-  void jumpScrollToIndex(int? index) {
+  void jumpScrollToIndex({int? index}) {
     if (index == null) {
       index = curIndex.value;
     } else {
@@ -70,11 +69,11 @@ class MarkDownController extends GetxController {
 
   Future<String> loadFileContent({String? filePath}) async {
     filePath ??= curFilePath.value;
+
     try {
       logger.d("Loading file: $filePath");
       final curText = await File(filePath).readAsString();
       curNodes.value = md.Document(encodeHtml: false).parse(curText);
-      listToC.value = getMarkDownToc(curNodes);
       listToI.value = getMarkDownToI(curText);
       contentControllter.text = curText;
       return curText;
@@ -84,18 +83,35 @@ class MarkDownController extends GetxController {
     }
   }
 
+  List<md.Node> getNodes({String? text}) {
+    if (text == null) {
+      if (curNodes.isNotEmpty) {
+        return curNodes;
+      }
+      text = contentControllter.text;
+    }
+    final nodes = md.Document(encodeHtml: false).parse(text);
+    listToC.value = getMarkDownToC(nodes);
+    return nodes;
+  }
+
+  // nodes 和list toc 同步设置
+  void setNodes(List<md.Node> nodes) {
+    curNodes.value = nodes;
+    listToC.value = getMarkDownToC(nodes);
+  }
+
   Future<void> saveChanges(String content, String path) async {
     try {
       await File(path).writeAsString(content);
-      curNodes.value = md.Document(encodeHtml: false).parse(content);
-      listToC.value = getMarkDownToc(curNodes);
+      // 随着文本自动更新
       listToI.value = getMarkDownToI(content);
     } catch (e) {
       logger.d("Error saving file: $e");
     }
   }
 
-  void _startAutoSave() {
+  void _startAutoTask() {
     _autoSaveTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (curFilePath.value.isNotEmpty && editOrPreview.value) {
         saveChanges(contentControllter.text, curFilePath.value);
@@ -103,12 +119,21 @@ class MarkDownController extends GetxController {
     });
   }
 
-  String _getNameWithoutExtension(String path) {
+  String _getFileName(String path) {
     final base = path.split(Platform.pathSeparator).last;
-    return base.endsWith('.md') ? base.substring(0, base.length - 3) : base;
+    return base;
   }
 
-  void toggleEditMode() => editOrPreview.toggle();
+  Future<void> toggleEditMode() async {
+    if (editOrPreview.value) {
+      logger.d("save sachanges");
+      await saveChanges(contentControllter.text, curFilePath.value);
+    } else {}
+    getNodes(text: contentControllter.text);
+    logger.d(
+        "nodes ${curNodes.length}, content ${contentControllter.text.length}");
+    editOrPreview.toggle();
+  }
 
   @override
   void onInit() {
@@ -118,7 +143,13 @@ class MarkDownController extends GetxController {
     if (args is String) {
       updateCurFilePath(args);
     }
-    _startAutoSave();
+    // 不同模式的初始化工作
+    if (editOrPreview.value) {
+      contentFocusNode.requestFocus();
+    } else {
+      getNodes();
+    }
+    _startAutoTask();
   }
 
   @override
