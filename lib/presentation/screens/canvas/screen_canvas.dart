@@ -101,8 +101,9 @@ class ScreenCanvas extends StatelessWidget {
                         border: Border.all(
                             color: Theme.of(context)
                                     .extension<EndernoteColors>()
-                                    ?.clrbackText ??
-                                Colors.white,
+                                    ?.clrbackText
+                                    .withAlpha(50) ??
+                                Colors.white.withAlpha(10),
                             width: 5),
                         borderRadius: BorderRadius.circular(12),
                       ),

@@ -171,8 +171,9 @@ class Dialog2LLM extends StatelessWidget {
                   width: maxWidth * 0.4,
                   padding: EdgeInsets.symmetric(horizontal: maxWidth * 0.03),
                   decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey, width: 5),
-                    color: Colors.lightBlue.withAlpha(0),
+                    border:
+                        Border.all(color: Colors.white.withAlpha(50), width: 5),
+                    color: Colors.white.withAlpha(10),
                     borderRadius: const BorderRadius.all(
                       Radius.circular(20),
                     ),
