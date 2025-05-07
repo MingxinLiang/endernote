@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:endernote/common/logger.dart' show logger;
-import 'package:endernote/common/utils.dart';
+import 'package:xnote/common/logger.dart' show logger;
+import 'package:xnote/common/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:markdown/markdown.dart' as md;

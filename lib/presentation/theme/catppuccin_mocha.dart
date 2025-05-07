@@ -64,7 +64,7 @@ final ThemeData catppuccinMochaTheme = ThemeData(
     side: BorderSide.none,
   ),
   extensions: const <ThemeExtension<dynamic>>{
-    EndernoteColors(
+    xnoteColors(
         clrBase: _clrBase,
         clrText: _clrText,
         clrbackground: _clrbackground,

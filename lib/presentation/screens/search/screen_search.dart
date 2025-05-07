@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:endernote/controller/dir_controller.dart';
+import 'package:xnote/controller/dir_controller.dart';
 import 'package:ficonsax/ficonsax.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -53,7 +53,7 @@ class ScreenSearch extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 16,
                   color: Theme.of(context)
-                      .extension<EndernoteColors>()
+                      .extension<xnoteColors>()
                       ?.clrText
                       .withAlpha(100),
                 ),
@@ -96,7 +96,7 @@ class ScreenSearch extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 12,
                           color: Theme.of(context)
-                              .extension<EndernoteColors>()
+                              .extension<xnoteColors>()
                               ?.clrText
                               .withAlpha(150),
                         ),
@@ -144,7 +144,7 @@ class ScreenSearch extends StatelessWidget {
           style: TextStyle(
             fontSize: 16,
             color: Theme.of(context)
-                .extension<EndernoteColors>()
+                .extension<xnoteColors>()
                 ?.clrText
                 .withAlpha(100),
           ),

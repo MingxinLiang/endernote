@@ -1,4 +1,4 @@
-import 'package:endernote/common/logger.dart';
+import 'package:xnote/common/logger.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

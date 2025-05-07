@@ -1,9 +1,9 @@
 import 'dart:io';
 
-import 'package:endernote/common/logger.dart' show logger;
-import 'package:endernote/controller/dir_controller.dart';
-import 'package:endernote/controller/markdown_controller.dart';
-import 'package:endernote/presentation/widgets/context_menu.dart'
+import 'package:xnote/common/logger.dart' show logger;
+import 'package:xnote/controller/dir_controller.dart';
+import 'package:xnote/controller/markdown_controller.dart';
+import 'package:xnote/presentation/widgets/context_menu.dart'
     show showContextMenu;
 import 'package:get/get.dart';
 import 'package:ficonsax/ficonsax.dart';
@@ -74,7 +74,7 @@ Widget buildDirectoryList(BuildContext context, {String? path}) {
         style: TextStyle(
           fontSize: 16,
           color: Theme.of(context)
-              .extension<EndernoteColors>()
+              .extension<xnoteColors>()
               ?.clrText
               .withAlpha(100),
         ),

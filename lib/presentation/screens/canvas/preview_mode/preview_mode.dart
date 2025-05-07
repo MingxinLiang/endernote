@@ -1,4 +1,4 @@
-import 'package:endernote/presentation/screens/canvas/preview_mode/markdown_preview.dart';
+import 'package:xnote/presentation/screens/canvas/preview_mode/markdown_preview.dart';
 import 'package:flutter/material.dart';
 
 class PreviewMode extends StatelessWidget {

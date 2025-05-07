@@ -1,6 +1,6 @@
 // ThemeController 负责管理应用主题
-import 'package:endernote/common/logger.dart' show logger;
-import 'package:endernote/presentation/theme/app_themes.dart';
+import 'package:xnote/common/logger.dart' show logger;
+import 'package:xnote/presentation/theme/app_themes.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 

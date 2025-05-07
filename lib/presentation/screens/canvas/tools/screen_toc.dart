@@ -1,5 +1,5 @@
-import 'package:endernote/common/utils.dart';
-import 'package:endernote/controller/markdown_controller.dart';
+import 'package:xnote/common/utils.dart';
+import 'package:xnote/controller/markdown_controller.dart';
 import 'package:flutter/material.dart';
 import "package:get/get.dart";
 

@@ -9,7 +9,7 @@ import "dart:io";
 import 'package:path_provider/path_provider.dart';
 import 'package:sherpa_onnx/sherpa_onnx.dart' as sherpa_onnx;
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:endernote/common/logger.dart' show logger;
+import 'package:xnote/common/logger.dart' show logger;
 
 Future<String> copyAssetFile(String src, [String? dst]) async {
   final Directory directory = await getApplicationDocumentsDirectory();

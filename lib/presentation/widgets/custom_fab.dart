@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:endernote/controller/dir_controller.dart';
+import 'package:xnote/controller/dir_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:ficonsax/ficonsax.dart';
@@ -72,12 +72,11 @@ class CustomFAB extends StatelessWidget {
       onTap: () => showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          backgroundColor:
-              Theme.of(context).extension<EndernoteColors>()?.clrBase,
+          backgroundColor: Theme.of(context).extension<xnoteColors>()?.clrBase,
           title: Text(
             'New $label',
             style: TextStyle(
-              color: Theme.of(context).extension<EndernoteColors>()?.clrText,
+              color: Theme.of(context).extension<xnoteColors>()?.clrText,
             ),
           ),
           content: TextField(

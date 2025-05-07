@@ -58,7 +58,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      title: 'Endernote',
+      title: 'xnote',
       debugShowCheckedModeBanner: false,
       initialRoute: '/',
       // 使用 GetX 的路由配置方式

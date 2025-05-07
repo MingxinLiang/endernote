@@ -1,6 +1,6 @@
 // DirectoryController 负责管理根目录路径
 import 'dart:io';
-import 'package:endernote/common/logger.dart' show logger;
+import 'package:xnote/common/logger.dart' show logger;
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -68,10 +68,10 @@ class DirController extends GetxController {
       late final String path;
       if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) {
         final directory = await getApplicationDocumentsDirectory();
-        path = '${directory.path}/Endernote';
+        path = '${directory.path}/xnote';
       } else {
         final directory = await getExternalStorageDirectory();
-        path = '${directory!.path}/Endernote';
+        path = '${directory!.path}/xnote';
       }
       final folder = Directory(path);
       if (!await folder.exists()) {

@@ -1,8 +1,8 @@
 import 'dart:math' show max;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:endernote/common/logger.dart';
-import 'package:endernote/presentation/screens/chat2llm/message_tile.dart';
-import 'package:endernote/presentation/screens/chat2llm/prompt_field.dart';
+import 'package:xnote/common/logger.dart';
+import 'package:xnote/presentation/screens/chat2llm/message_tile.dart';
+import 'package:xnote/presentation/screens/chat2llm/prompt_field.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:dio/dio.dart';

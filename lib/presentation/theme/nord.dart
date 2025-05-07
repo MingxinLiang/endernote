@@ -70,7 +70,7 @@ final ThemeData nordDarkTheme = ThemeData(
     side: BorderSide.none,
   ),
   extensions: const <ThemeExtension<dynamic>>{
-    EndernoteColors(
+    xnoteColors(
         clrBase: nordDarkBase,
         clrText: nordDarkText,
         clrbackground: nordDarkPrimary,
@@ -136,7 +136,7 @@ final ThemeData nordLightTheme = ThemeData(
     side: BorderSide.none,
   ),
   extensions: const <ThemeExtension<dynamic>>{
-    EndernoteColors(
+    xnoteColors(
         clrBase: nordLightBase,
         clrText: nordLightText,
         clrbackground: nordLightPrimary,

@@ -1,11 +1,11 @@
-import 'package:endernote/controller/markdown_controller.dart';
-import 'package:endernote/presentation/widgets/streaming_asr_widget.dart';
+import 'package:xnote/controller/markdown_controller.dart';
+import 'package:xnote/presentation/widgets/streaming_asr_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:markdown_toolbar/markdown_toolbar.dart';
 import 'package:get/get.dart';
 import '../../../theme/app_themes.dart';
-import 'package:endernote/common/logger.dart' show logger;
+import 'package:xnote/common/logger.dart' show logger;
 
 class MarkdownEditMode extends StatelessWidget {
   const MarkdownEditMode({super.key, required this.entityPath});
@@ -150,15 +150,13 @@ class MarkdownEditMode extends StatelessWidget {
                     style: const TextStyle(fontFamily: 'FiraCode'),
                     decoration: InputDecoration(
                       floatingLabelStyle: TextStyle(
-                        color: Theme.of(context)
-                            .extension<EndernoteColors>()
-                            ?.clrText,
+                        color:
+                            Theme.of(context).extension<xnoteColors>()?.clrText,
                       ),
                       border: InputBorder.none,
                       labelStyle: TextStyle(
-                        color: Theme.of(context)
-                            .extension<EndernoteColors>()
-                            ?.clrText,
+                        color:
+                            Theme.of(context).extension<xnoteColors>()?.clrText,
                       ),
                       enabledBorder: InputBorder.none,
                     ),

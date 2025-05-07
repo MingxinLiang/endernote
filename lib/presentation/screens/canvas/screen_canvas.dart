@@ -1,8 +1,8 @@
-import 'package:endernote/common/logger.dart' show logger;
-import 'package:endernote/common/utils.dart';
-import 'package:endernote/controller/markdown_controller.dart';
-import 'package:endernote/controller/dir_controller.dart';
-import 'package:endernote/presentation/screens/canvas/tools/tools_bar.dart';
+import 'package:xnote/common/logger.dart' show logger;
+import 'package:xnote/common/utils.dart';
+import 'package:xnote/controller/markdown_controller.dart';
+import 'package:xnote/controller/dir_controller.dart';
+import 'package:xnote/presentation/screens/canvas/tools/tools_bar.dart';
 import 'package:ficonsax/ficonsax.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -29,9 +29,8 @@ class ScreenCanvas extends StatelessWidget {
               toolbarHeight: 80,
               title: Container(
                 decoration: BoxDecoration(
-                  color: Theme.of(context)
-                      .extension<EndernoteColors>()
-                      ?.clrbackground,
+                  color:
+                      Theme.of(context).extension<xnoteColors>()?.clrbackground,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 padding: const EdgeInsets.all(3),
@@ -58,7 +57,7 @@ class ScreenCanvas extends StatelessWidget {
                         style: TextStyle(
                           fontFamily: 'FiraCode',
                           color: Theme.of(context)
-                              .extension<EndernoteColors>()
+                              .extension<xnoteColors>()
                               ?.clrbackText,
                         ),
                         decoration: InputDecoration(
@@ -66,7 +65,7 @@ class ScreenCanvas extends StatelessWidget {
                           hintStyle: TextStyle(
                             fontFamily: 'FiraCode',
                             color: Theme.of(context)
-                                .extension<EndernoteColors>()
+                                .extension<xnoteColors>()
                                 ?.clrText
                                 .withAlpha(100),
                             fontSize: 14,

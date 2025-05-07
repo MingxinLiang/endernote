@@ -1,10 +1,10 @@
 import 'dart:math' show min;
-import 'package:endernote/common/logger.dart' show logger;
-import 'package:endernote/controller/tools_bar_controller.dart';
-import 'package:endernote/presentation/screens/canvas/tools/screen_toc.dart'
+import 'package:xnote/common/logger.dart' show logger;
+import 'package:xnote/controller/tools_bar_controller.dart';
+import 'package:xnote/presentation/screens/canvas/tools/screen_toc.dart'
     show ToIWidget;
-import 'package:endernote/presentation/screens/list/screen_note_list.dart';
-import 'package:endernote/presentation/theme/app_themes.dart';
+import 'package:xnote/presentation/screens/list/screen_note_list.dart';
+import 'package:xnote/presentation/theme/app_themes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -75,7 +75,7 @@ class ToolsBar extends StatelessWidget {
               decoration: BoxDecoration(
                 border: Border.all(
                   color: Theme.of(context)
-                          .extension<EndernoteColors>()
+                          .extension<xnoteColors>()
                           ?.clrbackText
                           .withAlpha(50) ??
                       Colors.white.withAlpha(10),

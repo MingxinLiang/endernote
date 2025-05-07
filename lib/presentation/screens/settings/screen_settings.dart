@@ -1,4 +1,4 @@
-import 'package:endernote/controller/dir_controller.dart';
+import 'package:xnote/controller/dir_controller.dart';
 import 'package:ficonsax/ficonsax.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';

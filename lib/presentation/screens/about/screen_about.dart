@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
-import 'package:endernote/presentation/widgets/custom_list_tile.dart';
+import 'package:xnote/presentation/widgets/custom_list_tile.dart';
 
 class ScreenAbout extends StatelessWidget {
   const ScreenAbout({super.key});
@@ -63,7 +63,7 @@ class ScreenAbout extends StatelessWidget {
             //  lead: IconsaxOutline.award,
             //  title: 'Acknowledgments',
             //  subtitle:
-            //      'Built by Endernote crafters with Flutter, using amazing tools like flutter_bloc and more.',
+            //      'Built by xnote crafters with Flutter, using amazing tools like flutter_bloc and more.',
             //),
             //CustomListTile(
             //  lead: IconsaxOutline.star,
@@ -81,7 +81,7 @@ class ScreenAbout extends StatelessWidget {
             //  subtitle: 'Found an issue? Need help? Create an issue here.',
             //  trail: IconsaxOutline.link,
             //  onTap: () async => await launchUrl(
-            //    Uri.parse('https://www.github.com/shaaanuu/endernote/issues'),
+            //    Uri.parse('https://www.github.com/shaaanuu/xnote/issues'),
             //  ),
             //),
           ],

@@ -1,4 +1,4 @@
-import 'package:endernote/controller/streaming_asr_controller.dart'
+import 'package:xnote/controller/streaming_asr_controller.dart'
     show StreamingAsrController;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'catppuccin_mocha.dart';
 import 'nord.dart';
 
-class EndernoteColors extends ThemeExtension<EndernoteColors> {
+class xnoteColors extends ThemeExtension<xnoteColors> {
   final Color clrBase;
   final Color clrText;
   final Color clrbackground;
   final Color clrbackText;
 
-  const EndernoteColors({
+  const xnoteColors({
     required this.clrBase,
     required this.clrText,
     required this.clrbackground,
@@ -16,13 +16,13 @@ class EndernoteColors extends ThemeExtension<EndernoteColors> {
   });
 
   @override
-  ThemeExtension<EndernoteColors> copyWith({
+  ThemeExtension<xnoteColors> copyWith({
     Color? clrBase,
     Color? clrText,
     Color? clrbackText,
     Color? clrbackground,
   }) {
-    return EndernoteColors(
+    return xnoteColors(
       clrBase: clrBase ?? this.clrBase,
       clrText: clrText ?? this.clrText,
       clrbackground: clrbackground ?? this.clrbackground,
@@ -31,14 +31,14 @@ class EndernoteColors extends ThemeExtension<EndernoteColors> {
   }
 
   @override
-  ThemeExtension<EndernoteColors> lerp(
-    ThemeExtension<EndernoteColors>? other,
+  ThemeExtension<xnoteColors> lerp(
+    ThemeExtension<xnoteColors>? other,
     double t,
   ) {
-    if (other is! EndernoteColors) {
+    if (other is! xnoteColors) {
       return this;
     }
-    return EndernoteColors(
+    return xnoteColors(
       clrBase: Color.lerp(clrBase, other.clrBase, t)!,
       clrText: Color.lerp(clrText, other.clrText, t)!,
       clrbackground: Color.lerp(clrbackground, other.clrbackground, t)!,

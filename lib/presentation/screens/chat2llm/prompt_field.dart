@@ -1,6 +1,6 @@
 import 'dart:math' show min;
-import 'package:endernote/common/logger.dart';
-import 'package:endernote/presentation/screens/chat2llm/dialog_llm.dart';
+import 'package:xnote/common/logger.dart';
+import 'package:xnote/presentation/screens/chat2llm/dialog_llm.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
