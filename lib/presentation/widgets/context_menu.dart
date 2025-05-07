@@ -105,7 +105,7 @@ void _createNewFolder(BuildContext context, String entityPath) {
             Directory(
               '$entityPath/${value.trim()}', // new folder path
             ).createSync();
-            fileController.fetchDirectory(entityPath);
+            fileController.fetchDirectory(path: entityPath);
           }
           Get.back();
         },
@@ -121,7 +121,7 @@ void _createNewFolder(BuildContext context, String entityPath) {
               Directory(
                 '$entityPath/${controller.text.trim()}', // new folder path
               ).createSync();
-              fileController.fetchDirectory(entityPath);
+              fileController.fetchDirectory(path: entityPath);
             }
             Get.back();
           },
@@ -157,7 +157,7 @@ void _createNewFile(BuildContext context, String entityPath) {
             File(
               '$entityPath/${value.trim()}.md', // new file name
             ).createSync();
-            fileController.fetchDirectory(entityPath);
+            fileController.fetchDirectory(path: entityPath);
           }
           Get.back();
         },
@@ -173,7 +173,7 @@ void _createNewFile(BuildContext context, String entityPath) {
               File(
                 '$entityPath/${controller.text.trim()}.md', // new file name
               ).createSync();
-              fileController.fetchDirectory(entityPath);
+              fileController.fetchDirectory(path: entityPath);
             }
             Get.back();
           },
@@ -220,7 +220,8 @@ void _renameEntity(
                 '${Directory(entityPath).parent.path}/${value.trim()}.md', // updated file name
               );
             }
-            fileController.fetchDirectory(Directory(entityPath).parent.path);
+            fileController.fetchDirectory(
+                path: Directory(entityPath).parent.path);
           }
           Get.back();
         },
@@ -242,7 +243,8 @@ void _renameEntity(
                   '${Directory(entityPath).parent.path}/${controller.text.trim()}.md', // updated file name
                 );
               }
-              fileController.fetchDirectory(Directory(entityPath).parent.path);
+              fileController.fetchDirectory(
+                  path: Directory(entityPath).parent.path);
             }
             Get.back();
           },
@@ -282,7 +284,8 @@ void _deleteEntity(BuildContext context, String entityPath, bool isFolder) {
             } else {
               File(entityPath).deleteSync();
             }
-            fileController.fetchDirectory(Directory(entityPath).parent.path);
+            fileController.fetchDirectory(
+                path: Directory(entityPath).parent.path);
             Get.back();
           },
           child: const Text('Delete'),

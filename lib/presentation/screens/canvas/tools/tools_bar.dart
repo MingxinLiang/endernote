@@ -36,9 +36,8 @@ class ToolsBar extends StatelessWidget {
     }
 
     Widget itemBuilder(context, index) {
-      final ToolsBarController controller = Get.put(ToolsBarController());
-
-      return Obx(() => IconButton(
+      return GetBuilder<ToolsBarController>(builder: (controller) {
+        return IconButton(
             icon: Icon(
               icons[index],
               color: controller.selectedIndex.value == index
@@ -46,8 +45,8 @@ class ToolsBar extends StatelessWidget {
                   : Colors.white.withAlpha(50),
             ),
             tooltip: names[index],
-            onPressed: () => controller.changeSelectedToolIndex(index),
-          ));
+            onPressed: () => controller.changeSelectedToolIndex(index));
+      });
     }
 
     return Container(

@@ -1,4 +1,6 @@
+import 'package:endernote/common/logger.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // 状态控制器
 class ToolsBarController extends GetxController {
@@ -12,12 +14,14 @@ class ToolsBarController extends GetxController {
     }
   }
 
-  void changeSelectedToolIndex(int index) {
+  void changeSelectedToolIndex(int index) async {
     if (index == selectedIndex.value) {
       selectedIndex.value = -1;
     } else {
       selectedIndex.value = index;
     }
     update();
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setInt('selectedToolIndex', index);
   }
 }

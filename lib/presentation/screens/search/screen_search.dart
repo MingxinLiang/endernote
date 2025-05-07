@@ -106,7 +106,7 @@ class ScreenSearch extends StatelessWidget {
                           dirController.toggleFolder(entityPath);
                           if (dirController.folderContents
                               .containsKey(entityPath)) {
-                            dirController.fetchDirectory(entityPath);
+                            dirController.fetchDirectory(path: entityPath);
                           }
                         } else {
                           Get.toNamed("/canvas", arguments: entityPath);
@@ -183,7 +183,7 @@ class ScreenSearch extends StatelessWidget {
                   if (isFolder) {
                     controller.toggleFolder(entityPath);
                     if (!controller.folderContents.containsKey(entityPath)) {
-                      controller.fetchDirectory(entityPath);
+                      controller.fetchDirectory(path: entityPath);
                     }
                   } else {
                     Get.toNamed("/canvas", arguments: entityPath);

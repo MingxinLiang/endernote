@@ -32,7 +32,7 @@ class CustomFAB extends StatelessWidget {
               await Directory(
                 '$rootPath/${folderController.text}',
               ).create(recursive: true);
-              dirController.fetchDirectory(rootPath);
+              dirController.fetchDirectory(path: rootPath);
             }
             Get.back();
             folderController.clear();
@@ -48,7 +48,7 @@ class CustomFAB extends StatelessWidget {
               await File(
                 '$rootPath/${fileController.text}.md',
               ).create(recursive: true);
-              dirController.fetchDirectory(rootPath);
+              dirController.fetchDirectory(path: rootPath);
             }
             Get.back();
             fileController.clear();

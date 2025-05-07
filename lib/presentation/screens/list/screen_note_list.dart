@@ -19,7 +19,6 @@ class ScreenNoteList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final directoryController = Get.find<DirController>();
     final TextEditingController searchController = TextEditingController();
     final ValueNotifier<bool> hasText = ValueNotifier<bool>(false);
 
@@ -34,15 +33,15 @@ class ScreenNoteList extends StatelessWidget {
         showBackButton: true,
         hasText: hasText,
       ),
-      body: Obx(() {
-        if (directoryController.isLoading.value) {
+      body: GetBuilder<DirController>(builder: (dirController) {
+        if (!dirController.isLoading.value) {
           return const Center(child: CircularProgressIndicator());
         }
 
-        if (directoryController.error.value.isNotEmpty) {
+        if (dirController.error.value.isNotEmpty) {
           return Center(
             child: Text(
-              'Error: ${directoryController.error.value}',
+              'Error: ${dirController.error.value}',
               style: const TextStyle(color: Colors.red),
             ),
           );
@@ -60,7 +59,7 @@ Widget buildDirectoryList(BuildContext context, {String? path}) {
   final directoryController = Get.find<DirController>();
   late final List<String> contents;
   if (path?.isNotEmpty ?? false) {
-    directoryController.fetchDirectory(path); // 确保目录内容已加载
+    directoryController.fetchDirectory(path: path); // 确保目录内容已加载
     contents = directoryController.folderContents[path] ?? []; // 获取当前路径的内容
   } else {
     contents = directoryController
@@ -115,7 +114,7 @@ Widget buildDirectoryList(BuildContext context, {String? path}) {
                 if (isFolder) {
                   directoryController.toggleFolder(entityPath);
                   if (!directoryController.hasFolder(entityPath)) {
-                    directoryController.fetchDirectory(entityPath);
+                    directoryController.fetchDirectory(path: entityPath);
                   }
                 } else {
                   logger.d("open file: $entityPath");

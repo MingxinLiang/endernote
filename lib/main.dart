@@ -22,13 +22,17 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // 加载环境变量
   await dotenv.load(fileName: "lib/assets/.evn");
+
   // 根据配置初始化controller
   final prefs = await SharedPreferences.getInstance();
   final String? rootPath = prefs.getString('rootPath');
   Get.put(DirController(rootPath: rootPath));
+
   Get.put(ThemeController());
-  final int? toolsBarIndex = prefs.getInt('toolsBarIndex');
+
+  final int? toolsBarIndex = prefs.getInt('selectedToolIndex');
   Get.put(ToolsBarController(index: toolsBarIndex));
+
   Get.lazyPut(() => Dialog2LLMController());
   runApp(MyApp());
 }

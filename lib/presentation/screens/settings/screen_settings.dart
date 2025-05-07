@@ -68,39 +68,41 @@ class ScreenSettings extends StatelessWidget {
     final themeController = Get.find<ThemeController>();
 
     showModalBottomSheet(
-      context: context,
-      builder: (_) => Container(
-        decoration: const BoxDecoration(
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(10),
-            topRight: Radius.circular(10),
-          ),
-        ),
-        alignment: Alignment.center,
-        child: Obx(() => ListView(
-              // 响应式更新选中状态
-              children: [
-                const SizedBox(height: 20),
-                ...AppTheme.values.map((theme) => ListTile(
-                      title: Text(theme.toString().split('.').last),
-                      trailing: themeController.currentTheme.value == theme
-                          ? const Icon(IconsaxOutline.tick_circle)
-                          : null,
-                      onTap: () {
-                        themeController.changeTheme(theme);
-                        Get.back();
-                        Get.snackbar(
-                          'Theme Changed',
-                          'Selected theme: ${theme.toString().split('.').last}',
-                          backgroundColor:
-                              Theme.of(context).colorScheme.surface,
-                          colorText: Theme.of(context).colorScheme.onSurface,
-                        );
-                      },
-                    )),
-              ],
-            )),
-      ),
-    );
+        context: context,
+        builder: (_) => Container(
+              decoration: const BoxDecoration(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(10),
+                  topRight: Radius.circular(10),
+                ),
+              ),
+              alignment: Alignment.center,
+              child: GetBuilder<ThemeController>(builder: (controller) {
+                return ListView(
+                  // 响应式更新选中状态
+                  children: [
+                    const SizedBox(height: 20),
+                    ...AppTheme.values.map((theme) => ListTile(
+                          title: Text(theme.toString().split('.').last),
+                          trailing: themeController.currentTheme.value == theme
+                              ? const Icon(IconsaxOutline.tick_circle)
+                              : null,
+                          onTap: () {
+                            themeController.changeTheme(theme);
+                            Get.back();
+                            Get.snackbar(
+                              'Theme Changed',
+                              'Selected theme: ${theme.toString().split('.').last}',
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.surface,
+                              colorText:
+                                  Theme.of(context).colorScheme.onSurface,
+                            );
+                          },
+                        )),
+                  ],
+                );
+              }),
+            ));
   }
 }

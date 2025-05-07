@@ -13,6 +13,7 @@ class DirController extends GetxController {
     } else {
       fetchRootPath();
     }
+    fetchDirectory();
   }
 
   RxString rootPath = ''.obs;
@@ -37,7 +38,11 @@ class DirController extends GetxController {
   bool hasFolder(String path) => folderContents.containsKey(path);
 
   // 修改后的 fetchDirectory 方法
-  void fetchDirectory(String? path) async {
+  void fetchDirectory({String? path}) async {
+    if (path == rootPath.value && isLoading.value) {
+      return;
+    }
+
     path ??= rootPath.value;
     isLoading.value = false;
 
@@ -52,11 +57,12 @@ class DirController extends GetxController {
     } catch (e) {
       error.value = 'Directory fetch failed: ${e.toString()}';
       logger.e(error.value);
+    } finally {
+      update();
     }
   }
 
   Future<void> fetchRootPath() async {
-    isLoading.value = false;
     error.value = '';
     try {
       late final String path;
@@ -72,7 +78,6 @@ class DirController extends GetxController {
         await folder.create(recursive: true);
       }
       rootPath.value = folder.path;
-      isLoading.value = true;
     } catch (e) {
       error.value = 'Error fetching root path: ${e.toString()}';
       logger.e(error.value);
@@ -119,6 +124,7 @@ class DirController extends GetxController {
       rootPath.value = newPath;
       final prefs = await SharedPreferences.getInstance();
       prefs.setString('rootPath', newPath);
+      fetchDirectory();
       update();
     }
   }

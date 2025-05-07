@@ -51,7 +51,7 @@ class ScreenCanvas extends StatelessWidget {
                               renameFile(ctrl.curFilePath.value, newName);
                           if (newPath != null) {
                             ctrl.curFilePath.value = newPath;
-                            Get.find<DirController>().fetchDirectory(null);
+                            Get.find<DirController>().fetchDirectory();
                             ctrl.titleFocusNode.unfocus();
                           }
                         }, // 回车时重命名文件
