@@ -1,5 +1,6 @@
 import 'package:endernote/controller/dir_controller.dart';
 import 'package:endernote/controller/theme_controller.dart';
+import 'package:endernote/controller/tools_bar_controller.dart';
 import 'package:endernote/presentation/screens/chat2llm/dialog_llm.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart' show dotenv;
@@ -21,6 +22,7 @@ Future<void> main() async {
   // 根据配置初始化controller
   await Get.put(DirController()).fetchRootPath();
   Get.put(ThemeController());
+  Get.put(ToolsBarController());
   Get.lazyPut(() => Dialog2LLMController());
   runApp(MyApp());
 }

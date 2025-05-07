@@ -1,9 +1,7 @@
-import 'package:endernote/common/logger.dart';
 import 'package:endernote/common/utils.dart';
 import 'package:endernote/controller/markdown_controller.dart';
 import 'package:endernote/controller/dir_controller.dart';
-import 'package:endernote/presentation/screens/canvas/screen_toc.dart';
-import 'package:endernote/presentation/screens/list/screen_note_list.dart';
+import 'package:endernote/presentation/screens/canvas/tools/tools_bar.dart';
 import 'package:ficonsax/ficonsax.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -19,7 +17,6 @@ class ScreenCanvas extends StatelessWidget {
     curfilePath.value = Get.arguments;
   }
   final curfilePath = "".obs;
-  final showToI = true.obs;
 
   @override
   Widget build(BuildContext context) {
@@ -93,30 +90,21 @@ class ScreenCanvas extends StatelessWidget {
             // 主体内容
             body: Obx(() {
               return Row(children: [
+                Container(
+                  height: double.infinity,
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: Theme.of(context)
+                              .extension<EndernoteColors>()
+                              ?.clrbackText
+                              .withAlpha(50) ??
+                          Colors.white.withAlpha(10),
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: ToolsBar(),
+                ),
                 Expanded(
-                    flex: 1,
-                    child: Container(
-                      height: double.infinity,
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                            color: Theme.of(context)
-                                    .extension<EndernoteColors>()
-                                    ?.clrbackText
-                                    .withAlpha(50) ??
-                                Colors.white.withAlpha(10),
-                            width: 5),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Obx(() {
-                        if (showToI.value && ctrl.listToI.isNotEmpty) {
-                          return ToIWidget(markdownController: ctrl);
-                        } else {
-                          return buildDirectoryList(context);
-                        }
-                      }),
-                    )),
-                Expanded(
-                  flex: 3,
                   child: ctrl.editOrPreview.value
                       ? MarkdownEditMode(entityPath: ctrl.curFilePath.value)
                       : PreviewMode(

@@ -1,0 +1,86 @@
+import 'dart:math' show max, min;
+
+import 'package:endernote/common/logger.dart' show logger;
+import 'package:endernote/controller/tools_bar_controller.dart';
+import 'package:endernote/presentation/screens/canvas/tools/screen_toc.dart'
+    show ToIWidget;
+import 'package:endernote/presentation/screens/list/screen_note_list.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+
+// 活动栏组件
+class ToolsBar extends StatelessWidget {
+  const ToolsBar({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final names = ["大纲", "目录"];
+    final icons = [Icons.outlined_flag_outlined, Icons.folder];
+
+    Widget getTools(BuildContext context, index) {
+      Widget? result;
+      switch (index) {
+        case 0:
+          result = ToIWidget();
+          break;
+        case 1:
+          result = Align(
+              alignment: Alignment.topLeft, child: buildDirectoryList(context));
+          break;
+        default:
+          result = SizedBox.shrink();
+      }
+      logger.d("getTools: $result");
+
+      return result;
+    }
+
+    Widget itemBuilder(context, index) {
+      final ToolsBarController controller = Get.put(ToolsBarController());
+
+      return Obx(() => IconButton(
+            icon: Icon(
+              icons[index],
+              color: controller.selectedIndex.value == index
+                  ? Colors.white.withAlpha(200)
+                  : Colors.white.withAlpha(50),
+            ),
+            tooltip: names[index],
+            onPressed: () => controller.changeSelectedToolIndex(index),
+          ));
+    }
+
+    return Container(
+        color: Colors.white.withAlpha(10),
+        child: Row(children: [
+          Container(
+            decoration: BoxDecoration(
+              border: Border(
+                right: BorderSide(color: Colors.white.withAlpha(10), width: 3),
+              ),
+              borderRadius: const BorderRadius.all(
+                Radius.circular(20),
+              ),
+              color: Colors.transparent,
+            ),
+            width: min(50, Get.width * 0.03),
+            height: double.infinity,
+            child: ListView.builder(
+              itemBuilder: itemBuilder,
+              itemCount: icons.length,
+            ),
+          ),
+          GetBuilder<ToolsBarController>(
+              builder: (ToolsBarController controller) {
+            return AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              width: controller.selectedIndex.value >= 0
+                  ? min(500, Get.width * 0.3)
+                  : 0,
+              height: double.infinity,
+              child: getTools(context, controller.selectedIndex.value),
+            );
+          }),
+        ]));
+  }
+}
