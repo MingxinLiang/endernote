@@ -92,16 +92,6 @@ class ScreenCanvas extends StatelessWidget {
               return Row(children: [
                 Container(
                   height: double.infinity,
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Theme.of(context)
-                              .extension<EndernoteColors>()
-                              ?.clrbackText
-                              .withAlpha(50) ??
-                          Colors.white.withAlpha(10),
-                    ),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
                   child: ToolsBar(),
                 ),
                 Expanded(

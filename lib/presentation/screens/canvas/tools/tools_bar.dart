@@ -5,6 +5,7 @@ import 'package:endernote/controller/tools_bar_controller.dart';
 import 'package:endernote/presentation/screens/canvas/tools/screen_toc.dart'
     show ToIWidget;
 import 'package:endernote/presentation/screens/list/screen_note_list.dart';
+import 'package:endernote/presentation/theme/app_themes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -30,7 +31,7 @@ class ToolsBar extends StatelessWidget {
         default:
           result = SizedBox.shrink();
       }
-      logger.d("getTools: $result");
+      logger.d("getTools: $result, index: $index, width: ${Get.width}");
 
       return result;
     }
@@ -72,10 +73,19 @@ class ToolsBar extends StatelessWidget {
           ),
           GetBuilder<ToolsBarController>(
               builder: (ToolsBarController controller) {
-            return AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
+            return Container(
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: Theme.of(context)
+                          .extension<EndernoteColors>()
+                          ?.clrbackText
+                          .withAlpha(50) ??
+                      Colors.white.withAlpha(10),
+                ),
+                borderRadius: BorderRadius.circular(12),
+              ),
               width: controller.selectedIndex.value >= 0
-                  ? min(500, Get.width * 0.3)
+                  ? min(1000, Get.width * 0.15)
                   : 0,
               height: double.infinity,
               child: getTools(context, controller.selectedIndex.value),
