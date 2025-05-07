@@ -1,3 +1,4 @@
+import 'package:endernote/common/logger.dart' show logger;
 import 'package:endernote/common/utils.dart';
 import 'package:endernote/controller/markdown_controller.dart';
 import 'package:endernote/controller/dir_controller.dart';
@@ -89,8 +90,9 @@ class ScreenCanvas extends StatelessWidget {
             ),
             // 主体内容
             body: Obx(() {
+              logger.d("Canvas body build.");
               return Row(children: [
-                Container(
+                SizedBox(
                   height: double.infinity,
                   child: ToolsBar(),
                 ),

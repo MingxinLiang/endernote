@@ -16,7 +16,6 @@ class ScreenSettings extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeController = Get.find<ThemeController>();
-    final dirController = Get.find<DirController>(); // 获取目录控制器
 
     return Scaffold(
       appBar: AppBar(
@@ -38,19 +37,21 @@ class ScreenSettings extends StatelessWidget {
                       themeController.currentTheme.toString().split('.').last,
                   onTap: () => _showThemeSelector(context),
                 )),
-            CustomListTile(
-              lead: IconsaxOutline.book,
-              title: 'Root Path',
-              subtitle: dirController.rootPath.value,
-              onTap: () async {
-                String? selectedDirectory =
-                    await FilePicker.platform.getDirectoryPath();
-                logger.i("select path: $selectedDirectory");
-                if (selectedDirectory != null) {
-                  dirController.updateRootPath(selectedDirectory); // 使用控制器方法
-                }
-              },
-            ), // PathSetting
+            GetBuilder<DirController>(builder: (dirController) {
+              return CustomListTile(
+                lead: IconsaxOutline.book,
+                title: 'Root Path',
+                subtitle: dirController.rootPath.value,
+                onTap: () async {
+                  String? selectedDirectory =
+                      await FilePicker.platform.getDirectoryPath();
+                  logger.i("select path: $selectedDirectory");
+                  if (selectedDirectory != null) {
+                    dirController.updateRootPath(selectedDirectory); // 使用控制器方法
+                  }
+                },
+              );
+            }), // PathSetting
             CustomListTile(
               lead: IconsaxOutline.book,
               title: 'About',

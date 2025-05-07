@@ -1,5 +1,4 @@
-import 'dart:math' show max, min;
-
+import 'dart:math' show min;
 import 'package:endernote/common/logger.dart' show logger;
 import 'package:endernote/controller/tools_bar_controller.dart';
 import 'package:endernote/presentation/screens/canvas/tools/screen_toc.dart'

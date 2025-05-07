@@ -4,8 +4,12 @@ import 'package:get/get.dart';
 class ToolsBarController extends GetxController {
   final selectedIndex = 0.obs;
 
-  ToolsBarController({index = 0}) {
-    selectedIndex.value = index;
+  ToolsBarController({int? index}) {
+    if (index != null) {
+      selectedIndex.value = index;
+    } else {
+      selectedIndex.value = -1;
+    }
   }
 
   void changeSelectedToolIndex(int index) {

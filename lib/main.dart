@@ -1,10 +1,8 @@
-import 'package:endernote/controller/dir_controller.dart';
-import 'package:endernote/controller/theme_controller.dart';
-import 'package:endernote/controller/tools_bar_controller.dart';
-import 'package:endernote/presentation/screens/chat2llm/dialog_llm.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart' show dotenv;
-import 'package:get/get.dart';
+import 'controller/dir_controller.dart';
+import 'controller/theme_controller.dart';
+import 'controller/tools_bar_controller.dart';
+
+import 'presentation/screens/chat2llm/dialog_llm.dart';
 import 'presentation/screens/about/screen_about.dart';
 import 'presentation/screens/canvas/screen_canvas.dart';
 import 'presentation/screens/hello/screen_hello.dart';
@@ -13,16 +11,24 @@ import 'presentation/screens/search/screen_search.dart';
 import 'presentation/screens/settings/screen_settings.dart';
 import 'presentation/theme/app_themes.dart';
 
-import '../../../common/logger.dart' show logger;
+import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart' show dotenv;
+import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'common/logger.dart' show logger;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // 加载环境变量
   await dotenv.load(fileName: "lib/assets/.evn");
   // 根据配置初始化controller
-  await Get.put(DirController()).fetchRootPath();
+  final prefs = await SharedPreferences.getInstance();
+  final String? rootPath = prefs.getString('rootPath');
+  Get.put(DirController(rootPath: rootPath));
   Get.put(ThemeController());
-  Get.put(ToolsBarController());
+  final int? toolsBarIndex = prefs.getInt('toolsBarIndex');
+  Get.put(ToolsBarController(index: toolsBarIndex));
   Get.lazyPut(() => Dialog2LLMController());
   runApp(MyApp());
 }

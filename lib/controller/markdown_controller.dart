@@ -78,7 +78,7 @@ class MarkDownController extends GetxController {
       contentControllter.text = curText;
       return curText;
     } catch (e) {
-      logger.d("Error loading file: $e");
+      logger.e("Error loading file: $e");
       return "";
     }
   }

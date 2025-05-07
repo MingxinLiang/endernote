@@ -69,7 +69,7 @@ class ScreenAbout extends StatelessWidget {
                   'It will motivate us to work on cool projects like this.',
               trail: IconsaxOutline.link,
               onTap: () async => await launchUrl(
-                Uri.parse('https://www.github.com/shaaanuu/endernote'),
+                Uri.parse('http s://www.baidu.com'),
               ),
             ),
             CustomListTile(

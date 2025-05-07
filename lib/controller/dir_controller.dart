@@ -1,10 +1,20 @@
 // DirectoryController 负责管理根目录路径
 import 'dart:io';
+import 'package:endernote/common/logger.dart' show logger;
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DirController extends GetxController {
   // 根目录路径
+  DirController({String? rootPath}) {
+    if (rootPath != null) {
+      this.rootPath.value = rootPath;
+    } else {
+      fetchRootPath();
+    }
+  }
+
   RxString rootPath = ''.obs;
   // 加载状态
   RxBool isLoading = false.obs;
@@ -29,24 +39,24 @@ class DirController extends GetxController {
   // 修改后的 fetchDirectory 方法
   void fetchDirectory(String? path) async {
     path ??= rootPath.value;
+    isLoading.value = false;
 
     try {
-      isLoading.value = true;
       final folder = Directory(path);
       if (!await folder.exists()) await folder.create(recursive: true);
 
       final entities = folder.listSync();
       folderContents[path] = entities.map((e) => e.path).toList();
       error.value = '';
+      isLoading.value = true;
     } catch (e) {
       error.value = 'Directory fetch failed: ${e.toString()}';
-    } finally {
-      isLoading.value = false;
+      logger.e(error.value);
     }
   }
 
   Future<void> fetchRootPath() async {
-    isLoading.value = true;
+    isLoading.value = false;
     error.value = '';
     try {
       late final String path;
@@ -62,10 +72,10 @@ class DirController extends GetxController {
         await folder.create(recursive: true);
       }
       rootPath.value = folder.path;
+      isLoading.value = true;
     } catch (e) {
-      error.value = 'Error fetching root path: $e';
-    } finally {
-      isLoading.value = false;
+      error.value = 'Error fetching root path: ${e.toString()}';
+      logger.e(error.value);
     }
   }
 
@@ -90,24 +100,26 @@ class DirController extends GetxController {
 
         // If it's a file, also check its content
         if (entity is File && path.endsWith('.md')) {
-          try {
-            final content = await File(path).readAsString();
-            if (content.toLowerCase().contains(query.toLowerCase())) {
-              results.add(path);
-            }
-          } catch (_) {}
+          final content = await File(path).readAsString();
+          if (content.toLowerCase().contains(query.toLowerCase())) {
+            results.add(path);
+          }
         }
       }
       return results;
     } catch (e) {
+      error.value = 'Error searching directory: ${e.toString()}';
       throw Exception('Failed to search directory: $e');
     }
   }
 
   // 新增路径更新方法
-  void updateRootPath(String newPath) {
-    rootPath.value = newPath;
-    // 这里可以添加路径持久化逻辑
-    // _saveToPreferences(newPath);
+  Future<void> updateRootPath(String newPath) async {
+    if (newPath != rootPath.value) {
+      rootPath.value = newPath;
+      final prefs = await SharedPreferences.getInstance();
+      prefs.setString('rootPath', newPath);
+      update();
+    }
   }
 }

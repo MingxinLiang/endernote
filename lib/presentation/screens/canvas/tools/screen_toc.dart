@@ -1,4 +1,3 @@
-import 'package:endernote/common/logger.dart';
 import 'package:endernote/common/utils.dart';
 import 'package:endernote/controller/markdown_controller.dart';
 import 'package:flutter/material.dart';
