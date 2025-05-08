@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:ficonsax/ficonsax.dart';
 import 'package:get/get.dart';
+import 'package:xnote/presentation/screens/canvas/screen_canvas.dart';
 
 import '../../widgets/custom_app_bar.dart';
 import '../../widgets/custom_fab.dart';
@@ -125,7 +126,9 @@ class ScreenHello extends StatelessWidget {
                     );
                     await newFile.create();
 
-                    Get.toNamed("/canvas", arguments: newFile.path);
+                    Get.to(() => ScreenCanvas(
+                          filePath: newFile.path,
+                        ));
                   },
                 ),
                 OutlinedButton.icon(

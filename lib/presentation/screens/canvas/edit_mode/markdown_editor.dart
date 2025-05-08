@@ -8,8 +8,8 @@ import '../../../theme/app_themes.dart';
 import 'package:xnote/common/logger.dart' show logger;
 
 class MarkdownEditMode extends StatelessWidget {
-  const MarkdownEditMode({super.key, required this.entityPath});
   final String entityPath;
+  const MarkdownEditMode({super.key, required this.entityPath});
 
   // Handle key events for auto-continuation of lists.
   // Returns true if it handled the event.

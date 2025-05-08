@@ -1,21 +1,12 @@
 // DirectoryController 负责管理根目录路径
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:xnote/common/logger.dart' show logger;
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DirController extends GetxController {
-  // 根目录路径
-  DirController({String? rootPath}) {
-    if (rootPath != null) {
-      this.rootPath.value = rootPath;
-    } else {
-      fetchRootPath();
-    }
-    fetchDirectory();
-  }
-
   RxString rootPath = ''.obs;
   // 加载状态
   RxBool isLoading = false.obs;
@@ -26,6 +17,13 @@ class DirController extends GetxController {
   final RxMap<String, List<String>> folderContents =
       <String, List<String>>{}.obs;
   final RxSet<String> openFolders = <String>{}.obs;
+
+  DirController({String? rootPath}) {
+    if (rootPath != null) {
+      this.rootPath.value = rootPath;
+      fetchDirectory();
+    }
+  }
 
   void toggleFolder(String path) {
     if (openFolders.contains(path)) {
@@ -39,26 +37,33 @@ class DirController extends GetxController {
 
   // 修改后的 fetchDirectory 方法
   void fetchDirectory({String? path}) async {
-    if (path == rootPath.value && isLoading.value) {
-      return;
-    }
-
     path ??= rootPath.value;
-    isLoading.value = false;
+    isLoading.value = true;
+    bool isUpdate = false;
 
     try {
       final folder = Directory(path);
-      if (!await folder.exists()) await folder.create(recursive: true);
+      if (!await folder.exists()) {
+        await folder.create(recursive: true);
+        isUpdate = true;
+      }
 
       final entities = folder.listSync();
-      folderContents[path] = entities.map((e) => e.path).toList();
+      final entitiesLst = entities.map((e) => e.path).toList();
+      if (!folderContents.containsKey(path) ||
+          !listEquals(folderContents[path], entitiesLst)) {
+        folderContents[path] = entitiesLst;
+        isUpdate = true;
+      }
       error.value = '';
-      isLoading.value = true;
     } catch (e) {
       error.value = 'Directory fetch failed: ${e.toString()}';
       logger.e(error.value);
     } finally {
-      update();
+      isLoading.value = false;
+      if (isUpdate) {
+        update();
+      }
     }
   }
 
@@ -125,7 +130,6 @@ class DirController extends GetxController {
       final prefs = await SharedPreferences.getInstance();
       prefs.setString('rootPath', newPath);
       fetchDirectory();
-      update();
     }
   }
 }

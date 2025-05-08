@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:xnote/common/logger.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -23,5 +25,11 @@ class ToolsBarController extends GetxController {
     update();
     final prefs = await SharedPreferences.getInstance();
     prefs.setInt('selectedToolIndex', index);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    logger.d("ToolsBarController dispose");
   }
 }

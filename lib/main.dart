@@ -22,16 +22,14 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // 加载环境变量
   await dotenv.load(fileName: "lib/assets/.evn");
-
-  // 根据配置初始化controller
-  final prefs = await SharedPreferences.getInstance();
-  final String? rootPath = prefs.getString('rootPath');
-  Get.put(DirController(rootPath: rootPath));
-
   Get.put(ThemeController());
 
-  final int? toolsBarIndex = prefs.getInt('selectedToolIndex');
-  Get.put(ToolsBarController(index: toolsBarIndex));
+  // 根据配置初始化controller
+  // final String? rootPath = prefs.getString('rootPath');
+  //Get.lazyPut(() => DirController(rootPath: rootPath));
+  final dirController = Get.put(DirController());
+  await dirController.fetchRootPath();
+  dirController.fetchDirectory();
 
   Get.lazyPut(() => Dialog2LLMController());
   runApp(MyApp());
@@ -68,10 +66,6 @@ class MyApp extends StatelessWidget {
           page: () => ScreenHello(
             rootPath: Get.find<DirController>().rootPath.value,
           ),
-        ),
-        GetPage(
-          name: '/canvas',
-          page: () => ScreenCanvas(),
         ),
         GetPage(
           name: '/noteList',
