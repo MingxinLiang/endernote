@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:ficonsax/ficonsax.dart';
 import 'package:get/get.dart';
+import 'package:xnote/presentation/screens/canvas/screen_canvas.dart'
+    show ScreenCanvas;
 import '../theme/app_themes.dart';
 
 // 右下角悬浮按钮
@@ -44,14 +46,14 @@ class CustomFAB extends StatelessWidget {
           icon: IconsaxOutline.task_square,
           label: "Note",
           onCreate: () async {
+            File newFile = File('$rootPath/${fileController.text}.md');
             if (fileController.text.isNotEmpty) {
-              await File(
-                '$rootPath/${fileController.text}.md',
-              ).create(recursive: true);
-              dirController.fetchDirectory(path: rootPath);
+              newFile.create(recursive: true);
+              dirController.fetchDirectory(path: newFile.parent.path);
             }
             Get.back();
             fileController.clear();
+            Get.to(() => ScreenCanvas(filePath: newFile.path));
           },
         ),
       ],
