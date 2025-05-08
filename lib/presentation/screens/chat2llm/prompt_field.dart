@@ -23,10 +23,10 @@ class PromptField extends StatelessWidget {
       fontSize: min(maxWidth * 0.04, 20),
     );
 
-    final double hight = min(maxHeight * 0.15, 66);
     // 自动焦点
     _focusNode.requestFocus();
 
+    final double hight = min(maxHeight * 0.15, 66);
     sendPromt() {
       if (istyping.value) {
         ScaffoldMessenger.of(context).showSnackBar(

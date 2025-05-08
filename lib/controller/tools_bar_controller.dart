@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:xnote/common/logger.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';

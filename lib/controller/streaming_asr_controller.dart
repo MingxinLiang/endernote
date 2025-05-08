@@ -124,15 +124,19 @@ class StreamingAsrController extends GetxController {
       return;
     }
 
-    _audioRecorder = AudioRecorder();
-    _recordSub = _audioRecorder.onStateChanged().listen((recordState) {
-      _updateRecordState(recordState);
-    });
-    sherpa_onnx.initBindings();
-    recognizer = await createOnlineRecognizer();
-    stream = recognizer?.createStream();
-    isInitialized.value = true;
-    logger.i("init recording");
+    try {
+      _audioRecorder = AudioRecorder();
+      _recordSub = _audioRecorder.onStateChanged().listen((recordState) {
+        _updateRecordState(recordState);
+      });
+      sherpa_onnx.initBindings();
+      recognizer = await createOnlineRecognizer();
+      stream = recognizer?.createStream();
+      isInitialized.value = true;
+      logger.i("init recording");
+    } catch (e) {
+      logger.e(e);
+    }
   }
 
   Future<void> startRecording() async {

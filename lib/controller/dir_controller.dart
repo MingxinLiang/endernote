@@ -31,12 +31,13 @@ class DirController extends GetxController {
     } else {
       openFolders.add(path);
     }
+    update();
   }
 
   bool hasFolder(String path) => folderContents.containsKey(path);
 
   // 修改后的 fetchDirectory 方法
-  void fetchDirectory({String? path}) async {
+  Future<bool> fetchDirectory({String? path}) async {
     path ??= rootPath.value;
     isLoading.value = true;
     bool isUpdate = false;
@@ -65,6 +66,7 @@ class DirController extends GetxController {
         update();
       }
     }
+    return isUpdate;
   }
 
   Future<void> fetchRootPath() async {
