@@ -1,6 +1,5 @@
 import 'controller/dir_controller.dart';
 import 'controller/theme_controller.dart';
-import 'controller/tools_bar_controller.dart';
 
 import 'presentation/screens/chat2llm/dialog_llm.dart';
 import 'presentation/screens/about/screen_about.dart';
@@ -25,11 +24,9 @@ Future<void> main() async {
   Get.put(ThemeController());
 
   // 根据配置初始化controller
-  // final String? rootPath = prefs.getString('rootPath');
-  //Get.lazyPut(() => DirController(rootPath: rootPath));
-  final dirController = Get.put(DirController());
-  await dirController.fetchRootPath();
-  dirController.fetchDirectory();
+  final prefs = await SharedPreferences.getInstance();
+  final String? rootPath = prefs.getString('rootPath');
+  Get.put(DirController(rootPath: rootPath));
 
   Get.lazyPut(() => Dialog2LLMController());
   runApp(MyApp());
