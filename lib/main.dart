@@ -3,7 +3,6 @@ import 'controller/theme_controller.dart';
 
 import 'presentation/screens/chat2llm/dialog_llm.dart';
 import 'presentation/screens/about/screen_about.dart';
-import 'presentation/screens/canvas/screen_canvas.dart';
 import 'presentation/screens/hello/screen_hello.dart';
 import 'presentation/screens/list/screen_note_list.dart';
 import 'presentation/screens/search/screen_search.dart';
