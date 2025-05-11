@@ -1,4 +1,4 @@
-import 'dart:math' show min;
+import 'dart:math' show max, min;
 import 'package:xnote/common/logger.dart' show logger;
 import 'package:xnote/controller/tools_bar_controller.dart';
 import 'package:xnote/presentation/screens/canvas/tools/screen_toc.dart'
@@ -62,7 +62,7 @@ class ToolsBar extends StatelessWidget {
               ),
               color: Colors.transparent,
             ),
-            width: min(50, Get.width * 0.03),
+            width: max(50, Get.width * 0.03),
             height: double.infinity,
             child: ListView.builder(
               itemBuilder: itemBuilder,

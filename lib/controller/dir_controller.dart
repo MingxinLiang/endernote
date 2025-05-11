@@ -22,6 +22,8 @@ class DirController extends GetxController {
     if (rootPath != null) {
       this.rootPath.value = rootPath;
       fetchDirectory();
+    } else {
+      fetchRootPath();
     }
   }
 
@@ -63,6 +65,7 @@ class DirController extends GetxController {
     } finally {
       isLoading.value = false;
       if (isUpdate) {
+        logger.d("Directory updated, path $path");
         update();
       }
     }
@@ -131,7 +134,12 @@ class DirController extends GetxController {
       rootPath.value = newPath;
       final prefs = await SharedPreferences.getInstance();
       prefs.setString('rootPath', newPath);
-      fetchDirectory();
+      // 更新根目录时, 如果没有update, 强制update.
+      fetchDirectory().then((value) {
+        if (!value) {
+          update();
+        }
+      });
     }
   }
 }
