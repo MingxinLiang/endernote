@@ -1,6 +1,6 @@
 import 'dart:math' show min;
 import 'package:xnote/common/logger.dart';
-import 'package:xnote/presentation/screens/chat2llm/dialog_llm.dart';
+import 'package:xnote/controller/llm_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -8,7 +8,7 @@ class PromptField extends StatelessWidget {
   final void Function(String text) onSend;
   final TextEditingController promptController;
   final FocusNode _focusNode = FocusNode();
-  final istyping = Get.find<Dialog2LLMController>().isTyping;
+  final istyping = Get.find<DialogController>().isTyping;
 
   PromptField(
       {super.key, required this.onSend, required this.promptController});
