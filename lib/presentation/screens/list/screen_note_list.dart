@@ -84,6 +84,7 @@ Widget buildDirectoryList(BuildContext context, {String? path}) {
             itemBuilder: (context, index) {
               final entityPath = contents[index];
               final isFolder = Directory(entityPath).existsSync();
+              final isCurPath = entityPath == dirController.currentPath.value;
 
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -104,7 +105,10 @@ Widget buildDirectoryList(BuildContext context, {String? path}) {
                                 : IconsaxOutline.folder)
                             : IconsaxOutline.task_square,
                       ),
-                      title: Text(entityPath.split('/').last),
+                      title: Text(entityPath.split('/').last,
+                          style: TextStyle(
+                            color: isCurPath ? Colors.blue : null,
+                          )),
                       onTap: () async {
                         if (isFolder) {
                           dirController.toggleFolder(entityPath);

@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:xnote/common/logger.dart' show logger;
 import 'package:xnote/controller/dir_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';

@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class DirController extends GetxController {
   RxString rootPath = ''.obs;
+  RxString currentPath = ''.obs;
   // 加载状态
   RxBool isLoading = false.obs;
   // 错误信息
@@ -27,6 +28,11 @@ class DirController extends GetxController {
     }
   }
 
+  setCurrentPath(String path) {
+    currentPath.value = path;
+    //update();
+  }
+
   void toggleFolder(String path) {
     if (openFolders.contains(path)) {
       openFolders.remove(path);
@@ -37,6 +43,16 @@ class DirController extends GetxController {
   }
 
   bool hasFolder(String path) => folderContents.containsKey(path);
+
+  // list展示顺序
+  List<FileSystemEntity> sortFiles(List<FileSystemEntity> files) {
+    return files
+      ..sort((a, b) {
+        if (a is Directory && b is File) return -1;
+        if (a is File && b is Directory) return 1;
+        return a.path.compareTo(b.path);
+      });
+  }
 
   // 修改后的 fetchDirectory 方法
   Future<bool> fetchDirectory({String? path}) async {
@@ -51,7 +67,8 @@ class DirController extends GetxController {
         isUpdate = true;
       }
 
-      final entities = folder.listSync();
+      List<FileSystemEntity> entities = folder.listSync();
+      entities = sortFiles(entities);
       final entitiesLst = entities.map((e) => e.path).toList();
       if (!folderContents.containsKey(path) ||
           !listEquals(folderContents[path], entitiesLst)) {
