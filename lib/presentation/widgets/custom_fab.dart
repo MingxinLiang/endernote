@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:xnote/common/logger.dart' show logger;
 import 'package:xnote/controller/dir_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
@@ -19,6 +20,7 @@ class CustomFAB extends StatelessWidget {
     final ValueNotifier<bool> isDialOpen = ValueNotifier(false);
     final TextEditingController folderController = TextEditingController();
     final TextEditingController fileController = TextEditingController();
+
     final dirController = Get.find<DirController>();
 
     return SpeedDial(
@@ -46,14 +48,16 @@ class CustomFAB extends StatelessWidget {
           icon: IconsaxOutline.task_square,
           label: "Note",
           onCreate: () async {
-            File newFile = File('$rootPath/${fileController.text}.md');
             if (fileController.text.isNotEmpty) {
+              File newFile = File('$rootPath/${fileController.text}.md');
               newFile.create(recursive: true);
               dirController.fetchDirectory(path: newFile.parent.path);
+              fileController.clear();
+              Get.back();
+              Get.to(() => ScreenCanvas(filePath: newFile.path));
+            } else {
+              Get.back();
             }
-            Get.back();
-            fileController.clear();
-            Get.to(() => ScreenCanvas(filePath: newFile.path));
           },
         ),
       ],
@@ -73,36 +77,42 @@ class CustomFAB extends StatelessWidget {
       label: label,
       onTap: () => showDialog(
         context: context,
-        builder: (context) => AlertDialog(
-          backgroundColor: Theme.of(context).extension<xnoteColors>()?.clrBase,
-          title: Text(
-            'New $label',
-            style: TextStyle(
-              color: Theme.of(context).extension<xnoteColors>()?.clrText,
+        builder: (context) {
+          final textfocus = FocusNode();
+          textfocus.requestFocus();
+          return AlertDialog(
+            backgroundColor:
+                Theme.of(context).extension<xnoteColors>()?.clrBase,
+            title: Text(
+              'New $label',
+              style: TextStyle(
+                color: Theme.of(context).extension<xnoteColors>()?.clrText,
+              ),
             ),
-          ),
-          content: TextField(
-            controller: controller,
-            decoration: InputDecoration(
-              hintText: '$label name',
-              hintStyle: TextStyle(color: Colors.grey),
+            content: TextField(
+              controller: controller,
+              focusNode: textfocus,
+              decoration: InputDecoration(
+                hintText: '$label name',
+                hintStyle: TextStyle(color: Colors.grey),
+              ),
+              onSubmitted: (value) => onCreate(),
             ),
-            onSubmitted: (value) => onCreate(),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Get.back();
-                controller.clear();
-              },
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: onCreate,
-              child: const Text('Create'),
-            ),
-          ],
-        ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Get.back();
+                  controller.clear();
+                },
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: onCreate,
+                child: const Text('Create'),
+              ),
+            ],
+          );
+        },
       ),
     );
   }

@@ -7,14 +7,14 @@ import 'package:get/get.dart';
 class PromptField extends StatelessWidget {
   final void Function(String text) onSend;
   final TextEditingController promptController;
-  final FocusNode _focusNode = FocusNode();
-  final istyping = Get.find<DialogController>().isTyping;
 
-  PromptField(
+  const PromptField(
       {super.key, required this.onSend, required this.promptController});
 
   @override
   Widget build(BuildContext context) {
+    final istyping = Get.find<DialogController>().isTyping;
+    final focusNode = Get.find<DialogController>().focusNode;
     final double maxHeight = MediaQuery.of(context).size.height;
     final double maxWidth = MediaQuery.of(context).size.width;
     logger.d("PromptField build: $maxHeight, $maxWidth");
@@ -22,9 +22,6 @@ class PromptField extends StatelessWidget {
       color: Colors.black,
       fontSize: min(maxWidth * 0.04, 20),
     );
-
-    // 自动焦点
-    _focusNode.requestFocus();
 
     final double hight = min(maxHeight * 0.15, 66);
     sendPromt() {
@@ -53,7 +50,7 @@ class PromptField extends StatelessWidget {
       } else {
         onSend(promptController.text.trim()); // 发送消息
         promptController.clear(); // 清空输入框
-        _focusNode.requestFocus(); // 保有焦点
+        focusNode.requestFocus(); // 保有焦点
       }
     }
 
@@ -66,7 +63,7 @@ class PromptField extends StatelessWidget {
           padding: EdgeInsets.symmetric(vertical: maxHeight * 0.005),
           child: TextField(
             style: txtStyle,
-            focusNode: _focusNode,
+            focusNode: focusNode,
             cursorColor: Colors.lightBlue,
             textInputAction: TextInputAction.send,
             onSubmitted: (_) {

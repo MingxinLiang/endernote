@@ -7,6 +7,8 @@ import 'package:dio/dio.dart';
 class DialogController extends GetxController {
   // 是否在等待结果
   final RxBool isTyping = false.obs;
+  final FocusNode focusNode = FocusNode();
+
   late final ScrollController scrollController = ScrollController();
   late final promptController = TextEditingController();
   late final RxList data = [].obs;
@@ -66,6 +68,7 @@ class DialogController extends GetxController {
     } finally {
       isTyping.value = false;
     }
+    update();
   }
 
   onSend(String text) async {
@@ -88,12 +91,13 @@ class DialogController extends GetxController {
       "role": "user",
       "content": "#角色任务扮演一个叫线团的全能助手，尽可能简单的回答问题，主要任务助手辅助主人完成他想做的事。",
     });
+    focusNode.requestFocus();
+    logger.d('DialogController onInit');
   }
 }
 
 // 独立的 SlideController 类
-class LLMController extends GetxController
-    with GetTickerProviderStateMixin {
+class LLMController extends GetxController with GetTickerProviderStateMixin {
   // 对话框是否打开
   final RxBool isOpen = false.obs;
 
@@ -129,6 +133,8 @@ class LLMController extends GetxController
         logger.d('Animation dismissed');
       }
     });
+
+    Get.put(DialogController());
   }
 
   void toggleSlide() {
@@ -139,12 +145,17 @@ class LLMController extends GetxController
     if (_controller.isDismissed) {
       _controller.forward();
       isOpen.value = true;
+      final focusNode = Get.find<DialogController>().focusNode;
+      focusNode.requestFocus();
       logger.d('Animation started, is open: $isOpen');
     } else {
       _controller.reverse();
       isOpen.value = false;
+      Get.find<DialogController>().promptController.clear();
       logger.d('Animation reversed, is open: $isOpen');
     }
+
+    update();
   }
 
   @override
