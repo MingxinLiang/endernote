@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:markdown/markdown.dart' as md;
 import 'package:scroll_to_index/scroll_to_index.dart';
-import 'package:xnote/controller/dir_controller.dart';
 
 // 编辑器管理
 class MarkDownController extends GetxController {
@@ -35,9 +34,6 @@ class MarkDownController extends GetxController {
     if (path != curFilePath.value) {
       curFilePath.value = path;
       loadFileContent(filePath: path);
-
-      final dirCtrl = Get.find<DirController>();
-      dirCtrl.setCurrentPath(path);
 
       titleController.text = _getFileName(path);
     }

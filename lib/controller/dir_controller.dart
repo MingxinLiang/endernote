@@ -30,7 +30,7 @@ class DirController extends GetxController {
 
   setCurrentPath(String path) {
     currentPath.value = path;
-    //update();
+    update();
   }
 
   void toggleFolder(String path) {

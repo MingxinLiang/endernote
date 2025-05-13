@@ -14,17 +14,14 @@ import 'edit_mode/markdown_editor.dart';
 import 'preview_mode/preview_mode.dart';
 
 class ScreenCanvas extends StatelessWidget {
-  ScreenCanvas({super.key, required String filePath}) {
-    curfilePath.value = filePath;
-  }
+  final String filePath;
+  const ScreenCanvas({super.key, required this.filePath});
 
   Future<void> init() async {
     final prefs = await SharedPreferences.getInstance();
     Get.put(ToolsBarController(index: prefs.getInt("selectedToolIndex")));
     Get.put(MarkDownController());
   }
-
-  final curfilePath = "".obs;
 
   @override
   Widget build(BuildContext context) {
@@ -112,9 +109,9 @@ class ScreenCanvas extends StatelessWidget {
                       ),
                       Expanded(
                         child: ctrl.editOrPreview.value
-                            ? MarkdownEditMode(entityPath: curfilePath.value)
+                            ? MarkdownEditMode(entityPath: filePath)
                             : PreviewMode(
-                                filePath: curfilePath.value,
+                                filePath: filePath,
                               ),
                       )
                     ]);
