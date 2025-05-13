@@ -1,3 +1,4 @@
+import 'package:xnote/controller/dir_controller.dart' show DirController;
 import 'package:xnote/controller/markdown_controller.dart';
 import 'package:xnote/presentation/widgets/streaming_asr_widget.dart';
 import 'package:flutter/material.dart';
@@ -97,6 +98,12 @@ class MarkdownEditMode extends StatelessWidget {
       markdownController.updateCurFilePath(entityPath);
     }
 
+    // 在当前帧绘制完成后执行回调
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final direController = Get.find<DirController>();
+      direController.setCurrentPath(entityPath);
+    });
+
     // 优化布局
     final functionalBar = MarkdownToolbar(
       useIncludedTextField: false,
@@ -172,8 +179,6 @@ class MarkdownEditMode extends StatelessWidget {
                 )),
           ],
         );
-        //   },
-        // );
       },
     );
   }

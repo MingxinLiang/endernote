@@ -42,50 +42,55 @@ class ScreenNoteList extends StatelessWidget {
 
 // TODO: 多级目录优化
 Widget buildDirectoryList(BuildContext context, {String? path}) {
-  return GetBuilder<DirController>(builder: (dirController) {
-    path ??= dirController.rootPath.value;
-    return FutureBuilder(
-        future: dirController.fetchDirectory(path: path),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (dirController.error.value.isNotEmpty) {
-            return Center(
-              child: Text(
-                'Error: ${dirController.error.value}',
-                style: const TextStyle(color: Colors.red),
-              ),
-            );
-          }
+  final dirController = Get.find<DirController>();
+  return FutureBuilder(
+      future: dirController.fetchDirectory(path: path),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (dirController.error.value.isNotEmpty) {
+          return Center(
+            child: Text(
+              'Error: ${dirController.error.value}',
+              style: const TextStyle(color: Colors.red),
+            ),
+          );
+        }
 
-          late final List<String> contents;
+        late final List<String> contents;
+        if (path == null) {
+          contents =
+              dirController.folderContents[dirController.rootPath.value] ?? [];
+        } else {
           contents = dirController.folderContents[path] ?? []; // 获取当前路径的内容
+        }
 
-          if (contents.isEmpty) {
-            return Center(
-              child: Text(
-                "This folder is feeling lonely.",
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Theme.of(context)
-                      .extension<xnoteColors>()
-                      ?.clrText
-                      .withAlpha(100),
-                ),
+        if (contents.isEmpty) {
+          return Center(
+            child: Text(
+              "This folder is feeling lonely.",
+              style: TextStyle(
+                fontSize: 16,
+                color: Theme.of(context)
+                    .extension<xnoteColors>()
+                    ?.clrText
+                    .withAlpha(100),
               ),
-            );
-          }
+            ),
+          );
+        }
 
-          return ListView.builder(
-            shrinkWrap: true,
-            physics: const BouncingScrollPhysics(),
-            itemCount: contents.length,
-            itemBuilder: (context, index) {
-              final entityPath = contents[index];
-              final isFolder = Directory(entityPath).existsSync();
-              final isCurPath = entityPath == dirController.currentPath.value;
+        return ListView.builder(
+          shrinkWrap: true,
+          physics: const BouncingScrollPhysics(),
+          itemCount: contents.length,
+          itemBuilder: (context, index) {
+            final entityPath = contents[index];
+            final isFolder = Directory(entityPath).existsSync();
 
+            return GetBuilder<DirController>(builder: (dirController) {
+              final isCurPath = dirController.currentPath.value == entityPath;
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -117,10 +122,8 @@ Widget buildDirectoryList(BuildContext context, {String? path}) {
                           }
                         } else {
                           logger.d("open file: $entityPath");
-                          await Get.to(
-                              () => ScreenCanvas(filePath: entityPath));
-                          Get.find<MarkDownController>()
-                              .updateCurFilePath(entityPath);
+                          await Get.off(() => ScreenCanvas(
+                              key: ValueKey(entityPath), filePath: entityPath));
                         }
                       },
                     ),
@@ -135,8 +138,8 @@ Widget buildDirectoryList(BuildContext context, {String? path}) {
                     ),
                 ],
               );
-            },
-          );
-        });
-  });
+            });
+          },
+        );
+      });
 }
