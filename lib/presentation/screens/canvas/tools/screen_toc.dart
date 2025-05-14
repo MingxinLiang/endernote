@@ -18,39 +18,40 @@ class ToIWidget extends StatelessWidget {
 
   // for edit model
   // ignore: non_constant_identifier_names
-  Widget ItemBuilder(ToI toi, MarkDownController markdownController) {
-    final curIndex = markdownController.curIndex;
-    final child = Obx(() => ListTile(
+  Widget ItemBuilder(ToI toi) {
+    // 这里用Box 主要是toi的变化频率会比较搞
+    final markdownController = Get.find<MarkDownController>();
+
+    return Obx(() => ListTile(
           title: Container(
             margin: EdgeInsets.only(left: 20.0 * (toi.headLevel - 1)),
             child: Text(toi.text,
-                style: curIndex.value == toi.widgetIndex
+                style: toi.widgetIndex == markdownController.curIndex.value
                     ? currentTocTextStyle
                     : tocTextStyle),
           ),
           onTap: () {
-            markdownController.jumpScrollToIndex(index: toi.widgetIndex);
             markdownController.curIndex.value = toi.widgetIndex;
+            markdownController.jumpScrollToIndex(index: toi.widgetIndex);
           },
         ));
-    return child;
   }
 
   @override
   Widget build(BuildContext context) {
     // 使用 Obx 监听 RxList 的变化
-    return Obx(() {
-      final markdownController = Get.find<MarkDownController>();
-      RxList<ToI> listToI = markdownController.editOrPreview.value
-          ? markdownController.listToI
-          : markdownController.listToC;
-      return ListView.builder(
-        itemBuilder: (ctx, index) {
-          final currentToc = listToI[index];
-          return ItemBuilder(currentToc, markdownController);
-        },
-        itemCount: listToI.length,
-      );
-    });
+    final markdownController = Get.find<MarkDownController>();
+    RxList<ToI> listToI = markdownController.editOrPreview.value
+        ? markdownController.listToI
+        : markdownController.listToC;
+    //return Obx(() {
+    return ListView.builder(
+      itemBuilder: (ctx, index) {
+        final currentToc = listToI[index];
+        return ItemBuilder(currentToc);
+      },
+      itemCount: listToI.length,
+    );
+    //});
   }
 }
