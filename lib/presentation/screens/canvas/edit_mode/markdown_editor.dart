@@ -1,4 +1,3 @@
-import 'package:xnote/controller/dir_controller.dart' show DirController;
 import 'package:xnote/controller/markdown_controller.dart';
 import 'package:xnote/presentation/widgets/streaming_asr_widget.dart';
 import 'package:flutter/material.dart';
@@ -148,12 +147,12 @@ class MarkdownEditMode extends StatelessWidget {
                     decoration: InputDecoration(
                       floatingLabelStyle: TextStyle(
                         color:
-                            Theme.of(context).extension<xnoteColors>()?.clrText,
+                            Theme.of(context).extension<XnoteColors>()?.clrText,
                       ),
                       border: InputBorder.none,
                       labelStyle: TextStyle(
                         color:
-                            Theme.of(context).extension<xnoteColors>()?.clrText,
+                            Theme.of(context).extension<XnoteColors>()?.clrText,
                       ),
                       enabledBorder: InputBorder.none,
                     ),

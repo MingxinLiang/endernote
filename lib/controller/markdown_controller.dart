@@ -29,7 +29,7 @@ class MarkDownController extends GetxController {
 
   MarkDownController({String? filePath}) {
     if (filePath != null) {
-      curFilePath.value = filePath;
+      setCurFilePath(filePath);
     }
   }
 
@@ -40,10 +40,6 @@ class MarkDownController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    // 初始化目录
-    if (curFilePath.value.isNotEmpty) {
-      updateCurFilePath(curFilePath.value);
-    }
     // 不同模式的初始化工作
     if (editOrPreview.value) {
       contentFocusNode.requestFocus();
@@ -53,18 +49,13 @@ class MarkDownController extends GetxController {
     _startAutoTask();
   }
 
-  updateCurFilePath(String path) {
+  setCurFilePath(String path) {
     if (path != curFilePath.value) {
       curFilePath.value = path;
       loadFileContent(filePath: path);
       final dirController = Get.find<DirController>();
       dirController.updateCurrentPath(path);
     }
-  }
-
-  updateContentController(TextEditingController controller) {
-    contentControllter.text = controller.text;
-    contentControllter.selection = controller.selection;
   }
 
   void jumpScrollToIndex({int? index}) {

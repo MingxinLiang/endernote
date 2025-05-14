@@ -53,7 +53,7 @@ class ScreenSearch extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 16,
                   color: Theme.of(context)
-                      .extension<xnoteColors>()
+                      .extension<XnoteColors>()
                       ?.clrText
                       .withAlpha(100),
                 ),
@@ -96,7 +96,7 @@ class ScreenSearch extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 12,
                           color: Theme.of(context)
-                              .extension<xnoteColors>()
+                              .extension<XnoteColors>()
                               ?.clrText
                               .withAlpha(150),
                         ),
@@ -144,7 +144,7 @@ class ScreenSearch extends StatelessWidget {
           style: TextStyle(
             fontSize: 16,
             color: Theme.of(context)
-                .extension<xnoteColors>()
+                .extension<XnoteColors>()
                 ?.clrText
                 .withAlpha(100),
           ),

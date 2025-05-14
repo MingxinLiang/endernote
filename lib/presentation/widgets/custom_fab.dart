@@ -81,11 +81,11 @@ class CustomFAB extends StatelessWidget {
           textfocus.requestFocus();
           return AlertDialog(
             backgroundColor:
-                Theme.of(context).extension<xnoteColors>()?.clrBase,
+                Theme.of(context).extension<XnoteColors>()?.clrBase,
             title: Text(
               'New $label',
               style: TextStyle(
-                color: Theme.of(context).extension<xnoteColors>()?.clrText,
+                color: Theme.of(context).extension<XnoteColors>()?.clrText,
               ),
             ),
             content: TextField(

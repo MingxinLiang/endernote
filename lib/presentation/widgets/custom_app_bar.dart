@@ -26,7 +26,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       toolbarHeight: 80,
       title: Container(
         decoration: BoxDecoration(
-          color: Theme.of(context).extension<xnoteColors>()?.clrbackground,
+          color: Theme.of(context).extension<XnoteColors>()?.clrbackground,
           borderRadius: BorderRadius.circular(12),
         ),
         padding: const EdgeInsets.all(3),
@@ -45,7 +45,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                         hintText: "Search your notes",
                         hintStyle: TextStyle(
                           color: Theme.of(context)
-                              .extension<xnoteColors>()
+                              .extension<XnoteColors>()
                               ?.clrbackText,
                           fontSize: 14,
                           fontFamily: 'FiraCode',

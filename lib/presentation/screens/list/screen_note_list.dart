@@ -73,7 +73,7 @@ Widget buildDirectoryList(BuildContext context, {String? path}) {
               style: TextStyle(
                 fontSize: 16,
                 color: Theme.of(context)
-                    .extension<xnoteColors>()
+                    .extension<XnoteColors>()
                     ?.clrText
                     .withAlpha(100),
               ),
@@ -129,7 +129,7 @@ Widget buildDirectoryList(BuildContext context, {String? path}) {
                           );
                           // 通过MarkDownController更新,不更新UI, 只更新内容.
                           final ctrl = Get.find<MarkDownController>();
-                          ctrl.updateCurFilePath(entityPath);
+                          ctrl.setCurFilePath(entityPath);
                         }
                       },
                     ),

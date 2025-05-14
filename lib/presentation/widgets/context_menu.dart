@@ -58,7 +58,7 @@ void showContextMenu(
   }
 
   showMenu(
-    color: Theme.of(context).extension<xnoteColors>()?.clrBase,
+    color: Theme.of(context).extension<XnoteColors>()?.clrBase,
     context: context,
     position: relatedPosition,
     items: menuItems,
@@ -87,11 +87,11 @@ void _createNewFolder(BuildContext context, String entityPath) {
     context: context,
     builder: (context) => AlertDialog(
       backgroundColor:
-          Theme.of(context).extension<xnoteColors>()?.clrbackground,
+          Theme.of(context).extension<XnoteColors>()?.clrbackground,
       title: Text(
         'New Folder',
         style: TextStyle(
-          color: Theme.of(context).extension<xnoteColors>()?.clrText,
+          color: Theme.of(context).extension<XnoteColors>()?.clrText,
         ),
       ),
       content: TextField(
@@ -139,11 +139,11 @@ void _createNewFile(BuildContext context, String entityPath) {
     context: context,
     builder: (context) => AlertDialog(
       backgroundColor:
-          Theme.of(context).extension<xnoteColors>()?.clrbackground,
+          Theme.of(context).extension<XnoteColors>()?.clrbackground,
       title: Text(
         'New File',
         style: TextStyle(
-          color: Theme.of(context).extension<xnoteColors>()?.clrText,
+          color: Theme.of(context).extension<XnoteColors>()?.clrText,
         ),
       ),
       content: TextField(
@@ -196,11 +196,11 @@ void _renameEntity(
     context: context,
     builder: (context) => AlertDialog(
       backgroundColor:
-          Theme.of(context).extension<xnoteColors>()?.clrbackground,
+          Theme.of(context).extension<XnoteColors>()?.clrbackground,
       title: Text(
         'Rename',
         style: TextStyle(
-          color: Theme.of(context).extension<xnoteColors>()?.clrText,
+          color: Theme.of(context).extension<XnoteColors>()?.clrText,
         ),
       ),
       content: TextField(
@@ -261,11 +261,11 @@ void _deleteEntity(BuildContext context, String entityPath, bool isFolder) {
     context: context,
     builder: (context) => AlertDialog(
       backgroundColor:
-          Theme.of(context).extension<xnoteColors>()?.clrbackground,
+          Theme.of(context).extension<XnoteColors>()?.clrbackground,
       title: Text(
         'Delete',
         style: TextStyle(
-          color: Theme.of(context).extension<xnoteColors>()?.clrText,
+          color: Theme.of(context).extension<XnoteColors>()?.clrText,
         ),
       ),
       content: Text(

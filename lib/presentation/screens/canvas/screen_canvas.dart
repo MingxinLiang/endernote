@@ -39,7 +39,7 @@ class ScreenCanvas extends StatelessWidget {
                   title: Container(
                     decoration: BoxDecoration(
                       color: Theme.of(context)
-                          .extension<xnoteColors>()
+                          .extension<XnoteColors>()
                           ?.clrbackground,
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -70,7 +70,7 @@ class ScreenCanvas extends StatelessWidget {
                                 style: TextStyle(
                                   fontFamily: 'FiraCode',
                                   color: Theme.of(context)
-                                      .extension<xnoteColors>()
+                                      .extension<XnoteColors>()
                                       ?.clrbackText,
                                 ),
                                 decoration: InputDecoration(
@@ -78,7 +78,7 @@ class ScreenCanvas extends StatelessWidget {
                                   hintStyle: TextStyle(
                                     fontFamily: 'FiraCode',
                                     color: Theme.of(context)
-                                        .extension<xnoteColors>()
+                                        .extension<XnoteColors>()
                                         ?.clrText
                                         .withAlpha(100),
                                     fontSize: 14,

@@ -75,7 +75,7 @@ class ToolsBar extends StatelessWidget {
               decoration: BoxDecoration(
                 border: Border.all(
                   color: Theme.of(context)
-                          .extension<xnoteColors>()
+                          .extension<XnoteColors>()
                           ?.clrbackText
                           .withAlpha(50) ??
                       Colors.white.withAlpha(10),

@@ -64,7 +64,7 @@ final ThemeData catppuccinMochaTheme = ThemeData(
     side: BorderSide.none,
   ),
   extensions: const <ThemeExtension<dynamic>>{
-    xnoteColors(
+    XnoteColors(
         clrBase: _clrBase,
         clrText: _clrText,
         clrbackground: _clrbackground,
