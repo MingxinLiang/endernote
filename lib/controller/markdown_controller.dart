@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:markdown/markdown.dart' as md;
 import 'package:scroll_to_index/scroll_to_index.dart';
+import 'package:xnote/controller/dir_controller.dart';
 
 // 编辑器管理
 class MarkDownController extends GetxController {
@@ -26,16 +27,38 @@ class MarkDownController extends GetxController {
 
   late final Timer? _autoSaveTimer;
 
+  MarkDownController({String? filePath}) {
+    if (filePath != null) {
+      curFilePath.value = filePath;
+    }
+  }
+
   setScrollController(AutoScrollController controller) {
     autoScrollController = controller;
+  }
+
+  @override
+  void onInit() {
+    super.onInit();
+    // 初始化目录
+    if (curFilePath.value.isNotEmpty) {
+      updateCurFilePath(curFilePath.value);
+    }
+    // 不同模式的初始化工作
+    if (editOrPreview.value) {
+      contentFocusNode.requestFocus();
+    } else {
+      getNodes();
+    }
+    _startAutoTask();
   }
 
   updateCurFilePath(String path) {
     if (path != curFilePath.value) {
       curFilePath.value = path;
       loadFileContent(filePath: path);
-
-      titleController.text = _getFileName(path);
+      final dirController = Get.find<DirController>();
+      dirController.updateCurrentPath(path);
     }
   }
 
@@ -73,10 +96,13 @@ class MarkDownController extends GetxController {
 
     try {
       logger.d("Loading file: $filePath");
+      titleController.text = _getFileName(filePath);
+
       final curText = await File(filePath).readAsString();
       curNodes.value = md.Document(encodeHtml: false).parse(curText);
       listToI.value = getMarkDownToI(curText);
       contentControllter.text = curText;
+
       return curText;
     } catch (e) {
       logger.e("Error loading file: $e");
@@ -125,7 +151,7 @@ class MarkDownController extends GetxController {
     return base;
   }
 
-  Future<void> toggleEditMode() async {
+  Future<void> toggleMode() async {
     if (editOrPreview.value) {
       logger.d("save sachanges");
       await saveChanges(contentControllter.text, curFilePath.value);
@@ -134,23 +160,7 @@ class MarkDownController extends GetxController {
     logger.d(
         "nodes ${curNodes.length}, content ${contentControllter.text.length}");
     editOrPreview.toggle();
-  }
-
-  @override
-  void onInit() {
-    super.onInit();
-    // 通过Get参数初始化路径
-    final args = Get.arguments;
-    if (args is String) {
-      updateCurFilePath(args);
-    }
-    // 不同模式的初始化工作
-    if (editOrPreview.value) {
-      contentFocusNode.requestFocus();
-    } else {
-      getNodes();
-    }
-    _startAutoTask();
+    update();
   }
 
   @override

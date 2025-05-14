@@ -9,8 +9,7 @@ import '../../../theme/app_themes.dart';
 import 'package:xnote/common/logger.dart' show logger;
 
 class MarkdownEditMode extends StatelessWidget {
-  final String entityPath;
-  const MarkdownEditMode({super.key, required this.entityPath});
+  const MarkdownEditMode({super.key});
 
   // Handle key events for auto-continuation of lists.
   // Returns true if it handled the event.
@@ -94,15 +93,6 @@ class MarkdownEditMode extends StatelessWidget {
     logger.d("EditMode build");
     final MarkDownController markdownController =
         Get.find<MarkDownController>();
-    if (markdownController.curFilePath.value != entityPath) {
-      markdownController.updateCurFilePath(entityPath);
-    }
-
-    // 在当前帧绘制完成后执行回调
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final direController = Get.find<DirController>();
-      direController.setCurrentPath(entityPath);
-    });
 
     // 优化布局
     final functionalBar = MarkdownToolbar(

@@ -28,7 +28,7 @@ class DirController extends GetxController {
     }
   }
 
-  setCurrentPath(String path) {
+  updateCurrentPath(String path) {
     currentPath.value = path;
     update();
   }

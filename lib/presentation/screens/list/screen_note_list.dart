@@ -122,8 +122,14 @@ Widget buildDirectoryList(BuildContext context, {String? path}) {
                           }
                         } else {
                           logger.d("open file: $entityPath");
-                          await Get.off(() => ScreenCanvas(
-                              key: ValueKey(entityPath), filePath: entityPath));
+                          // 只初始化一次
+                          await Get.to(
+                            () => ScreenCanvas(filePath: entityPath),
+                            preventDuplicates: true,
+                          );
+                          // 通过MarkDownController更新,不更新UI, 只更新内容.
+                          final ctrl = Get.find<MarkDownController>();
+                          ctrl.updateCurFilePath(entityPath);
                         }
                       },
                     ),

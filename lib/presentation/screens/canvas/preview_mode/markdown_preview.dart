@@ -7,9 +7,6 @@ import 'package:scroll_to_index/scroll_to_index.dart';
 
 /// 自定义的 Markdown 组件，用于显示解析后的 Markdown 内容
 class MarkdownWidget extends StatefulWidget {
-  /// 要显示的 Markdown 数据
-  final String filePath;
-
   /// 设置 Markdown 列表项的滚动物理效果
   final ScrollPhysics? physics;
 
@@ -24,7 +21,6 @@ class MarkdownWidget extends StatefulWidget {
 
   const MarkdownWidget({
     super.key,
-    required this.filePath,
     this.physics,
     this.shrinkWrap = false,
     this.selectable = true,
@@ -50,7 +46,6 @@ class MarkdownWidgetState extends State<MarkdownWidget> {
     updateState();
     // 获取 MarkDownController
     var markDownController = Get.find<MarkDownController>();
-    markDownController.loadFileContent(filePath: widget.filePath);
     markDownController.setScrollController(scrollController);
     markDownController.jumpScrollToIndex();
     _widgets = getMarkDownWidgets(markDownController.curNodes);
