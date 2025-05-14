@@ -104,12 +104,8 @@ class MarkdownEditMode extends StatelessWidget {
       textEditingController: markdownController.contentControllter,
     );
 
-    return FutureBuilder<String>(
-      future: markdownController.loadFileContent(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
+    return Builder(
+      builder: (context) {
         markdownController.jumpScrollToIndex();
 
         return Column(

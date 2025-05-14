@@ -76,11 +76,10 @@ class ScreenSearch extends StatelessWidget {
                       context,
                       entityPath,
                       isFolder,
-                      searchQuery,
                       position: details.globalPosition,
                     ),
                     onSecondaryTapDown: (details) => showContextMenu(
-                        context, entityPath, isFolder, searchQuery,
+                        context, entityPath, isFolder,
                         position: details.globalPosition),
                     child: ListTile(
                       leading: Icon(
@@ -165,10 +164,10 @@ class ScreenSearch extends StatelessWidget {
           children: [
             GestureDetector(
               onLongPressStart: (details) => showContextMenu(
-                  context, entityPath, isFolder, searchQuery,
+                  context, entityPath, isFolder,
                   position: details.globalPosition),
               onSecondaryTapDown: (details) => showContextMenu(
-                  context, entityPath, isFolder, searchQuery,
+                  context, entityPath, isFolder,
                   position: details.globalPosition),
               child: ListTile(
                 leading: Icon(

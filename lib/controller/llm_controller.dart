@@ -75,6 +75,7 @@ class DialogController extends GetxController {
     scrollToBottom();
     if (text.isNotEmpty) {
       data.add({"content": text, "role": "user"});
+      update();
       await getResponse(prompt: text);
       scrollToBottom();
     }

@@ -81,71 +81,69 @@ Widget buildDirectoryList(BuildContext context, {String? path}) {
           );
         }
 
-        return ListView.builder(
-          shrinkWrap: true,
-          physics: const BouncingScrollPhysics(),
-          itemCount: contents.length,
-          itemBuilder: (context, index) {
-            final entityPath = contents[index];
-            final isFolder = Directory(entityPath).existsSync();
+        return GetBuilder<DirController>(builder: (dirController) {
+          return ListView.builder(
+              shrinkWrap: true,
+              physics: const BouncingScrollPhysics(),
+              itemCount: contents.length,
+              itemBuilder: (context, index) {
+                final entityPath = contents[index];
+                final isFolder = Directory(entityPath).existsSync();
+                final isCurPath = dirController.currentPath.value == entityPath;
 
-            return GetBuilder<DirController>(builder: (dirController) {
-              final isCurPath = dirController.currentPath.value == entityPath;
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  GestureDetector(
-                    onLongPressStart: (details) => showContextMenu(
-                        context, entityPath, isFolder, "",
-                        position: details.globalPosition),
-                    onSecondaryTapDown: (details) => showContextMenu(
-                        context, entityPath, isFolder, "",
-                        position: details.globalPosition),
-                    child: ListTile(
-                      leading: Icon(
-                        isFolder
-                            ? (dirController.openFolders
-                                    .contains(entityPath) // 改用GetX状态
-                                ? IconsaxOutline.folder_open
-                                : IconsaxOutline.folder)
-                            : IconsaxOutline.task_square,
-                      ),
-                      title: Text(entityPath.split('/').last,
-                          style: TextStyle(
-                            color: isCurPath ? Colors.blue : null,
-                          )),
-                      onTap: () async {
-                        if (isFolder) {
-                          dirController.toggleFolder(entityPath);
-                          if (!dirController.hasFolder(entityPath)) {
-                            dirController.fetchDirectory(path: entityPath);
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    GestureDetector(
+                      onLongPressStart: (details) => showContextMenu(
+                          context, entityPath, isFolder,
+                          position: details.globalPosition),
+                      onSecondaryTapDown: (details) => showContextMenu(
+                          context, entityPath, isFolder,
+                          position: details.globalPosition),
+                      child: ListTile(
+                        leading: Icon(
+                          isFolder
+                              ? (dirController.openFolders
+                                      .contains(entityPath) // 改用GetX状态
+                                  ? IconsaxOutline.folder_open
+                                  : IconsaxOutline.folder)
+                              : IconsaxOutline.task_square,
+                        ),
+                        title: Text(entityPath.split('/').last,
+                            style: TextStyle(
+                              color: isCurPath ? Colors.blue : null,
+                            )),
+                        onTap: () async {
+                          if (isFolder) {
+                            dirController.toggleFolder(entityPath);
+                            if (!dirController.hasFolder(entityPath)) {
+                              dirController.fetchDirectory(path: entityPath);
+                            }
+                          } else {
+                            logger.d("open file: $entityPath");
+                            // 只初始化一次
+                            await Get.to(
+                              () => ScreenCanvas(filePath: entityPath),
+                              preventDuplicates: true,
+                            );
+                            // 通过MarkDownController更新,不更新UI, 只更新内容.
+                            Get.find<MarkDownController>().setCurFilePath(entityPath);
                           }
-                        } else {
-                          logger.d("open file: $entityPath");
-                          // 只初始化一次
-                          await Get.to(
-                            () => ScreenCanvas(filePath: entityPath),
-                            preventDuplicates: true,
-                          );
-                          // 通过MarkDownController更新,不更新UI, 只更新内容.
-                          final ctrl = Get.find<MarkDownController>();
-                          ctrl.setCurFilePath(entityPath);
-                        }
-                      },
+                        },
+                      ),
                     ),
-                  ),
-                  if (isFolder &&
-                      dirController.openFolders
-                          .contains(entityPath)) // 改用GetX状态
-                    Padding(
-                      padding: const EdgeInsets.only(left: 16.0),
-                      child: buildDirectoryList(context,
-                          path: entityPath), // 移除state参数
-                    ),
-                ],
-              );
-            });
-          },
-        );
+                    if (isFolder &&
+                        dirController.openFolders
+                            .contains(entityPath)) // 改用GetX状态
+                      Padding(
+                        padding: const EdgeInsets.only(left: 16.0),
+                        child: buildDirectoryList(context,
+                            path: entityPath), // 移除state参数
+                      ),
+                  ],
+                );
+              });
+        });
       });
 }

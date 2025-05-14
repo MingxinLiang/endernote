@@ -6,8 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../theme/app_themes.dart';
 
-void showContextMenu(
-    BuildContext context, String entityPath, bool isFolder, String searchQuery,
+const _dialogBackGroupColor = Colors.black54;
+const _dialogTextColor = Colors.white54;
+
+void showContextMenu(BuildContext context, String entityPath, bool isFolder,
     {required Offset position}) {
   final RenderBox overlay =
       Overlay.of(context).context.findRenderObject() as RenderBox;
@@ -58,40 +60,46 @@ void showContextMenu(
   }
 
   showMenu(
-    color: Theme.of(context).extension<XnoteColors>()?.clrBase,
     context: context,
+    color: Theme.of(context).extension<XnoteColors>()?.clrBase,
     position: relatedPosition,
     items: menuItems,
   ).then((value) {
     switch (value) {
       case 'rename':
-        _renameEntity(context, entityPath, searchQuery, isFolder);
+        _renameEntity(entityPath, isFolder);
         break;
       case 'delete':
-        _deleteEntity(context, entityPath, isFolder);
+        _deleteEntity(entityPath, isFolder);
         break;
       case 'new_folder':
-        _createNewFolder(context, entityPath);
+        _createNewFolder(entityPath);
         break;
       case 'new_file':
-        _createNewFile(context, entityPath);
+        _createNewFile(entityPath);
         break;
     }
   });
 }
 
-void _createNewFolder(BuildContext context, String entityPath) {
+void _createNewFolder(String entityPath) {
+  void imp(String value) {
+    if (value.trim().isNotEmpty) {
+      Directory(
+        '$entityPath/${value.trim()}', // new folder path
+      ).createSync();
+      Get.find<DirController>().fetchDirectory(path: entityPath);
+    }
+  }
+
   final controller = TextEditingController();
-  final DirController fileController = Get.find<DirController>();
-  showDialog(
-    context: context,
-    builder: (context) => AlertDialog(
-      backgroundColor:
-          Theme.of(context).extension<XnoteColors>()?.clrbackground,
+  Get.dialog(
+    AlertDialog(
+      backgroundColor: _dialogBackGroupColor,
       title: Text(
         'New Folder',
         style: TextStyle(
-          color: Theme.of(context).extension<XnoteColors>()?.clrText,
+          color: _dialogTextColor,
         ),
       ),
       content: TextField(
@@ -101,12 +109,7 @@ void _createNewFolder(BuildContext context, String entityPath) {
           hintStyle: TextStyle(color: Colors.grey),
         ),
         onSubmitted: (value) {
-          if (value.trim().isNotEmpty) {
-            Directory(
-              '$entityPath/${value.trim()}', // new folder path
-            ).createSync();
-            fileController.fetchDirectory(path: entityPath);
-          }
+          imp(value);
           Get.back();
         },
       ),
@@ -117,12 +120,7 @@ void _createNewFolder(BuildContext context, String entityPath) {
         ),
         TextButton(
           onPressed: () {
-            if (controller.text.trim().isNotEmpty) {
-              Directory(
-                '$entityPath/${controller.text.trim()}', // new folder path
-              ).createSync();
-              fileController.fetchDirectory(path: entityPath);
-            }
+            imp(controller.text);
             Get.back();
           },
           child: const Text('Create'),
@@ -132,18 +130,24 @@ void _createNewFolder(BuildContext context, String entityPath) {
   );
 }
 
-void _createNewFile(BuildContext context, String entityPath) {
+void _createNewFile(String entityPath) {
+  void imp(String name) {
+    if (name.trim().isNotEmpty) {
+      File(
+        '$entityPath/${name.trim()}.md', // new file name
+      ).createSync();
+      Get.find<DirController>().fetchDirectory(path: entityPath);
+    }
+  }
+
   final controller = TextEditingController();
-  final fileController = Get.find<DirController>();
-  showDialog(
-    context: context,
-    builder: (context) => AlertDialog(
-      backgroundColor:
-          Theme.of(context).extension<XnoteColors>()?.clrbackground,
+  Get.dialog(
+    AlertDialog(
+      backgroundColor: _dialogBackGroupColor,
       title: Text(
         'New File',
         style: TextStyle(
-          color: Theme.of(context).extension<XnoteColors>()?.clrText,
+          color: _dialogTextColor,
         ),
       ),
       content: TextField(
@@ -153,12 +157,7 @@ void _createNewFile(BuildContext context, String entityPath) {
           hintStyle: TextStyle(color: Colors.grey),
         ),
         onSubmitted: (value) {
-          if (value.trim().isNotEmpty) {
-            File(
-              '$entityPath/${value.trim()}.md', // new file name
-            ).createSync();
-            fileController.fetchDirectory(path: entityPath);
-          }
+          imp(value);
           Get.back();
         },
       ),
@@ -169,12 +168,7 @@ void _createNewFile(BuildContext context, String entityPath) {
         ),
         TextButton(
           onPressed: () {
-            if (controller.text.trim().isNotEmpty) {
-              File(
-                '$entityPath/${controller.text.trim()}.md', // new file name
-              ).createSync();
-              fileController.fetchDirectory(path: entityPath);
-            }
+            imp(controller.text);
             Get.back();
           },
           child: const Text('Create'),
@@ -185,22 +179,34 @@ void _createNewFile(BuildContext context, String entityPath) {
 }
 
 void _renameEntity(
-  BuildContext context,
   String entityPath,
-  String searchQuery,
   bool isFolder,
 ) {
+  void imp(String newName) {
+    if (newName.trim().isNotEmpty) {
+      if (isFolder) {
+        Directory(entityPath).renameSync(
+          '${Directory(entityPath).parent.path}/${newName.trim()}', // updated folder name
+        );
+      } else {
+        File(entityPath).renameSync(
+          '${Directory(entityPath).parent.path}/${newName.trim()}.md', // updated file name
+        );
+      }
+      Get.find<DirController>()
+          .fetchDirectory(path: Directory(entityPath).parent.path);
+    }
+  }
+
   final controller = TextEditingController();
-  final DirController fileController = Get.find<DirController>();
-  showDialog(
-    context: context,
-    builder: (context) => AlertDialog(
-      backgroundColor:
-          Theme.of(context).extension<XnoteColors>()?.clrbackground,
+  // 对话
+  Get.dialog(
+    AlertDialog(
+      backgroundColor: _dialogBackGroupColor,
       title: Text(
         'Rename',
         style: TextStyle(
-          color: Theme.of(context).extension<XnoteColors>()?.clrText,
+          color: _dialogTextColor,
         ),
       ),
       content: TextField(
@@ -209,23 +215,13 @@ void _renameEntity(
           hintText: 'New name for ${entityPath.split('/').last}',
           hintStyle: const TextStyle(color: Colors.grey),
         ),
+        // 回车提交
         onSubmitted: (value) {
-          if (value.trim().isNotEmpty) {
-            if (isFolder) {
-              Directory(entityPath).renameSync(
-                '${Directory(entityPath).parent.path}/${value.trim()}', // updated folder name
-              );
-            } else {
-              File(entityPath).renameSync(
-                '${Directory(entityPath).parent.path}/${value.trim()}.md', // updated file name
-              );
-            }
-            fileController.fetchDirectory(
-                path: Directory(entityPath).parent.path);
-          }
+          imp(value);
           Get.back();
         },
       ),
+      // 按钮操作
       actions: [
         TextButton(
           onPressed: () => Get.back(),
@@ -233,19 +229,7 @@ void _renameEntity(
         ),
         TextButton(
           onPressed: () {
-            if (controller.text.trim().isNotEmpty) {
-              if (isFolder) {
-                Directory(entityPath).renameSync(
-                  '${Directory(entityPath).parent.path}/${controller.text.trim()}', // updated folder name
-                );
-              } else {
-                File(entityPath).renameSync(
-                  '${Directory(entityPath).parent.path}/${controller.text.trim()}.md', // updated file name
-                );
-              }
-              fileController.fetchDirectory(
-                  path: Directory(entityPath).parent.path);
-            }
+            imp(controller.text);
             Get.back();
           },
           child: const Text('Rename'),
@@ -255,17 +239,14 @@ void _renameEntity(
   );
 }
 
-void _deleteEntity(BuildContext context, String entityPath, bool isFolder) {
-  final fileController = Get.find<DirController>();
-  showDialog(
-    context: context,
-    builder: (context) => AlertDialog(
-      backgroundColor:
-          Theme.of(context).extension<XnoteColors>()?.clrbackground,
+void _deleteEntity(String entityPath, bool isFolder) {
+  Get.dialog(
+    AlertDialog(
+      backgroundColor: _dialogBackGroupColor,
       title: Text(
         'Delete',
         style: TextStyle(
-          color: Theme.of(context).extension<XnoteColors>()?.clrText,
+          color: _dialogTextColor,
         ),
       ),
       content: Text(
@@ -284,8 +265,8 @@ void _deleteEntity(BuildContext context, String entityPath, bool isFolder) {
             } else {
               File(entityPath).deleteSync();
             }
-            fileController.fetchDirectory(
-                path: Directory(entityPath).parent.path);
+            Get.find<DirController>()
+                .fetchDirectory(path: Directory(entityPath).parent.path);
             Get.back();
           },
           child: const Text('Delete'),

@@ -51,8 +51,9 @@ class MarkDownController extends GetxController {
 
   setCurFilePath(String path) {
     if (path != curFilePath.value) {
+      logger.d("${curFilePath.value} vs $path");
       curFilePath.value = path;
-      loadFileContent(filePath: path);
+      _loadFileContent(filePath: path);
       final dirController = Get.find<DirController>();
       dirController.updateCurrentPath(path);
     }
@@ -82,9 +83,7 @@ class MarkDownController extends GetxController {
     }
   }
 
-  Future<String> loadFileContent({String? filePath}) async {
-    filePath ??= curFilePath.value;
-
+  Future<String> _loadFileContent({required String filePath}) async {
     try {
       logger.d("Loading file: $filePath");
       titleController.text = _getFileName(filePath);
@@ -93,7 +92,7 @@ class MarkDownController extends GetxController {
       curNodes.value = md.Document(encodeHtml: false).parse(curText);
       listToI.value = getMarkDownToI(curText);
       contentControllter.text = curText;
-
+      update();
       return curText;
     } catch (e) {
       logger.e("Error loading file: $e");
@@ -146,8 +145,8 @@ class MarkDownController extends GetxController {
     if (editOrPreview.value) {
       logger.d("save sachanges");
       await saveChanges(contentControllter.text, curFilePath.value);
-    } else {}
-    getNodes(text: contentControllter.text);
+      curNodes.value = getNodes(text: contentControllter.text);
+    }
     logger.d(
         "nodes ${curNodes.length}, content ${contentControllter.text.length}");
     editOrPreview.toggle();
