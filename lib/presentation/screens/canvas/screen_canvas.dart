@@ -4,6 +4,7 @@ import 'package:xnote/common/utils.dart';
 import 'package:xnote/controller/markdown_controller.dart';
 import 'package:xnote/controller/dir_controller.dart';
 import 'package:xnote/controller/tools_bar_controller.dart';
+import 'package:xnote/controller/window_size_controller.dart';
 import 'package:xnote/presentation/screens/canvas/tools/tools_bar.dart';
 import 'package:ficonsax/ficonsax.dart';
 import 'package:flutter/material.dart';
@@ -105,10 +106,11 @@ class ScreenCanvas extends StatelessWidget {
                   )),
               // 主体内容
               body: Row(children: [
-                SizedBox(
-                  height: double.infinity,
-                  child: ToolsBar(),
-                ),
+                GetBuilder<WindowSizeController>(
+                    builder: (ctrl) => SizedBox(
+                          height: double.infinity,
+                          child: ToolsBar(),
+                        )),
                 Expanded(child: GetBuilder<MarkDownController>(builder: (ctrl) {
                   return ctrl.editOrPreview.value
                       ? MarkdownEditMode()

@@ -1,4 +1,5 @@
 import 'package:xnote/controller/llm_controller.dart';
+import 'package:xnote/controller/window_size_controller.dart';
 
 import 'controller/dir_controller.dart';
 import 'controller/theme_controller.dart';
@@ -30,6 +31,7 @@ Future<void> main() async {
   Get.put(DirController(rootPath: rootPath));
 
   Get.put(LLMController());
+  Get.put(WindowSizeController());
 
   runApp(MyApp());
 }

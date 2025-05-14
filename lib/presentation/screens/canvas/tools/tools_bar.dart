@@ -83,7 +83,7 @@ class ToolsBar extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
               width: controller.selectedIndex.value >= 0
-                  ? min(1000, Get.width * 0.15)
+                  ? max(200, Get.width * 0.15)
                   : 0,
               height: double.infinity,
               child: getTools(context, controller.selectedIndex.value),

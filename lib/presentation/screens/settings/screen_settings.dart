@@ -65,8 +65,6 @@ class ScreenSettings extends StatelessWidget {
   }
 
   void _showThemeSelector(BuildContext context) {
-    final themeController = Get.find<ThemeController>();
-
     showModalBottomSheet(
         context: context,
         builder: (_) => Container(
@@ -77,7 +75,7 @@ class ScreenSettings extends StatelessWidget {
                 ),
               ),
               alignment: Alignment.center,
-              child: GetBuilder<ThemeController>(builder: (controller) {
+              child: GetBuilder<ThemeController>(builder: (themeController) {
                 return ListView(
                   // 响应式更新选中状态
                   children: [

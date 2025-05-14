@@ -48,7 +48,7 @@ class CustomFAB extends StatelessWidget {
           label: "Note",
           onCreate: () async {
             if (fileController.text.isNotEmpty) {
-              File newFile = File('$rootPath/${fileController.text}.md');
+              File newFile = File('$rootPath/${fileController.text}');
               newFile.create(recursive: true);
               dirController.fetchDirectory(path: newFile.parent.path);
               fileController.clear();

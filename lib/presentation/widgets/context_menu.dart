@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:xnote/controller/dir_controller.dart';
 import 'package:ficonsax/ficonsax.dart';
 import 'package:flutter/material.dart';
@@ -34,6 +35,13 @@ void showContextMenu(BuildContext context, String entityPath, bool isFolder,
       child: ListTile(
         leading: Icon(IconsaxOutline.folder_cross),
         title: Text('Delete'),
+      ),
+    ),
+    const PopupMenuItem(
+      value: 'export',
+      child: ListTile(
+        leading: Icon(IconsaxOutline.export_2),
+        title: Text('export'),
       ),
     ),
   ];
@@ -77,6 +85,9 @@ void showContextMenu(BuildContext context, String entityPath, bool isFolder,
         break;
       case 'new_file':
         _createNewFile(entityPath);
+        break;
+      case 'export':
+        _exportEntity(entityPath, isFolder);
         break;
     }
   });
@@ -274,4 +285,47 @@ void _deleteEntity(String entityPath, bool isFolder) {
       ],
     ),
   );
+}
+
+void _exportEntity(String entityPath, bool isFolder) async {
+  void imp() async {
+    String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
+
+    if (selectedDirectory == null) {
+      return;
+    }
+
+    if (isFolder) {
+      _copyDirectory(Directory(entityPath), Directory(selectedDirectory))
+          .then((_) => Get.snackbar("Success", "Folder exported successfully!"))
+          .catchError((e) => Get.snackbar("Fail", "$e"));
+    } else {
+      File(entityPath)
+          .copy('$selectedDirectory/${entityPath.split('/').last}')
+          .then((_) => Get.snackbar("Success", "File exported successfully!"))
+          .catchError((e) => Get.snackbar("Fail", "$e"));
+    }
+  }
+
+  imp();
+}
+
+Future<void> _copyDirectory(Directory source, Directory target) async {
+  final targetDir = Directory("${target.path}/${source.path.split("/").last}");
+  if (!await targetDir.exists()) {
+    await targetDir.create();
+  }
+
+  final entities = source.listSync();
+  for (var entity in entities) {
+    if (entity is File) {
+      final targetFile =
+          File('${targetDir.path}/${entity.path.split('/').last}');
+      await entity.copy(targetFile.path);
+    } else if (entity is Directory) {
+      final newTarget =
+          Directory('${targetDir.path}/${entity.path.split('/').last}');
+      await _copyDirectory(entity, newTarget);
+    }
+  }
 }
