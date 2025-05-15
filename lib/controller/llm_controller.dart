@@ -54,7 +54,6 @@ class DialogController extends GetxController {
           ));
       logger.d('response:$response');
       if (response.statusCode != null && response.statusCode! >= 200) {
-        // TODO: 多输入检测
         for (var item in response.data["choices"]) {
           data.add(
               {"content": item["message"]["content"], "role": "assistant"});

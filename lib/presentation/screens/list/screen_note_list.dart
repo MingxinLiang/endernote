@@ -37,7 +37,6 @@ class ScreenNoteList extends StatelessWidget {
   }
 }
 
-// TODO: 多级目录优化
 Widget buildDirectoryList(BuildContext context, {String? path}) {
   final dirController = Get.find<DirController>();
   return FutureBuilder(

@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/widgets.dart';
 import 'package:markdown/markdown.dart' as md;
 import 'package:markdown_widget/config/configs.dart' show MarkdownConfig;
@@ -84,34 +83,6 @@ List<ToI> getMarkDownToI(String text) {
   }
 
   return listToI;
-}
-
-String? renameFile(String oldPath, String newName) {
-  final newNameTrimmed = newName.trim();
-  if (newNameTrimmed.isEmpty || oldPath.isEmpty) return null;
-
-  final parentDir = Directory(oldPath).parent;
-  final newPath = _getAvailablePath(parentDir, newNameTrimmed);
-
-  if (newPath != oldPath) {
-    try {
-      File(oldPath).renameSync(newPath);
-    } catch (e) {
-      debugPrint("Error renaming file: $e");
-    }
-  }
-
-  return newPath;
-}
-
-String _getAvailablePath(Directory parent, String name) {
-  var basePath = '${parent.path}${Platform.pathSeparator}$name';
-  var newPath = '$basePath.md';
-
-  for (var i = 1; File(newPath).existsSync(); i++) {
-    newPath = '$basePath ($i).md';
-  }
-  return newPath;
 }
 
 // 用于展示
