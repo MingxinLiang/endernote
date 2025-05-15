@@ -75,31 +75,35 @@ void showContextMenu(BuildContext context, String entityPath, bool isFolder,
   ).then((value) {
     switch (value) {
       case 'rename':
-        _renameEntity(entityPath, isFolder);
+        renameEntity(entityPath, isFolder);
         break;
       case 'delete':
-        _deleteEntity(entityPath, isFolder);
+        deleteEntity(entityPath, isFolder);
         break;
       case 'new_folder':
-        _createNewFolder(entityPath);
+        createNewFolder(entityPath);
         break;
       case 'new_file':
-        _createNewFile(entityPath);
+        createNewFile(entityPath);
         break;
       case 'export':
-        _exportEntity(entityPath, isFolder);
+        exportEntity(entityPath, isFolder);
         break;
     }
   });
 }
 
-void _createNewFolder(String entityPath) {
+void createNewFolder(String entityPath) {
   void imp(String value) {
     if (value.trim().isNotEmpty) {
-      Directory(
-        '$entityPath/${value.trim()}', // new folder path
-      ).createSync();
-      Get.find<DirController>().fetchDirectory(path: entityPath);
+      try {
+        Directory(
+          '$entityPath/${value.trim()}', // new folder path
+        ).createSync();
+        Get.find<DirController>().fetchDirectory(path: entityPath);
+      } catch (e) {
+        Get.snackbar('Error', 'Failed to create folder: $e');
+      }
     }
   }
 
@@ -141,13 +145,17 @@ void _createNewFolder(String entityPath) {
   );
 }
 
-void _createNewFile(String entityPath) {
+void createNewFile(String entityPath) {
   void imp(String name) {
     if (name.trim().isNotEmpty) {
-      File(
-        '$entityPath/${name.trim()}.md', // new file name
-      ).createSync();
-      Get.find<DirController>().fetchDirectory(path: entityPath);
+      try {
+        File(
+          '$entityPath/${name.trim()}.md', // new file name
+        ).createSync(recursive: true);
+        Get.find<DirController>().fetchDirectory(path: entityPath);
+      } catch (e) {
+        Get.snackbar('Error', 'Failed to create file: $e');
+      }
     }
   }
 
@@ -189,23 +197,27 @@ void _createNewFile(String entityPath) {
   );
 }
 
-void _renameEntity(
+void renameEntity(
   String entityPath,
   bool isFolder,
 ) {
   void imp(String newName) {
     if (newName.trim().isNotEmpty) {
-      if (isFolder) {
-        Directory(entityPath).renameSync(
-          '${Directory(entityPath).parent.path}/${newName.trim()}', // updated folder name
-        );
-      } else {
-        File(entityPath).renameSync(
-          '${Directory(entityPath).parent.path}/${newName.trim()}.md', // updated file name
-        );
+      try {
+        if (isFolder) {
+          Directory(entityPath).renameSync(
+            '${Directory(entityPath).parent.path}/${newName.trim()}', // updated folder name
+          );
+        } else {
+          File(entityPath).renameSync(
+            '${Directory(entityPath).parent.path}/${newName.trim()}.md', // updated file name
+          );
+        }
+        Get.find<DirController>()
+            .fetchDirectory(path: Directory(entityPath).parent.path);
+      } catch (e) {
+        Get.snackbar('Error', 'Failed to rename entity: $e');
       }
-      Get.find<DirController>()
-          .fetchDirectory(path: Directory(entityPath).parent.path);
     }
   }
 
@@ -250,7 +262,7 @@ void _renameEntity(
   );
 }
 
-void _deleteEntity(String entityPath, bool isFolder) {
+void deleteEntity(String entityPath, bool isFolder) {
   Get.dialog(
     AlertDialog(
       backgroundColor: _dialogBackGroupColor,
@@ -271,14 +283,18 @@ void _deleteEntity(String entityPath, bool isFolder) {
         ),
         TextButton(
           onPressed: () {
-            if (isFolder) {
-              Directory(entityPath).deleteSync(recursive: true);
-            } else {
-              File(entityPath).deleteSync();
+            try {
+              if (isFolder) {
+                Directory(entityPath).deleteSync(recursive: true);
+              } else {
+                File(entityPath).deleteSync();
+              }
+              Get.find<DirController>()
+                  .fetchDirectory(path: Directory(entityPath).parent.path);
+              Get.back();
+            } catch (e) {
+              Get.snackbar('Error', 'Failed to delete entity: $e');
             }
-            Get.find<DirController>()
-                .fetchDirectory(path: Directory(entityPath).parent.path);
-            Get.back();
           },
           child: const Text('Delete'),
         ),
@@ -287,7 +303,7 @@ void _deleteEntity(String entityPath, bool isFolder) {
   );
 }
 
-void _exportEntity(String entityPath, bool isFolder) async {
+void exportEntity(String entityPath, bool isFolder) async {
   void imp() async {
     String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
 

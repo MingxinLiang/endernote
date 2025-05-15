@@ -55,10 +55,11 @@ class DialogController extends GetxController {
       logger.d('response:$response');
       if (response.statusCode != null && response.statusCode! >= 200) {
         // TODO: 多输入检测
-        data.add({
-          "content": response.data["choices"][0]["message"]["content"],
-          "role": "assistant"
-        });
+        for (var item in response.data["choices"]) {
+          data.add(
+              {"content": item["message"]["content"], "role": "assistant"});
+          update();
+        }
       } else {
         logger.e('Request failed with status code: ${response.statusCode}');
         logger.e(response.toString());
@@ -68,7 +69,6 @@ class DialogController extends GetxController {
     } finally {
       isTyping.value = false;
     }
-    update();
   }
 
   onSend(String text) async {

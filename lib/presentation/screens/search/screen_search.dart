@@ -4,6 +4,9 @@ import 'package:xnote/controller/dir_controller.dart';
 import 'package:ficonsax/ficonsax.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:xnote/controller/markdown_controller.dart'
+    show MarkDownController;
+import 'package:xnote/presentation/screens/canvas/screen_canvas.dart';
 
 import '../../theme/app_themes.dart';
 import '../../widgets/context_menu.dart';
@@ -100,7 +103,7 @@ class ScreenSearch extends StatelessWidget {
                               .withAlpha(150),
                         ),
                       ),
-                      onTap: () {
+                      onTap: () async {
                         if (isFolder) {
                           dirController.toggleFolder(entityPath);
                           if (dirController.folderContents
@@ -108,7 +111,13 @@ class ScreenSearch extends StatelessWidget {
                             dirController.fetchDirectory(path: entityPath);
                           }
                         } else {
-                          Get.toNamed("/canvas", arguments: entityPath);
+                          Get.to(
+                            () => ScreenCanvas(filePath: entityPath),
+                            preventDuplicates: true,
+                          )
+                              ?.then((_) => Get.find<MarkDownController>()
+                                  .setCurFilePath(entityPath))
+                              .catchError((e) => Get.snackbar("ERR", "$e"));
                         }
                       },
                     ),
@@ -129,6 +138,7 @@ class ScreenSearch extends StatelessWidget {
     );
   }
 
+  // TODO: 合并方法
   Widget _buildDirectoryList(
     BuildContext context,
     String path,
@@ -178,14 +188,20 @@ class ScreenSearch extends StatelessWidget {
                       : IconsaxOutline.task_square,
                 ),
                 title: Text(entityPath.split('/').last),
-                onTap: () {
+                onTap: () async {
                   if (isFolder) {
                     controller.toggleFolder(entityPath);
                     if (!controller.folderContents.containsKey(entityPath)) {
                       controller.fetchDirectory(path: entityPath);
                     }
                   } else {
-                    Get.toNamed("/canvas", arguments: entityPath);
+                    Get.to(
+                      () => ScreenCanvas(filePath: entityPath),
+                      preventDuplicates: true,
+                    )
+                        ?.then((_) => Get.find<MarkDownController>()
+                            .setCurFilePath(entityPath))
+                        .catchError((e) => Get.snackbar("ERR", "$e"));
                   }
                 },
               ),

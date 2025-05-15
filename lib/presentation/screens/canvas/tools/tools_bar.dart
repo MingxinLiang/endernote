@@ -1,4 +1,4 @@
-import 'dart:math' show max, min;
+import 'dart:math' show max;
 import 'package:xnote/common/logger.dart' show logger;
 import 'package:xnote/controller/tools_bar_controller.dart';
 import 'package:xnote/presentation/screens/canvas/tools/screen_toc.dart'
