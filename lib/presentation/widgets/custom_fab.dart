@@ -6,6 +6,7 @@ import 'package:ficonsax/ficonsax.dart';
 import 'package:get/get.dart';
 import 'package:xnote/controller/markdown_controller.dart'
     show MarkDownController;
+import 'package:xnote/presentation/widgets/context_menu.dart';
 import '../theme/app_themes.dart';
 
 // 右下角悬浮按钮
@@ -20,8 +21,6 @@ class CustomFAB extends StatelessWidget {
     final TextEditingController folderController = TextEditingController();
     final TextEditingController fileController = TextEditingController();
 
-    final dirController = Get.find<DirController>();
-
     return SpeedDial(
       openCloseDial: isDialOpen,
       children: [
@@ -30,36 +29,17 @@ class CustomFAB extends StatelessWidget {
           controller: folderController,
           icon: IconsaxOutline.folder,
           label: "Folder",
-          onCreate: () async {
-            if (folderController.text.isNotEmpty) {
-              await Directory(
-                '$rootPath/${folderController.text}',
-              ).create(recursive: true);
-              dirController.fetchDirectory(path: rootPath);
-            }
-            Get.back();
-            folderController.clear();
-          },
+          onCreate: () => createNewFolder(),
         ),
-        _buildDialChild(
-          context,
-          controller: fileController,
-          icon: IconsaxOutline.task_square,
-          label: "Note",
-          onCreate: () async {
-            if (fileController.text.isNotEmpty) {
-              File newFile = File('$rootPath/${fileController.text}');
-              newFile.create(recursive: true);
-              dirController.fetchDirectory(path: newFile.parent.path);
-              fileController.clear();
-              Get.back();
-              Get.find<MarkDownController>().setCurFilePath(newFile.path);
-              Get.toNamed("/canvas");
-            } else {
-              Get.back();
-            }
-          },
-        ),
+        _buildDialChild(context,
+            controller: fileController,
+            icon: IconsaxOutline.task_square,
+            label: "Note", onCreate: () async {
+          final newFilePath = await createNewFile(dirPath: rootPath);
+          Get.find<DirController>().fetchDirectory(path: rootPath);
+          Get.find<MarkDownController>().setCurFilePath(newFilePath);
+          Get.toNamed("/canvas");
+        }),
       ],
       child: const Icon(IconsaxOutline.add),
     );
@@ -70,50 +50,12 @@ class CustomFAB extends StatelessWidget {
     required TextEditingController controller,
     required IconData icon,
     required String label,
-    required Future<void> Function() onCreate,
+    required Function() onCreate,
   }) {
     return SpeedDialChild(
       child: Icon(icon),
       label: label,
-      onTap: () => showDialog(
-        context: context,
-        builder: (context) {
-          final textfocus = FocusNode();
-          textfocus.requestFocus();
-          return AlertDialog(
-            backgroundColor:
-                Theme.of(context).extension<XnoteColors>()?.clrBase,
-            title: Text(
-              'New $label',
-              style: TextStyle(
-                color: Theme.of(context).extension<XnoteColors>()?.clrText,
-              ),
-            ),
-            content: TextField(
-              controller: controller,
-              focusNode: textfocus,
-              decoration: InputDecoration(
-                hintText: '$label name',
-                hintStyle: TextStyle(color: Colors.grey),
-              ),
-              onSubmitted: (value) => onCreate(),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Get.back();
-                  controller.clear();
-                },
-                child: const Text('Cancel'),
-              ),
-              TextButton(
-                onPressed: onCreate,
-                child: const Text('Create'),
-              ),
-            ],
-          );
-        },
-      ),
+      onTap: () => onCreate(),
     );
   }
 }

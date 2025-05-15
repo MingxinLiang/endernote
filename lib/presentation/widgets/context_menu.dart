@@ -7,8 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../theme/app_themes.dart';
 
-const _dialogBackGroupColor = Colors.black54;
-const _dialogTextColor = Colors.white54;
+const _dialogBackGroupColor = Colors.black87;
+const _dialogTextColor = Colors.white70;
 
 void showContextMenu(BuildContext context, String entityPath, bool isFolder,
     {required Offset position}) {
@@ -81,10 +81,10 @@ void showContextMenu(BuildContext context, String entityPath, bool isFolder,
         deleteEntity(entityPath, isFolder);
         break;
       case 'new_folder':
-        createNewFolder(entityPath);
+        createNewFolder(dirPath: entityPath);
         break;
       case 'new_file':
-        createNewFile(entityPath);
+        createNewFile(dirPath: entityPath);
         break;
       case 'export':
         exportEntity(entityPath, isFolder);
@@ -93,19 +93,21 @@ void showContextMenu(BuildContext context, String entityPath, bool isFolder,
   });
 }
 
-void createNewFolder(String entityPath) {
+void createNewFolder({String? dirPath}) {
   void imp(String value) {
     if (value.trim().isNotEmpty) {
       try {
         Directory(
-          '$entityPath/${value.trim()}', // new folder path
+          '$dirPath/${value.trim()}', // new folder path
         ).createSync();
-        Get.find<DirController>().fetchDirectory(path: entityPath);
+        Get.find<DirController>().fetchDirectory(path: dirPath);
       } catch (e) {
         Get.snackbar('Error', 'Failed to create folder: $e');
       }
     }
   }
+
+  dirPath ??= Get.find<DirController>().rootPath.value;
 
   final controller = TextEditingController();
   Get.dialog(
@@ -123,6 +125,7 @@ void createNewFolder(String entityPath) {
           hintText: 'Folder name',
           hintStyle: TextStyle(color: Colors.grey),
         ),
+        autofocus: true,
         onSubmitted: (value) {
           imp(value);
           Get.back();
@@ -145,22 +148,25 @@ void createNewFolder(String entityPath) {
   );
 }
 
-void createNewFile(String entityPath) {
+Future<String> createNewFile({String? dirPath}) async {
+  String newPath = "";
+
   void imp(String name) {
     if (name.trim().isNotEmpty) {
+      newPath = '$dirPath/${name.trim()}';
       try {
-        File(
-          '$entityPath/${name.trim()}.md', // new file name
-        ).createSync(recursive: true);
-        Get.find<DirController>().fetchDirectory(path: entityPath);
+        File(newPath).createSync(recursive: true);
+        Get.find<DirController>().fetchDirectory(path: dirPath);
       } catch (e) {
         Get.snackbar('Error', 'Failed to create file: $e');
       }
     }
   }
 
+  dirPath ??= Get.find<DirController>().rootPath.value;
+
   final controller = TextEditingController();
-  Get.dialog(
+  await Get.dialog(
     AlertDialog(
       backgroundColor: _dialogBackGroupColor,
       title: Text(
@@ -175,6 +181,7 @@ void createNewFile(String entityPath) {
           hintText: 'File name',
           hintStyle: TextStyle(color: Colors.grey),
         ),
+        autofocus: true,
         onSubmitted: (value) {
           imp(value);
           Get.back();
@@ -195,6 +202,8 @@ void createNewFile(String entityPath) {
       ],
     ),
   );
+
+  return newPath;
 }
 
 void renameEntity(
@@ -238,6 +247,7 @@ void renameEntity(
           hintText: 'New name for ${entityPath.split('/').last}',
           hintStyle: const TextStyle(color: Colors.grey),
         ),
+        autofocus: true,
         // 回车提交
         onSubmitted: (value) {
           imp(value);

@@ -54,30 +54,31 @@ Widget buildDirectoryList(BuildContext context, {String? path}) {
           );
         }
 
-        late final List<String> contents;
-        if (path == null) {
-          contents =
-              dirController.folderContents[dirController.rootPath.value] ?? [];
-        } else {
-          contents = dirController.folderContents[path] ?? []; // 获取当前路径的内容
-        }
-
-        if (contents.isEmpty) {
-          return Center(
-            child: Text(
-              "This folder is feeling lonely.",
-              style: TextStyle(
-                fontSize: 16,
-                color: Theme.of(context)
-                    .extension<XnoteColors>()
-                    ?.clrText
-                    .withAlpha(100),
-              ),
-            ),
-          );
-        }
-
         return GetBuilder<DirController>(builder: (dirController) {
+          late final List<String> contents;
+          if (path == null) {
+            contents =
+                dirController.folderContents[dirController.rootPath.value] ??
+                    [];
+          } else {
+            contents = dirController.folderContents[path] ?? []; // 获取当前路径的内容
+          }
+
+          if (contents.isEmpty) {
+            return Center(
+              child: Text(
+                "This folder is feeling lonely.",
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Theme.of(context)
+                      .extension<XnoteColors>()
+                      ?.clrText
+                      .withAlpha(100),
+                ),
+              ),
+            );
+          }
+
           return ListView.builder(
               shrinkWrap: true,
               physics: const BouncingScrollPhysics(),

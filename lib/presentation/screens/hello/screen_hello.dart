@@ -4,8 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:ficonsax/ficonsax.dart';
 import 'package:get/get.dart';
+import 'package:xnote/controller/dir_controller.dart' show DirController;
 import 'package:xnote/controller/markdown_controller.dart'
     show MarkDownController;
+import 'package:xnote/presentation/widgets/context_menu.dart'
+    show createNewFile;
 
 import '../../widgets/custom_app_bar.dart';
 import '../../widgets/custom_fab.dart';
@@ -122,11 +125,9 @@ class ScreenHello extends StatelessWidget {
                     ),
                   ),
                   onPressed: () async {
-                    final newFile = File(
-                      '$rootPath/new_note_${DateTime.now().millisecondsSinceEpoch}.md',
-                    );
-                    await newFile.create();
-                    Get.find<MarkDownController>().setCurFilePath(newFile.path);
+                    final newFilePath = await createNewFile(dirPath: rootPath);
+                    Get.find<DirController>().fetchDirectory(path: rootPath);
+                    Get.find<MarkDownController>().setCurFilePath(newFilePath);
                     Get.toNamed("/canvas");
                   },
                 ),
