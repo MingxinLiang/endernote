@@ -1,5 +1,9 @@
 import 'package:xnote/controller/llm_controller.dart';
+import 'package:xnote/controller/markdown_controller.dart'
+    show MarkDownController;
 import 'package:xnote/controller/window_size_controller.dart';
+import 'package:xnote/presentation/screens/canvas/screen_canvas.dart'
+    show ScreenCanvas;
 
 import 'controller/dir_controller.dart';
 import 'controller/theme_controller.dart';
@@ -32,6 +36,8 @@ Future<void> main() async {
 
   Get.put(LLMController());
   Get.put(WindowSizeController());
+
+  Get.put(MarkDownController());
 
   runApp(MyApp());
 }
@@ -73,6 +79,11 @@ class MyApp extends StatelessWidget {
             page: () => ScreenNoteList(
               rootPath: Get.find<DirController>().rootPath.value,
             ),
+          ),
+          GetPage(
+            name: '/canvas',
+            page: () => ScreenCanvas(),
+            preventDuplicates: true,
           ),
           GetPage(
             name: '/settings',

@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:ficonsax/ficonsax.dart';
 import 'package:get/get.dart';
-import 'package:xnote/presentation/screens/canvas/screen_canvas.dart';
+import 'package:xnote/controller/markdown_controller.dart'
+    show MarkDownController;
 
 import '../../widgets/custom_app_bar.dart';
 import '../../widgets/custom_fab.dart';
@@ -25,8 +26,8 @@ class ScreenHello extends StatelessWidget {
     return Scaffold(
       appBar: CustomAppBar(
         rootPath: rootPath,
-        controller: searchController,
-        hasText: hasText,
+        showBackButton: false,
+        showRightButton: true,
       ),
 
       // TODO: 优化入门页面
@@ -125,10 +126,8 @@ class ScreenHello extends StatelessWidget {
                       '$rootPath/new_note_${DateTime.now().millisecondsSinceEpoch}.md',
                     );
                     await newFile.create();
-
-                    Get.to(() => ScreenCanvas(
-                          filePath: newFile.path,
-                        ));
+                    Get.find<MarkDownController>().setCurFilePath(newFile.path);
+                    Get.toNamed("/canvas");
                   },
                 ),
                 OutlinedButton.icon(

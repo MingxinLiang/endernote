@@ -1,23 +1,21 @@
+import 'package:xnote/presentation/screens/search/screen_search.dart'
+    show buildSearchBar;
 import 'package:xnote/presentation/theme/app_themes.dart';
 import 'package:ficonsax/ficonsax.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const CustomAppBar({
-    super.key,
-    this.controller,
-    this.searchQuery,
-    this.hasText,
-    required this.rootPath,
-    this.showBackButton = false,
-  });
-
-  final TextEditingController? controller;
-  final String? searchQuery;
-  final ValueNotifier<bool>? hasText;
   final String rootPath;
   final bool showBackButton;
+  final bool showRightButton;
+
+  const CustomAppBar({
+    super.key,
+    required this.rootPath,
+    this.showBackButton = false,
+    this.showRightButton = true,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -32,64 +30,19 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         padding: const EdgeInsets.all(3),
         child: Row(
           children: [
-            if (showBackButton)
-              IconButton(
-                onPressed: () => Get.back(),
-                icon: const Icon(IconsaxOutline.arrow_left_2),
+            buildSearchBar(
+                rootPath: rootPath,
+                showBackButton: showBackButton,
+                showRightButton: showRightButton),
+            IconButton(
+              onPressed: () {
+                Get.toNamed("./settings");
+              },
+              tooltip: 'Settings',
+              icon: Icon(
+                IconsaxOutline.setting_2,
               ),
-            Expanded(
-              child: controller != null
-                  ? TextField(
-                      controller: controller,
-                      decoration: InputDecoration(
-                        hintText: "Search your notes",
-                        hintStyle: TextStyle(
-                          color: Theme.of(context)
-                              .extension<XnoteColors>()
-                              ?.clrbackText,
-                          fontSize: 14,
-                          fontFamily: 'FiraCode',
-                        ),
-                        border: InputBorder.none,
-                        enabledBorder: InputBorder.none,
-                        contentPadding: showBackButton
-                            ? null
-                            : const EdgeInsets.only(left: 15),
-                      ),
-                      onSubmitted: (value) {
-                        if (controller!.text.trim().isNotEmpty) {
-                          Get.toNamed("/search", arguments: {
-                            'query': controller!.text.trim(),
-                            'rootPath': rootPath
-                          });
-                        }
-                        controller!.clear();
-                      },
-                    )
-                  : Text('Results for "$searchQuery"'),
             ),
-            if (controller != null && hasText != null)
-              ValueListenableBuilder<bool>(
-                valueListenable: hasText!,
-                builder: (_, hasTextValue, __) => IconButton(
-                  onPressed: () {
-                    if (hasTextValue && controller!.text.trim().isNotEmpty) {
-                      Get.toNamed("./search", arguments: {
-                        'query': controller!.text.trim(),
-                        'rootPath': rootPath
-                      });
-                    } else {
-                      Get.toNamed("./settings");
-                    }
-                  },
-                  tooltip: hasTextValue ? 'Search' : 'Settings',
-                  icon: Icon(
-                    hasTextValue
-                        ? IconsaxOutline.search_normal_1
-                        : IconsaxOutline.setting_2,
-                  ),
-                ),
-              ),
           ],
         ),
       ),

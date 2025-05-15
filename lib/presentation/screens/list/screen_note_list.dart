@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:xnote/common/logger.dart' show logger;
 import 'package:xnote/controller/dir_controller.dart';
 import 'package:xnote/controller/markdown_controller.dart';
-import 'package:xnote/presentation/screens/canvas/screen_canvas.dart';
 import 'package:xnote/presentation/widgets/context_menu.dart'
     show showContextMenu;
 import 'package:get/get.dart';
@@ -30,9 +29,7 @@ class ScreenNoteList extends StatelessWidget {
     return Scaffold(
       appBar: CustomAppBar(
         rootPath: rootPath,
-        controller: searchController,
         showBackButton: true,
-        hasText: hasText,
       ),
       body: buildDirectoryList(context, path: rootPath),
       floatingActionButton: CustomFAB(rootPath: rootPath),
@@ -122,13 +119,10 @@ Widget buildDirectoryList(BuildContext context, {String? path}) {
                             }
                           } else {
                             logger.d("open file: $entityPath");
-                            // 只初始化一次
-                            await Get.to(
-                              () => ScreenCanvas(filePath: entityPath),
-                              preventDuplicates: true,
-                            );
                             // 通过MarkDownController更新,不更新UI, 只更新内容.
-                            Get.find<MarkDownController>().setCurFilePath(entityPath);
+                            Get.find<MarkDownController>()
+                                .setCurFilePath(entityPath);
+                            await Get.toNamed("/canvas");
                           }
                         },
                       ),

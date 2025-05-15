@@ -1,6 +1,7 @@
 // DirectoryController 负责管理根目录路径
 import 'dart:io';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart' show TextEditingController;
 import 'package:xnote/common/logger.dart' show logger;
 import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
@@ -13,6 +14,7 @@ class DirController extends GetxController {
   RxBool isLoading = false.obs;
   // 错误信息
   RxString error = ''.obs;
+  final TextEditingController searchQueryControllter = TextEditingController();
 
   // 只保留这个Map形式的folderContents
   final RxMap<String, List<String>> folderContents =

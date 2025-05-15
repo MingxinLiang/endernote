@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:ficonsax/ficonsax.dart';
 import 'package:get/get.dart';
-import 'package:xnote/presentation/screens/canvas/screen_canvas.dart'
-    show ScreenCanvas;
+import 'package:xnote/controller/markdown_controller.dart'
+    show MarkDownController;
 import '../theme/app_themes.dart';
 
 // 右下角悬浮按钮
@@ -53,7 +53,8 @@ class CustomFAB extends StatelessWidget {
               dirController.fetchDirectory(path: newFile.parent.path);
               fileController.clear();
               Get.back();
-              Get.to(() => ScreenCanvas(filePath: newFile.path));
+              Get.find<MarkDownController>().setCurFilePath(newFile.path);
+              Get.toNamed("/canvas");
             } else {
               Get.back();
             }

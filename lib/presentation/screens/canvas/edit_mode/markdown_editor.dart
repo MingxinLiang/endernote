@@ -92,6 +92,7 @@ class MarkdownEditMode extends StatelessWidget {
     logger.d("EditMode build");
     final MarkDownController markdownController =
         Get.find<MarkDownController>();
+    markdownController.jumpScrollToIndex();
 
     // 优化布局
     final functionalBar = MarkdownToolbar(
@@ -106,8 +107,6 @@ class MarkdownEditMode extends StatelessWidget {
 
     return Builder(
       builder: (context) {
-        markdownController.jumpScrollToIndex();
-
         return Column(
           children: [
             Align(

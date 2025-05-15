@@ -6,11 +6,56 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:xnote/controller/markdown_controller.dart'
     show MarkDownController;
-import 'package:xnote/presentation/screens/canvas/screen_canvas.dart';
 
 import '../../theme/app_themes.dart';
 import '../../widgets/context_menu.dart';
 import '../../widgets/custom_app_bar.dart';
+
+Widget buildSearchBar(
+    {String? rootPath,
+    bool showBackButton = false,
+    bool showRightButton = false}) {
+  final controller = Get.find<DirController>().searchQueryControllter;
+  rootPath ??= Get.find<DirController>().rootPath.value;
+
+  return Expanded(
+      child: Row(children: [
+    if (showBackButton)
+      IconButton(
+        onPressed: () {
+          controller.clear();
+          Get.back();
+        },
+        icon: const Icon(IconsaxOutline.arrow_left_2),
+      ),
+    Expanded(
+        child: TextField(
+      controller: controller,
+      decoration: InputDecoration(
+        hintText: "Search your notes",
+        hintStyle: TextStyle(
+          color: Colors.grey,
+          fontSize: 14,
+          fontFamily: 'FiraCode',
+        ),
+        border: InputBorder.none,
+        enabledBorder: InputBorder.none,
+        contentPadding: showBackButton
+            ? const EdgeInsets.only(right: 15)
+            : const EdgeInsets.only(left: 15, right: 15),
+      ),
+      onSubmitted: (value) {
+        if (controller.text.trim().isNotEmpty) {
+          Get.toNamed("/search", arguments: {
+            'query': controller.text.trim(),
+            'rootPath': rootPath
+          });
+        }
+        controller.clear();
+      },
+    ))
+  ]));
+}
 
 class ScreenSearch extends StatelessWidget {
   const ScreenSearch({
@@ -28,8 +73,8 @@ class ScreenSearch extends StatelessWidget {
     return Scaffold(
       appBar: CustomAppBar(
         rootPath: rootPath,
-        searchQuery: searchQuery,
         showBackButton: true,
+        showRightButton: false,
       ),
       body: FutureBuilder(
         future: dirController.searchDirectory(searchQuery),
@@ -111,13 +156,11 @@ class ScreenSearch extends StatelessWidget {
                             dirController.fetchDirectory(path: entityPath);
                           }
                         } else {
-                          Get.to(
-                            () => ScreenCanvas(filePath: entityPath),
-                            preventDuplicates: true,
-                          )
-                              ?.then((_) => Get.find<MarkDownController>()
-                                  .setCurFilePath(entityPath))
-                              .catchError((e) => Get.snackbar("ERR", "$e"));
+                          Get.find<MarkDownController>()
+                              .setCurFilePath(entityPath);
+                          Get.toNamed(
+                            "/canvas",
+                          );
                         }
                       },
                     ),
@@ -195,13 +238,8 @@ class ScreenSearch extends StatelessWidget {
                       controller.fetchDirectory(path: entityPath);
                     }
                   } else {
-                    Get.to(
-                      () => ScreenCanvas(filePath: entityPath),
-                      preventDuplicates: true,
-                    )
-                        ?.then((_) => Get.find<MarkDownController>()
-                            .setCurFilePath(entityPath))
-                        .catchError((e) => Get.snackbar("ERR", "$e"));
+                    Get.find<MarkDownController>().setCurFilePath(entityPath);
+                    Get.toNamed("/canvas");
                   }
                 },
               ),
