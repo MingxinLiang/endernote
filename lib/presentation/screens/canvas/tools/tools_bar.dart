@@ -1,5 +1,6 @@
 import 'dart:math' show max;
 import 'package:xnote/common/logger.dart' show logger;
+import 'package:xnote/controller/dir_controller.dart';
 import 'package:xnote/controller/tools_bar_controller.dart';
 import 'package:xnote/presentation/screens/canvas/tools/screen_toc.dart'
     show ToIWidget;
@@ -7,6 +8,8 @@ import 'package:xnote/presentation/screens/list/screen_note_list.dart';
 import 'package:xnote/presentation/theme/app_themes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:xnote/presentation/widgets/context_menu.dart'
+    show showContextMenu;
 
 // 活动栏组件
 class ToolsBar extends StatelessWidget {
@@ -24,8 +27,20 @@ class ToolsBar extends StatelessWidget {
           result = ToIWidget();
           break;
         case 1:
-          result = Align(
-              alignment: Alignment.topLeft, child: buildDirectoryList(context));
+          result =
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            buildDirectoryList(context,
+                path: Get.find<DirController>().rootPath.value),
+            Expanded(
+                child: GestureDetector(
+              onSecondaryTapDown: (details) => showContextMenu(
+                  context, Get.find<DirController>().rootPath.value, true,
+                  position: details.globalPosition),
+              child: Container(
+                color: Colors.transparent,
+              ),
+            )),
+          ]);
           break;
         default:
           result = SizedBox.shrink();

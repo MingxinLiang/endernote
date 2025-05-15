@@ -31,13 +31,22 @@ class ScreenNoteList extends StatelessWidget {
         rootPath: rootPath,
         showBackButton: true,
       ),
-      body: buildDirectoryList(context, path: rootPath),
+      body: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        buildDirectoryList(context, path: rootPath),
+        Expanded(
+            child: GestureDetector(
+          onSecondaryTapDown: (details) => showContextMenu(
+              context, rootPath, true,
+              position: details.globalPosition),
+          child: Container(color: Colors.transparent),
+        )),
+      ]),
       floatingActionButton: CustomFAB(rootPath: rootPath),
     );
   }
 }
 
-Widget buildDirectoryList(BuildContext context, {String? path}) {
+Widget buildDirectoryList(BuildContext context, {required String path}) {
   final dirController = Get.find<DirController>();
   return FutureBuilder(
       future: dirController.fetchDirectory(path: path),
@@ -55,89 +64,98 @@ Widget buildDirectoryList(BuildContext context, {String? path}) {
         }
 
         return GetBuilder<DirController>(builder: (dirController) {
-          late final List<String> contents;
-          if (path == null) {
-            contents =
-                dirController.folderContents[dirController.rootPath.value] ??
-                    [];
-          } else {
-            contents = dirController.folderContents[path] ?? []; // 获取当前路径的内容
-          }
+          final List<String> contents =
+              dirController.folderContents[path] ?? []; // 获取当前路径的内容
 
           if (contents.isEmpty) {
-            return Center(
-              child: Text(
-                "This folder is feeling lonely.",
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Theme.of(context)
-                      .extension<XnoteColors>()
-                      ?.clrText
-                      .withAlpha(100),
-                ),
-              ),
-            );
+            return GestureDetector(
+                onSecondaryTapDown: (details) => showContextMenu(
+                    context, path, true,
+                    position: details.globalPosition),
+                child: Container(
+                  alignment: Alignment.center,
+                  color: Colors.amber,
+                  child: Text(
+                    "This folder is feeling lonely.",
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Theme.of(context)
+                          .extension<XnoteColors>()
+                          ?.clrText
+                          .withAlpha(100),
+                    ),
+                  ),
+                ));
           }
 
-          return ListView.builder(
-              shrinkWrap: true,
-              physics: const BouncingScrollPhysics(),
-              itemCount: contents.length,
-              itemBuilder: (context, index) {
-                final entityPath = contents[index];
-                final isFolder = Directory(entityPath).existsSync();
-                final isCurPath = dirController.currentPath.value == entityPath;
+          // return GestureDetector(
+          //     onSecondaryTapDown: (details) => showContextMenu(
+          //         context, path, true,
+          //         position: details.globalPosition),
+          //     child:
 
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    GestureDetector(
-                      onLongPressStart: (details) => showContextMenu(
-                          context, entityPath, isFolder,
-                          position: details.globalPosition),
-                      onSecondaryTapDown: (details) => showContextMenu(
-                          context, entityPath, isFolder,
-                          position: details.globalPosition),
-                      child: ListTile(
-                        leading: Icon(
-                          isFolder
-                              ? (dirController.openFolders
-                                      .contains(entityPath) // 改用GetX状态
-                                  ? IconsaxOutline.folder_open
-                                  : IconsaxOutline.folder)
-                              : IconsaxOutline.task_square,
-                        ),
-                        title: Text(entityPath.split('/').last,
-                            style: TextStyle(
-                              color: isCurPath ? Colors.blue : null,
-                            )),
-                        onTap: () async {
-                          if (isFolder) {
-                            dirController.toggleFolder(entityPath);
-                            if (!dirController.hasFolder(entityPath)) {
-                              dirController.fetchDirectory(path: entityPath);
+          return Column(children: [
+            ListView.builder(
+                shrinkWrap: true,
+                physics: const BouncingScrollPhysics(),
+                itemCount: contents.length,
+                itemBuilder: (context, index) {
+                  final entityPath = contents[index];
+                  final isFolder = Directory(entityPath).existsSync();
+                  final isCurPath =
+                      dirController.currentPath.value == entityPath;
+
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      GestureDetector(
+                        onLongPressStart: (details) => showContextMenu(
+                            context, entityPath, isFolder,
+                            position: details.globalPosition),
+                        onSecondaryTapDown: (details) => showContextMenu(
+                            context, entityPath, isFolder,
+                            position: details.globalPosition),
+                        child: ListTile(
+                          leading: Icon(
+                            isFolder
+                                ? (dirController.openFolders
+                                        .contains(entityPath) // 改用GetX状态
+                                    ? IconsaxOutline.folder_open
+                                    : IconsaxOutline.folder)
+                                : IconsaxOutline.task_square,
+                          ),
+                          title: Text(entityPath.split('/').last,
+                              style: TextStyle(
+                                color: isCurPath ? Colors.blue : null,
+                              )),
+                          onTap: () async {
+                            if (isFolder) {
+                              dirController.toggleFolder(entityPath);
+                              if (!dirController.hasFolder(entityPath)) {
+                                dirController.fetchDirectory(path: entityPath);
+                              }
+                            } else {
+                              logger.d("open file: $entityPath");
+                              // 通过MarkDownController更新,不更新UI, 只更新内容.
+                              Get.find<MarkDownController>()
+                                  .setCurFilePath(entityPath);
+                              await Get.toNamed("/canvas");
                             }
-                          } else {
-                            logger.d("open file: $entityPath");
-                            // 通过MarkDownController更新,不更新UI, 只更新内容.
-                            Get.find<MarkDownController>()
-                                .setCurFilePath(entityPath);
-                            await Get.toNamed("/canvas");
-                          }
-                        },
+                          },
+                        ),
                       ),
-                    ),
-                    if (isFolder &&
-                        dirController.openFolders
-                            .contains(entityPath)) // 改用GetX状态
-                      Padding(
-                        padding: const EdgeInsets.only(left: 16.0),
-                        child: buildDirectoryList(context,
-                            path: entityPath), // 移除state参数
-                      ),
-                  ],
-                );
-              });
+                      if (isFolder &&
+                          dirController.openFolders
+                              .contains(entityPath)) // 改用GetX状态
+                        Padding(
+                          padding: const EdgeInsets.only(left: 16.0),
+                          child: buildDirectoryList(context,
+                              path: entityPath), // 移除state参数
+                        ),
+                    ],
+                  );
+                }),
+          ]);
         });
       });
 }
