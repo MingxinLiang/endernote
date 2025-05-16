@@ -57,6 +57,7 @@ Future<sherpa_onnx.OnlineModelConfig> getOnlineModelConfig(
   );
 }
 
+// TODO: 优化识别
 Future<sherpa_onnx.OnlineRecognizer> createOnlineRecognizer() async {
   final type = 0;
   final modelConfig = await getOnlineModelConfig(type: type);
