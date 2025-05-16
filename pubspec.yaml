@@ -11,8 +11,8 @@ dependencies:
   flutter:
     sdk: flutter
 
-  record: ^5.1.0
-  sherpa_onnx: 1.11.3
+  record: ^6.0.0
+  sherpa_onnx: ^1.12.0
   get: ^4.7.2 # 添加GetX依赖
   flutter_svg: ^2.0.10+1
   ficonsax: ^0.0.3
@@ -23,7 +23,7 @@ dependencies:
   package_info_plus: ^8.1.2
   path: ^1.9.0
   flutter_speed_dial: ^7.0.0
-  file_picker: ^9.2.1
+  file_picker: ^10.1.9
   logger: ^2.5.0
   shared_preferences: ^2.5.3
   dio: ^5.8.0+1
