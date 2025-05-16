@@ -15,8 +15,6 @@ class ScreenSettings extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeController = Get.find<ThemeController>();
-
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -29,14 +27,15 @@ class ScreenSettings extends StatelessWidget {
         padding: const EdgeInsets.all(10),
         child: ListView(
           children: [
-            Obx(() => CustomListTile(
-                  // 使用响应式监听
-                  lead: IconsaxOutline.brush_3,
-                  title: 'Theme',
-                  subtitle:
-                      themeController.currentTheme.toString().split('.').last,
-                  onTap: () => _showThemeSelector(context),
-                )),
+            GetBuilder<ThemeController>(builder: (ctrl) {
+              return CustomListTile(
+                // 使用响应式监听
+                lead: IconsaxOutline.brush_3,
+                title: 'Theme',
+                subtitle: ctrl.currentTheme.toString().split('.').last,
+                onTap: () => _showThemeSelector(context),
+              );
+            }),
             GetBuilder<DirController>(builder: (dirController) {
               return CustomListTile(
                 lead: IconsaxOutline.book,
@@ -85,8 +84,8 @@ class ScreenSettings extends StatelessWidget {
                           trailing: themeController.currentTheme.value == theme
                               ? const Icon(IconsaxOutline.tick_circle)
                               : null,
-                          onTap: () {
-                            themeController.changeTheme(theme);
+                          onTap: () async {
+                            await themeController.updateTheme(theme);
                             Get.back();
                             Get.snackbar(
                               'Theme Changed',

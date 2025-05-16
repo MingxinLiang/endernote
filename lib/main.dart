@@ -62,88 +62,92 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-        title: 'xnote',
-        debugShowCheckedModeBanner: false,
-        initialRoute: '/',
-        // 使用 GetX 的路由配置方式
-        getPages: [
-          GetPage(
-            name: '/',
-            page: () => ScreenHello(
-              rootPath: Get.find<DirController>().rootPath.value,
-            ),
-          ),
-          GetPage(
-            name: '/noteList',
-            page: () => ScreenNoteList(
-              dirPath: Get.find<DirController>().rootPath.value,
-            ),
-          ),
-          GetPage(
-            name: '/canvas',
-            page: () => ScreenCanvas(),
-            preventDuplicates: true,
-          ),
-          GetPage(
-            name: '/settings',
-            page: () => ScreenSettings(),
-          ),
-          GetPage(
-            name: '/about',
-            page: () => const ScreenAbout(),
-          ),
-          GetPage(
-            name: '/search',
-            page: () {
-              final args = Get.arguments as Map<String, dynamic>?;
-              if (args != null &&
-                  args.containsKey('query') &&
-                  args.containsKey('rootPath')) {
-                return ScreenSearch(
-                  searchQuery: args['query'],
-                  rootPath: args['rootPath'],
-                );
-              } else {
-                // 处理参数缺失的情况
-                logger.w('Missing required arguments for /search route');
-                return Container();
-              }
-            },
-          ),
-        ],
-        // 根据当前主题获取对应的 ThemeData
-        theme: appThemeData[Get.find<ThemeController>().currentTheme.value],
-        // 使用 builder 参数包裹所有页面
-        builder: (context, child) {
-          return GetBuilder<LLMController>(builder: (llmController) {
-            return Scaffold(
-              body: Row(children: [
-                Expanded(child: child!),
-                Visibility(
-                  visible: llmController.isOpen.value,
-                  child: Dialog2LLM(),
-                )
-              ]),
-              floatingActionButtonLocation:
-                  RightCenterFloatingActionButtonLocation(),
-              floatingActionButton: FloatingActionButton.large(
-                onPressed: () {
-                  try {
-                    llmController.toggleSlide();
-                    logger.d("控制器实例获取成功");
-                  } catch (e) {
-                    logger.d('获取控制器实例失败: $e');
-                  }
-                },
-                backgroundColor: Colors.transparent,
-                elevation: 0,
-                child: llmController.isOpen.value
-                    ? Image.asset("lib/assets/icons/xiantuan2.png")
-                    : Image.asset("lib/assets/icons/xiantuan1.png"),
+    // 改变主题时, 重构应用
+    return GetBuilder<ThemeController>(builder: (themeController) {
+      return GetMaterialApp(
+          title: 'xnote',
+          debugShowCheckedModeBanner: false,
+          initialRoute: '/',
+          // 使用 GetX 的路由配置方式
+          getPages: [
+            GetPage(
+              name: '/',
+              page: () => ScreenHello(
+                rootPath: Get.find<DirController>().rootPath.value,
               ),
-            );
+            ),
+            GetPage(
+              name: '/noteList',
+              page: () => ScreenNoteList(
+                dirPath: Get.find<DirController>().rootPath.value,
+              ),
+            ),
+            GetPage(
+              name: '/canvas',
+              page: () => ScreenCanvas(),
+              preventDuplicates: true,
+            ),
+            GetPage(
+              name: '/settings',
+              page: () => ScreenSettings(),
+            ),
+            GetPage(
+              name: '/about',
+              page: () => const ScreenAbout(),
+            ),
+            GetPage(
+              name: '/search',
+              page: () {
+                final args = Get.arguments as Map<String, dynamic>?;
+                if (args != null &&
+                    args.containsKey('query') &&
+                    args.containsKey('rootPath')) {
+                  return ScreenSearch(
+                    searchQuery: args['query'],
+                    rootPath: args['rootPath'],
+                  );
+                } else {
+                  // 处理参数缺失的情况
+                  logger.w('Missing required arguments for /search route');
+                  return Container();
+                }
+              },
+            ),
+          ],
+          // 根据当前主题获取对应的 ThemeData
+          theme: appThemeData[Get.find<ThemeController>().currentTheme.value],
+          // 使用 builder 参数包裹所有页面
+          builder: (context, child) {
+            return GetBuilder<LLMController>(builder: (llmController) {
+              logger.d("rebuilded");
+              return Scaffold(
+                body: Row(children: [
+                  Expanded(child: child!),
+                  Visibility(
+                    visible: llmController.isOpen.value,
+                    child: Dialog2LLM(),
+                  )
+                ]),
+                floatingActionButtonLocation:
+                    RightCenterFloatingActionButtonLocation(),
+                floatingActionButton: FloatingActionButton.large(
+                  onPressed: () {
+                    try {
+                      llmController.toggleSlide();
+                      logger.d("控制器实例获取成功");
+                    } catch (e) {
+                      logger.d('获取控制器实例失败: $e');
+                    }
+                  },
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
+                  child: llmController.isOpen.value
+                      ? Image.asset("lib/assets/icons/xiantuan2.png")
+                      : Image.asset("lib/assets/icons/xiantuan1.png"),
+                ),
+              );
+            });
           });
-        });
+    });
   }
 }

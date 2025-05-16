@@ -1,12 +1,11 @@
 // ThemeController 负责管理应用主题
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:xnote/common/logger.dart' show logger;
 import 'package:xnote/presentation/theme/app_themes.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 
 class ThemeController extends GetxController {
   // 用于持久化存储主题设置
-  final storage = const FlutterSecureStorage();
   // 当前主题
   Rx<AppTheme> currentTheme = AppTheme.catppuccinMocha.obs;
 
@@ -17,9 +16,11 @@ class ThemeController extends GetxController {
   }
 
   // 从存储中加载主题
-  Future<void> _loadTheme() async {
+  Future<void> _loadTheme({String? themeString}) async {
     try {
-      final themeString = await storage.read(key: 'app_theme');
+      final perfs = await SharedPreferences.getInstance();
+      themeString = perfs.getString("app_theme");
+
       if (themeString != null) {
         final theme = AppTheme.values.firstWhere(
           (element) => element.toString() == 'AppTheme.$themeString',
@@ -33,12 +34,15 @@ class ThemeController extends GetxController {
   }
 
   // 更改主题并保存到存储
-  Future<void> changeTheme(AppTheme theme) async {
+  Future<void> updateTheme(AppTheme theme) async {
+    if (currentTheme.value == theme) return;
     try {
       currentTheme.value = theme;
-      await storage.write(
-          key: 'app_theme', value: theme.toString().split('.').last);
+      final perfs = await SharedPreferences.getInstance();
+      perfs.setString("app_theme", theme.toString().split('.').last);
+      await _loadTheme();
       update();
+      logger.d("Theme changed to: ${theme.toString().split('.').last}");
     } catch (e) {
       logger.e("Error changing theme: $e");
     }
