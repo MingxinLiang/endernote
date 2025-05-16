@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'dart:math' show max;
 import 'package:xnote/common/logger.dart' show logger;
+import 'package:xnote/common/utils.dart' show move2Directory;
 import 'package:xnote/controller/dir_controller.dart';
 import 'package:xnote/controller/tools_bar_controller.dart';
 import 'package:xnote/presentation/screens/canvas/tools/screen_toc.dart'
@@ -32,14 +34,37 @@ class ToolsBar extends StatelessWidget {
             buildDirectoryList(context,
                 path: Get.find<DirController>().rootPath.value),
             Expanded(
+                // TODO: 抽象出拖拽类
                 child: GestureDetector(
-              onSecondaryTapDown: (details) => showContextMenu(
-                  context, Get.find<DirController>().rootPath.value, true,
-                  position: details.globalPosition),
-              child: Container(
-                color: Colors.transparent,
-              ),
-            )),
+                    onSecondaryTapDown: (details) => showContextMenu(
+                        context, Get.find<DirController>().rootPath.value, true,
+                        position: details.globalPosition),
+                    child: DragTarget(
+                      onWillAcceptWithDetails: (details) {
+                        if (details.data != null && details.data is String) {
+                          return FileSystemEntity.typeSync(
+                                  details.data as String) !=
+                              FileSystemEntityType.notFound;
+                        }
+                        return false;
+                      },
+                      onAcceptWithDetails: (details) async {
+                        final dirController = Get.find<DirController>();
+                        final targetDir = dirController.rootPath.value;
+                        String soureParent = await move2Directory(
+                            details.data as String, targetDir);
+                        if (soureParent.isNotEmpty) {
+                          dirController.fetchDirectory(path: soureParent);
+                          dirController.fetchDirectory(path: targetDir);
+                        }
+                      },
+                      builder: (context, candidateData, rejectedData) {
+                        final blackColor = candidateData.isNotEmpty
+                            ? Colors.white24
+                            : Colors.transparent;
+                        return Container(color: blackColor);
+                      },
+                    ))),
           ]);
           break;
         default:

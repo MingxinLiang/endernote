@@ -77,7 +77,7 @@ class MyApp extends StatelessWidget {
           GetPage(
             name: '/noteList',
             page: () => ScreenNoteList(
-              rootPath: Get.find<DirController>().rootPath.value,
+              dirPath: Get.find<DirController>().rootPath.value,
             ),
           ),
           GetPage(

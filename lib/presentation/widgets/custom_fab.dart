@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:xnote/controller/dir_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
@@ -7,7 +6,6 @@ import 'package:get/get.dart';
 import 'package:xnote/controller/markdown_controller.dart'
     show MarkDownController;
 import 'package:xnote/presentation/widgets/context_menu.dart';
-import '../theme/app_themes.dart';
 
 // 右下角悬浮按钮
 // 功能：创建文件夹、创建文件

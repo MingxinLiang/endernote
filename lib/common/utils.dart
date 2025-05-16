@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/widgets.dart';
+import 'package:get/get.dart';
 import 'package:markdown/markdown.dart' as md;
 import 'package:markdown_widget/config/configs.dart' show MarkdownConfig;
 import 'package:markdown_widget/widget/widget_visitor.dart' show WidgetVisitor;
@@ -101,4 +104,34 @@ List<Widget> getMarkDownWidgets(markDownNodes) {
         padding: const EdgeInsets.symmetric(vertical: 8), child: richText));
   }
   return widgets;
+}
+
+Future<String> move2Directory(String sourcePath, String targetDir) async {
+  String soureParent = "";
+  try {
+    final sourceEntity = FileSystemEntity.typeSync(sourcePath);
+    final sourceName = sourcePath.split('/').last;
+    final targetPath = '$targetDir/$sourceName';
+
+    if (targetPath == sourcePath) {
+      return "";
+    }
+
+    // 移动文件或文件夹
+    if (sourceEntity == FileSystemEntityType.file) {
+      // ignore: no_leading_underscores_for_local_identifiers
+      final _sourcePath = File(sourcePath);
+      await _sourcePath.rename(targetPath);
+      soureParent = _sourcePath.parent.path;
+    } else if (sourceEntity == FileSystemEntityType.directory) {
+      // ignore: no_leading_underscores_for_local_identifiers
+      final _sourcePath = Directory(sourcePath);
+      await _sourcePath.rename(targetPath);
+      soureParent = _sourcePath.parent.path;
+    }
+  } catch (e) {
+    Get.snackbar("ERR", 'Failed to move file/directory: $e');
+  }
+
+  return soureParent;
 }

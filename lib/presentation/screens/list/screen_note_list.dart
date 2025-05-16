@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:xnote/common/logger.dart' show logger;
+import 'package:xnote/common/utils.dart';
 import 'package:xnote/controller/dir_controller.dart';
 import 'package:xnote/controller/markdown_controller.dart';
 import 'package:xnote/presentation/widgets/context_menu.dart'
@@ -13,9 +14,9 @@ import '../../widgets/custom_app_bar.dart';
 import '../../widgets/custom_fab.dart';
 
 class ScreenNoteList extends StatelessWidget {
-  const ScreenNoteList({super.key, required this.rootPath});
+  const ScreenNoteList({super.key, required this.dirPath});
 
-  final String rootPath;
+  final String dirPath;
 
   @override
   Widget build(BuildContext context) {
@@ -28,20 +29,45 @@ class ScreenNoteList extends StatelessWidget {
 
     return Scaffold(
       appBar: CustomAppBar(
-        rootPath: rootPath,
+        rootPath: dirPath,
         showBackButton: true,
       ),
       body: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        buildDirectoryList(context, path: rootPath),
+        buildDirectoryList(context, path: dirPath),
         Expanded(
+            // TODO: 抽象出拖拽类
             child: GestureDetector(
-          onSecondaryTapDown: (details) => showContextMenu(
-              context, rootPath, true,
-              position: details.globalPosition),
-          child: Container(color: Colors.transparent),
-        )),
+                onSecondaryTapDown: (details) => showContextMenu(
+                    context, dirPath, true,
+                    position: details.globalPosition),
+                child: DragTarget(
+                  onWillAcceptWithDetails: (details) {
+                    if (details.data != null && details.data is String) {
+                      return FileSystemEntity.typeSync(
+                              details.data as String) !=
+                          FileSystemEntityType.notFound;
+                    }
+                    return false;
+                  },
+                  onAcceptWithDetails: (details) async {
+                    final dirController = Get.find<DirController>();
+                    final targetDir = dirPath;
+                    String soureParent =
+                        await move2Directory(details.data as String, targetDir);
+                    if (soureParent.isNotEmpty) {
+                      dirController.fetchDirectory(path: soureParent);
+                      dirController.fetchDirectory(path: targetDir);
+                    }
+                  },
+                  builder: (context, candidateData, rejectedData) {
+                    final blackColor = candidateData.isNotEmpty
+                        ? Colors.white24
+                        : Colors.transparent;
+                    return Container(color: blackColor);
+                  },
+                ))),
       ]),
-      floatingActionButton: CustomFAB(rootPath: rootPath),
+      floatingActionButton: CustomFAB(rootPath: dirPath),
     );
   }
 }
@@ -74,7 +100,7 @@ Widget buildDirectoryList(BuildContext context, {required String path}) {
                     position: details.globalPosition),
                 child: Container(
                   alignment: Alignment.center,
-                  color: Colors.amber,
+                  color: Colors.transparent,
                   child: Text(
                     "This folder is feeling lonely.",
                     style: TextStyle(
@@ -88,12 +114,6 @@ Widget buildDirectoryList(BuildContext context, {required String path}) {
                 ));
           }
 
-          // return GestureDetector(
-          //     onSecondaryTapDown: (details) => showContextMenu(
-          //         context, path, true,
-          //         position: details.globalPosition),
-          //     child:
-
           return Column(children: [
             ListView.builder(
                 shrinkWrap: true,
@@ -101,7 +121,8 @@ Widget buildDirectoryList(BuildContext context, {required String path}) {
                 itemCount: contents.length,
                 itemBuilder: (context, index) {
                   final entityPath = contents[index];
-                  final isFolder = Directory(entityPath).existsSync();
+                  final isFolder = FileSystemEntity.typeSync(entityPath) ==
+                      FileSystemEntityType.directory;
                   final isCurPath =
                       dirController.currentPath.value == entityPath;
 
@@ -109,41 +130,73 @@ Widget buildDirectoryList(BuildContext context, {required String path}) {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       GestureDetector(
-                        onLongPressStart: (details) => showContextMenu(
-                            context, entityPath, isFolder,
-                            position: details.globalPosition),
-                        onSecondaryTapDown: (details) => showContextMenu(
-                            context, entityPath, isFolder,
-                            position: details.globalPosition),
-                        child: ListTile(
-                          leading: Icon(
-                            isFolder
-                                ? (dirController.openFolders
-                                        .contains(entityPath) // 改用GetX状态
-                                    ? IconsaxOutline.folder_open
-                                    : IconsaxOutline.folder)
-                                : IconsaxOutline.task_square,
-                          ),
-                          title: Text(entityPath.split('/').last,
-                              style: TextStyle(
-                                color: isCurPath ? Colors.blue : null,
-                              )),
-                          onTap: () async {
-                            if (isFolder) {
-                              dirController.toggleFolder(entityPath);
-                              if (!dirController.hasFolder(entityPath)) {
-                                dirController.fetchDirectory(path: entityPath);
-                              }
-                            } else {
-                              logger.d("open file: $entityPath");
-                              // 通过MarkDownController更新,不更新UI, 只更新内容.
-                              Get.find<MarkDownController>()
-                                  .setCurFilePath(entityPath);
-                              await Get.toNamed("/canvas");
+                          onSecondaryTapDown: (details) => showContextMenu(
+                              context, entityPath, isFolder,
+                              position: details.globalPosition),
+                          child: DragTarget(onWillAcceptWithDetails: (details) {
+                            if (details.data != null &&
+                                details.data is String) {
+                              return FileSystemEntity.typeSync(
+                                      details.data as String) !=
+                                  FileSystemEntityType.notFound;
                             }
-                          },
-                        ),
-                      ),
+                            return false;
+                          }, onAcceptWithDetails: (details) async {
+                            String targetDir;
+                            if (isFolder) {
+                              targetDir = Directory(entityPath).path;
+                            } else {
+                              targetDir = File(entityPath).parent.path;
+                            }
+                            String soureParent = await move2Directory(
+                                details.data as String, targetDir);
+                            if (soureParent.isNotEmpty) {
+                              dirController.fetchDirectory(path: soureParent);
+                              dirController.fetchDirectory(path: targetDir);
+                            }
+                          }, builder: (context, candidateData, rejectedData) {
+                            final blackColor = candidateData.isNotEmpty
+                                ? Colors.white24
+                                : Colors.transparent;
+
+                            return LongPressDraggable(
+                                data: entityPath,
+                                feedback: Container(
+                                  color: Colors.white54,
+                                  height: 30,
+                                  child: Center(child: Text(entityPath)),
+                                ),
+                                child: ListTile(
+                                    leading: Icon(
+                                      isFolder
+                                          ? (dirController.openFolders.contains(
+                                                  entityPath) // 改用GetX状态
+                                              ? IconsaxOutline.folder_open
+                                              : IconsaxOutline.folder)
+                                          : IconsaxOutline.task_square,
+                                    ),
+                                    tileColor: blackColor,
+                                    title: Text(entityPath.split('/').last,
+                                        style: TextStyle(
+                                          color: isCurPath ? Colors.blue : null,
+                                        )),
+                                    onTap: () async {
+                                      if (isFolder) {
+                                        dirController.toggleFolder(entityPath);
+                                        if (!dirController
+                                            .hasFolder(entityPath)) {
+                                          dirController.fetchDirectory(
+                                              path: entityPath);
+                                        }
+                                      } else {
+                                        logger.d("open file: $entityPath");
+                                        // 通过MarkDownController更新,不更新UI, 只更新内容.
+                                        Get.find<MarkDownController>()
+                                            .setCurFilePath(entityPath);
+                                        await Get.toNamed("/canvas");
+                                      }
+                                    }));
+                          })),
                       if (isFolder &&
                           dirController.openFolders
                               .contains(entityPath)) // 改用GetX状态
